@@ -160,8 +160,9 @@
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\DocumentExt.cs" />
     <Compile Include="Core\IView.cs" />
-    <Compile Include="Model\AddinSettings.cs" />
     <Compile Include="Model\ICatalogProvider.cs" />
+    <Compile Include="Model\CatalogProviderInfo.cs" />
+    <Compile Include="Model\SettingsModel.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Presentation\DocumentManager.cs" />
     <Compile Include="Core\IRuntimeContext.cs" />
