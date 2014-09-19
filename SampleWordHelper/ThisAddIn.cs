@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Configuration;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
-using SampleWordHelper.Configuration;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
@@ -22,7 +20,6 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
-            var configuration = (ReportHelperConfigurationSection) ConfigurationManager.GetSection("reportHelper");
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
             var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
             documentManager = new DocumentManager(context);
