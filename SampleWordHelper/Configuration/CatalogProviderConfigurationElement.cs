@@ -17,7 +17,7 @@ namespace SampleWordHelper.Configuration
         /// <summary>
         /// Имя свойства, содержащего класс, реализующий провайдер.
         /// </summary>
-        const string IMPLEMENTATION_PROPERTY = "implementation";
+        const string CLASS_PROPERTY = "class";
 
         /// <summary>
         /// Возвращает название провайдера каталога.
@@ -32,11 +32,11 @@ namespace SampleWordHelper.Configuration
         /// <summary>
         /// Возвращает тип, реализующий управление каталогом.
         /// </summary>
-        [ConfigurationProperty(IMPLEMENTATION_PROPERTY, IsRequired = true)]
+        [ConfigurationProperty(CLASS_PROPERTY, IsRequired = true)]
         [TypeConverter(typeof (TypeNameConverter))]
         public Type Class
         {
-            get { return (Type) base[IMPLEMENTATION_PROPERTY]; }
+            get { return (Type) base[CLASS_PROPERTY]; }
         }
     }
 }

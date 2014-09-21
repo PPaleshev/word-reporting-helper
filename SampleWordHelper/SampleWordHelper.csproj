@@ -157,12 +157,19 @@
   <ItemGroup>
     <Compile Include="Configuration\CatalogProviderConfigurationElement.cs" />
     <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
+    <Compile Include="Configuration\ConfigurationModel.cs" />
+    <Compile Include="Configuration\FileSystemProviderConfigurationSection.cs" />
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\DocumentExt.cs" />
     <Compile Include="Core\IView.cs" />
-    <Compile Include="Model\ICatalogProvider.cs" />
+    <Compile Include="Core\ValidationError.cs" />
+    <Compile Include="Interface\StructureTreeView.cs" />
+    <Compile Include="Model\Item.cs" />
+    <Compile Include="Model\ValidationResult.cs" />
+    <Compile Include="Presentation\ISettingsEditorPresenter.cs" />
+    <Compile Include="Providers\Core\ICatalogProvider.cs" />
     <Compile Include="Model\CatalogProviderInfo.cs" />
-    <Compile Include="Model\SettingsModel.cs" />
+    <Compile Include="Model\SettingsEditorModel.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Presentation\DocumentManager.cs" />
     <Compile Include="Core\IRuntimeContext.cs" />
@@ -171,7 +178,7 @@
     <Compile Include="Interface\SuspendFlag.cs" />
     <Compile Include="Core\TaskPaneManager.cs" />
     <Compile Include="Core\ViewFactory.cs" />
-    <Compile Include="Interface\IAddinSettingsView.cs" />
+    <Compile Include="Interface\ISettingsEditorView.cs" />
     <Compile Include="Interface\IStructureView.cs" />
     <Compile Include="Interface\ITaskPanePresenter.cs" />
     <Compile Include="Interface\IRibbonView.cs" />
@@ -193,16 +200,16 @@
     <Compile Include="Model\CatalogModel.cs" />
     <Compile Include="Model\IDocumentModel.cs" />
     <Compile Include="Model\DocumentModel.cs" />
-    <Compile Include="Presentation\AddinSettingsPresenter.cs" />
+    <Compile Include="Presentation\SettingsEditorPresenter.cs" />
     <Compile Include="Presentation\DocumentPresenter.cs" />
     <Compile Include="Presentation\IMainPresenter.cs" />
     <Compile Include="Presentation\IRibbonPresenter.cs" />
     <Compile Include="Presentation\IStructurePresenter.cs" />
-    <Compile Include="Interface\ReportingRibbon.cs">
+    <Compile Include="Interface\MainRibbon.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Interface\ReportingRibbon.Designer.cs">
-      <DependentUpon>ReportingRibbon.cs</DependentUpon>
+    <Compile Include="Interface\MainRibbon.Designer.cs">
+      <DependentUpon>MainRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentation\RibbonEventFilter.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -215,8 +222,8 @@
     <EmbeddedResource Include="Interface\StructureTreeControl.resx">
       <DependentUpon>StructureTreeControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Interface\ReportingRibbon.resx">
-      <DependentUpon>ReportingRibbon.cs</DependentUpon>
+    <EmbeddedResource Include="Interface\MainRibbon.resx">
+      <DependentUpon>MainRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -237,7 +244,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Providers\Core\ISettingsModel.cs" />
     <Compile Include="Providers\FileSystem\FileSystemCatalogProvider.cs" />
+    <Compile Include="Providers\FileSystem\Settings.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>

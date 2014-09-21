@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
+using Microsoft.Office.Tools;
 using Microsoft.Office.Tools.Ribbon;
+using SampleWordHelper.Configuration;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
@@ -11,7 +17,7 @@ namespace SampleWordHelper
 {
     public partial class ThisAddIn
     {
-        ReportingRibbon ribbon;
+        MainRibbon ribbon;
         DocumentManager documentManager;
 
         /// <summary>
@@ -20,8 +26,9 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
+            var configurationModel = new ConfigurationModel("reportHelper", null);
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
-            var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
+            var context = new RuntimeContext(Application, viewFactory, Globals.Factory, configurationModel);
             documentManager = new DocumentManager(context);
         }
 
@@ -64,7 +71,7 @@ namespace SampleWordHelper
 
         protected override IRibbonExtension[] CreateRibbonObjects()
         {
-            return new IRibbonExtension[] {ribbon = new ReportingRibbon()};
+            return new IRibbonExtension[] {ribbon = new MainRibbon()};
         }
 
         #endregion

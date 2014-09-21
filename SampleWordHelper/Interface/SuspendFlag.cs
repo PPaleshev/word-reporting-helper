@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Interface
 {
     public class SuspendFlag
     {

@@ -12,5 +12,10 @@ namespace SampleWordHelper.Interface
         /// Инициализирует представление данными модели.
         /// </summary>
         void Initialize(StructureModel model);
+
+        /// <summary>
+        /// Показывает\скрывает представление в зависимости от переданного флага.
+        /// </summary>
+        void SetVisibility(bool value);
     }
 }

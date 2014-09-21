@@ -49,6 +49,12 @@ namespace SampleWordHelper.Presentation
                 innerPresenter.OnShowSettings();
         }
 
+        public void OnShowErrors()
+        {
+            if (IsFilterActive)
+                innerPresenter.OnShowErrors();
+        }
+
         /// <summary>
         /// Возвращает true, если возникающие события могут быть делегированы <see cref="innerPresenter"/>, иначе false.
         /// </summary>

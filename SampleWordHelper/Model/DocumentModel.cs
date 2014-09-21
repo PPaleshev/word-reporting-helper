@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace SampleWordHelper.Model
+﻿namespace SampleWordHelper.Model
 {
     public class DocumentModel : IDocumentModel
     {
@@ -12,6 +10,14 @@ namespace SampleWordHelper.Model
         public string PaneTitle
         {
             get { return "Структура каталога"; }
+        }
+
+        /// <summary>
+        /// Ширина панели структуры по умолчанию.
+        /// </summary>
+        public int DefaultPanelSize
+        {
+            get { return 300; }
         }
 
         public DocumentModel()
