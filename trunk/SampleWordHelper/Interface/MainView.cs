@@ -15,7 +15,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Экземпляр ленты.
         /// </summary>
-        readonly ReportingRibbon ribbon;
+        readonly MainRibbon ribbon;
 
         /// <summary>
         /// Экземпляр пользовательского контрола для отображения структуры каталога.
@@ -40,7 +40,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Создаёт новый экземпляр представления.
         /// </summary>
-        public MainView(ReportingRibbon ribbon, CustomTaskPane paneContainer)
+        public MainView(MainRibbon ribbon, CustomTaskPane paneContainer)
         {
             this.ribbon = ribbon;
             structureTree = (StructureTreeControl) paneContainer.Control;

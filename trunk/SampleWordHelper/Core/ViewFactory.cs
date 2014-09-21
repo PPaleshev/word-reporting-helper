@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using Microsoft.Office.Tools;
+﻿using Microsoft.Office.Tools;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
 
@@ -13,7 +12,7 @@ namespace SampleWordHelper.Core
         /// <summary>
         /// Экземпляр ленты, которая делится между всеми экземплярами окон.
         /// </summary>
-        readonly ReportingRibbon ribbon;
+        readonly MainRibbon ribbon;
 
         /// <summary>
         /// Фабрика контейнеров для панелей задач.
@@ -25,7 +24,7 @@ namespace SampleWordHelper.Core
         /// </summary>
         /// <param name="ribbon">Экземпляр ленты с элементами управления.</param>
         /// <param name="paneFactory">Фабрика контейнеров для панелей задач.</param>
-        public ViewFactory(ReportingRibbon ribbon, CustomTaskPaneCollection paneFactory)
+        public ViewFactory(MainRibbon ribbon, CustomTaskPaneCollection paneFactory)
         {
             this.ribbon = ribbon;
             this.paneFactory = paneFactory;
@@ -36,14 +35,16 @@ namespace SampleWordHelper.Core
             return new RibbonView(ribbon, presenter);
         }
 
-        public IStructureView CreateStructureView(IStructurePresenter presenter)
+        public IStructureView CreateStructureView(IStructurePresenter presenter, string title)
         {
-            return new StructureTreeControl(presenter);
+            var control = new StructureTreeControl();
+            var container = paneFactory.Add(control, title);
+            return new StructureTreeView(container, presenter);
         }
 
-        public CustomTaskPane CreateTaskPaneContainer(UserControl control, string title)
+        public ISettingsEditorView CreateSettingsView(ISettingsEditorPresenter presenter)
         {
-            return paneFactory.Add(control, title);
+            return new SettingsForm(presenter);
         }
     }
 }

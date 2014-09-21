@@ -8,12 +8,12 @@ using SampleWordHelper.Core;
 namespace SampleWordHelper.Presentation
 {
     /// <summary>
-    /// Класс для отслеживания состояния открываемых и создаваемых документов.
+    /// Основной менеджер надстройки.
     /// </summary>
     public class DocumentManager: IDisposable
     {
         /// <summary>
-        /// Контекст работы плагина.
+        /// Контекст работы надстройки.
         /// </summary>
         readonly IRuntimeContext context;
 
@@ -21,6 +21,13 @@ namespace SampleWordHelper.Presentation
         /// Отображение из ключа документа в управляющий им менеджер.
         /// </summary>
         readonly Dictionary<object, DocumentPresenter> documents = new Dictionary<object, DocumentPresenter>();
+
+        /// <summary>
+        /// Флаг, равный true, если <see cref="OnDocumentChanged"/> вызывается до вызовов <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
+        /// Это означает, что документ был открыт при старте Microsoft Word.
+        /// В таких случаях среда не будет вызывать требуемых событий.
+        /// </summary>
+        bool documentOpenedExternally = true;
 
         /// <summary>
         /// Создаёт новый экземпляр менеджера документов.
@@ -62,6 +69,7 @@ namespace SampleWordHelper.Presentation
         /// <remarks>Для нового документа признак сохранения устанавливается в <c>false</c> для предотвращения его "перезаписывания" при открытии существующего документа.</remarks>
         void OnNewDocument(Document newDocument)
         {
+            documentOpenedExternally = false;
             newDocument.Saved = false;
             RegisterDocument(newDocument);
         }
@@ -72,6 +80,7 @@ namespace SampleWordHelper.Presentation
         /// <param name="doc">Открытый документ.</param>
         void OnDocumentOpened(Document doc)
         {
+            documentOpenedExternally = false;
             RegisterDocument(doc);
         }
 
@@ -82,16 +91,13 @@ namespace SampleWordHelper.Presentation
         {
             DocumentPresenter presenter;
             if (!documents.TryGetValue(documentKey, out presenter))
-            {
-                MessageBox.Show("OnDocumentClosing: no presenter found for this document (" + documentKey + ")");
                 return;
-            }
             documents.Remove(documentKey);
             presenter.Dispose();
         }
 
         /// <summary>
-        /// Вызывается при изменении активного документа.
+        /// Вызывается при изменении документа.
         /// </summary>
         void OnDocumentChanged()
         {
@@ -103,7 +109,14 @@ namespace SampleWordHelper.Presentation
                 if (activeDocument == null)
                     return;
                 DocumentPresenter presenter;
-                if (TryGetPresenter(activeDocument, out presenter))
+                if (documentOpenedExternally)
+                {
+                    if (string.IsNullOrWhiteSpace(activeDocument.Path))
+                        OnNewDocument(activeDocument);
+                    else
+                        OnDocumentOpened(activeDocument);
+                }
+                else if (TryGetPresenter(activeDocument, out presenter))
                     presenter.Activate();
             }
             catch (COMException e)

@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-using Microsoft.Office.Tools;
-using SampleWordHelper.Interface;
+﻿using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Core
@@ -20,13 +18,12 @@ namespace SampleWordHelper.Core
         /// Создаёт представление для просмотра структуры каталога.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
-        IStructureView CreateStructureView(IStructurePresenter presenter);
+        /// <param name="title">Заголовок отображаемого представления.</param>
+        IStructureView CreateStructureView(IStructurePresenter presenter, string title);
 
         /// <summary>
-        /// Создаёт экземпляр панели задач, в которой размещается пользовательский элемент управления.
+        /// Создаёт представление для настройки аддина.
         /// </summary>
-        /// <param name="control">Пользовательский элемент управления.</param>
-        /// <param name="title">Заголовок контейнера, не может быть пустым.</param>
-        CustomTaskPane CreateTaskPaneContainer(UserControl control, string title);
+        ISettingsEditorView CreateSettingsView(ISettingsEditorPresenter presenter);
     }
 }

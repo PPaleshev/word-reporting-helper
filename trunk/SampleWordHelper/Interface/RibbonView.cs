@@ -12,7 +12,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Основной элемент управления ленты.
         /// </summary>
-        readonly ReportingRibbon ribbon;
+        readonly MainRibbon ribbon;
 
         /// <summary>
         /// Менеджер представления.
@@ -27,11 +27,17 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Создаёт новый экземпляр представления.
         /// </summary>
-        public RibbonView(ReportingRibbon ribbon, IRibbonPresenter presenter)
+        public RibbonView(MainRibbon ribbon, IRibbonPresenter presenter)
         {
             this.ribbon = ribbon;
             this.presenter = presenter;
             SetupEvents();
+        }
+
+        public void SetValid(bool isValid)
+        {
+            ribbon.buttonShowErrors.Visible = !isValid;
+            ribbon.toggleStructureVisibility.Visible = isValid;
         }
 
         public void SetStructureVisible(bool value)
@@ -44,19 +50,38 @@ namespace SampleWordHelper.Interface
         {
             ribbon.toggleStructureVisibility.Click -= OnToggleStructureClicked;
             ribbon.group1.DialogLauncherClick -= OnDialogLauncherClicked;
+            ribbon.buttonShowErrors.Click -= OnShowErrors;
         }
 
+        /// <summary>
+        /// Выполняет подписку на события.
+        /// </summary>
         void SetupEvents()
         {
+            ribbon.buttonShowErrors.Click += OnShowErrors;
             ribbon.toggleStructureVisibility.Click += OnToggleStructureClicked;
             ribbon.group1.DialogLauncherClick += OnDialogLauncherClicked;
         }
 
+        /// <summary>
+        /// Вызывается для отображения ошибок.
+        /// </summary>
+        void OnShowErrors(object sender, RibbonControlEventArgs e)
+        {
+            presenter.OnShowErrors();
+        }
+
+        /// <summary>
+        /// Вызывается при нажатии на кнопке настроек.
+        /// </summary>
         void OnDialogLauncherClicked(object sender, RibbonControlEventArgs e)
         {
             presenter.OnShowSettings();
         }
 
+        /// <summary>
+        /// Вызывается при нажатии на кнопке переключения видимости панели структуры.
+        /// </summary>
         void OnToggleStructureClicked(object sender, RibbonControlEventArgs e)
         {
             using (suspendFlag.Suspend())

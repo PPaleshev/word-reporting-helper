@@ -1,6 +1,6 @@
 ﻿namespace SampleWordHelper.Interface
 {
-    public partial class ReportingRibbon
+    public partial class MainRibbon
     {
     }
 }

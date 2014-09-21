@@ -12,7 +12,6 @@ namespace SampleWordHelper.Presentation
         readonly IRuntimeContext context;
         readonly IRibbonView ribbonView;
         readonly IStructureView structureView;
-        readonly Microsoft.Office.Tools.CustomTaskPane taskPaneView;
         readonly DocumentModel model;
 
         public DocumentPresenter(IRuntimeContext context, Document document)
@@ -20,21 +19,28 @@ namespace SampleWordHelper.Presentation
             this.context = context;
             model = new DocumentModel();
             ribbonView = context.ViewFactory.CreateRibbonView(new RibbonEventFilter(context, this, document.GetKey()));
-            structureView = context.ViewFactory.CreateStructureView(this);
-            taskPaneView = context.ViewFactory.CreateTaskPaneContainer((UserControl) structureView.RawObject, model.PaneTitle);
-            taskPaneView.VisibleChanged += TaskPaneViewVisibleChanged;
+            structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
         }
 
         public void OnToggleStructureVisibility()
         {
             model.IsStructureVisible = !model.IsStructureVisible;
             ribbonView.SetStructureVisible(model.IsStructureVisible);
-            taskPaneView.Visible = model.IsStructureVisible;
+            structureView.SetVisibility(model.IsStructureVisible);
         }
 
         public void OnShowSettings()
         {
-            MessageBox.Show("Settings here");
+            using (var presenter = new SettingsEditorPresenter(context))
+                presenter.Run();
+        }
+
+        public void OnShowErrors()
+        {
+//            if(context.Configuration.IsValid)
+//                return;
+//            var message = string.Join(Environment.NewLine, context.Configuration.Errors);
+//            MessageBox.Show(message);
         }
 
         /// <summary>
@@ -42,8 +48,9 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Activate()
         {
+//            ribbonView.SetValid(context.Configuration.IsValid);
             ribbonView.SetStructureVisible(model.IsStructureVisible);
-            taskPaneView.Visible = model.IsStructureVisible;
+            structureView.SetVisibility(model.IsStructureVisible);
         }
 
         /// <summary>
@@ -55,21 +62,14 @@ namespace SampleWordHelper.Presentation
             Activate();
         }
 
-        /// <summary>
-        /// Вызывается при изменении видимости панели структуры.
-        /// Используется для обработки закрытии панели пользователем.
-        /// </summary>
-        void TaskPaneViewVisibleChanged(object sender, EventArgs eventArgs)
+        public void OnClosed()
         {
-            if (taskPaneView.Visible)
-                return;
             model.IsStructureVisible = false;
             ribbonView.SetStructureVisible(model.IsStructureVisible);
         }
 
         public void Dispose()
         {
-            taskPaneView.VisibleChanged -= TaskPaneViewVisibleChanged;
             ribbonView.Dispose();
             structureView.Dispose();
         }

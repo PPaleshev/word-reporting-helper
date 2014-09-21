@@ -5,5 +5,9 @@
     /// </summary>
     public interface IStructurePresenter
     {
+        /// <summary>
+        /// Вызывается при закрытии панели структуры каталога.
+        /// </summary>
+        void OnClosed();
     }
 }

@@ -8,6 +8,11 @@ namespace SampleWordHelper.Interface
     public interface IRibbonView : IDisposable
     {
         /// <summary>
+        /// Устанавливает признак отображения ошибок.
+        /// </summary>
+        void SetValid(bool isValid);
+
+        /// <summary>
         /// Устанавливает признак нажатия кнопки отображения структуры.
         /// </summary>
         /// <param name="value">Флаг, равный true, если структура должна быть отображена, и false, если скрыта.</param>
