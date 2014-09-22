@@ -1,5 +1,5 @@
-﻿using System.Configuration;
-using SampleWordHelper.Configuration;
+﻿using System;
+using System.Threading;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
@@ -20,6 +20,11 @@ namespace SampleWordHelper.Presentation
         readonly IMainView view;
 
         /// <summary>
+        /// Токен, используемый при старте всех фоновых операций для их отмены при завершении.
+        /// </summary>
+        readonly CancellationTokenSource shutdown = new CancellationTokenSource();
+
+        /// <summary>
         /// Объект для отслеживания состояния документов.
         /// </summary>
         DocumentManager documentManager;
@@ -28,6 +33,11 @@ namespace SampleWordHelper.Presentation
         /// Модель конфигурации приложения.
         /// </summary>
         ConfigurationModel configurationModel;
+
+        /// <summary>
+        /// Модель каталога.
+        /// </summary>
+        CatalogModel catalog;
 
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
@@ -39,11 +49,6 @@ namespace SampleWordHelper.Presentation
             view = context.ViewFactory.CreateMainView(this);
         }
 
-        public IRuntimeContext Context
-        {
-            get { return context; }
-        }
-
         /// <summary>
         /// Начинает выполнение презентера.
         /// </summary>
@@ -51,7 +56,10 @@ namespace SampleWordHelper.Presentation
         {
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
-            ValidateProviderState(configurationModel.GetActiveProvider());
+            var activeProvider = configurationModel.GetActiveProvider();
+            if (!ValidateProviderState(activeProvider))
+                return;
+            catalog = activeProvider.LoadCatalog(CatalogLoadMode.PARTIAL);
         }
 
         public void OnEditSettings()
@@ -70,7 +78,8 @@ namespace SampleWordHelper.Presentation
                     activeProvider.Initialize(context);
                 }
                 activeProvider.ApplyConfiguration(editorModel.ProviderSettingsModel);
-                ValidateProviderState(activeProvider);
+                if (!ValidateProviderState(activeProvider))
+                    return;
             }
         }
 
@@ -78,7 +87,7 @@ namespace SampleWordHelper.Presentation
         /// Проверяет состояние провайдера.
         /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
         /// </summary>
-        void ValidateProviderState(ICatalogProvider activeProvider)
+        bool ValidateProviderState(ICatalogProvider activeProvider)
         {
             string message = null;
             if (activeProvider == null)
@@ -87,10 +96,12 @@ namespace SampleWordHelper.Presentation
                 message = "Требуется настройка текущего поставщика каталога.";
             var isSuccess = string.IsNullOrWhiteSpace(message);
             view.EnableAddinFeatures(isSuccess, message);
+            return isSuccess;
         }
 
         protected override void DisposeManaged()
         {
+            shutdown.Cancel(true);
             view.SafeDispose();
             documentManager.SafeDispose();
         }

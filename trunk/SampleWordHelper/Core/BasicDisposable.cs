@@ -13,6 +13,14 @@ namespace SampleWordHelper.Core
         bool disposed;
 
         /// <summary>
+        /// Флаг, равный true, если ресурсы объекта были освобождены, иначе false.
+        /// </summary>
+        public bool Disposed
+        {
+            get { return disposed; }
+        }
+
+        /// <summary>
         /// Финализатор.
         /// </summary>
         ~BasicDisposable()

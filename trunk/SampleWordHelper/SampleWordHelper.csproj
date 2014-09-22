@@ -157,6 +157,7 @@
   <ItemGroup>
     <Compile Include="Configuration\CatalogProviderConfigurationElement.cs" />
     <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
+    <Compile Include="Core\BackgroundTaskContext.cs" />
     <Compile Include="Model\ConfigurationModel.cs" />
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\BasicDisposable.cs" />
@@ -247,6 +248,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Providers\Core\ISettingsModel.cs" />
+    <Compile Include="Providers\Core\CatalogLoadMode.cs" />
+    <Compile Include="Providers\Core\UpdateCatalogCommand.cs" />
     <Compile Include="Providers\FileSystem\FileSystemCatalogProvider.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettings.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettingsModel.cs" />
