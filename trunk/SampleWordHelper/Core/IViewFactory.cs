@@ -18,7 +18,7 @@ namespace SampleWordHelper.Core
         /// Создаёт представление для отображения ленты.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
-        IRibbonView CreateRibbonView(IRibbonPresenter presenter);
+        IRibbonView CreateDocumentView(IRibbonPresenter presenter);
 
         /// <summary>
         /// Создаёт представление для просмотра структуры каталога.

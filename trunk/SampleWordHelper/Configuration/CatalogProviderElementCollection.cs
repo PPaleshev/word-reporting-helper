@@ -2,6 +2,9 @@
 
 namespace SampleWordHelper.Configuration
 {
+    /// <summary>
+    /// Элемент конфигурации, содержащий множество доступных поставщиков.
+    /// </summary>
     [ConfigurationCollection(typeof (CatalogProviderConfigurationElement))]
     public class CatalogProviderElementCollection : ConfigurationElementCollection
     {

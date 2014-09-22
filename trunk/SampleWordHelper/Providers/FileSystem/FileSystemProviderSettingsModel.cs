@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using System.Security.AccessControl;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
@@ -11,11 +12,29 @@ namespace SampleWordHelper.Providers.FileSystem
     internal class FileSystemProviderSettingsModel : ISettingsModel
     {
         /// <summary>
+        /// Внутренний объект, которому делегируются свойства.
+        /// </summary>
+        readonly FileSystemProviderSettings settings;
+
+        /// <summary>
         /// Путь к каталогу.
         /// </summary>
         [DisplayName("Путь к каталогу")]
         [Category("Основные")]
-        public string RootPath { get; set; }
+        public string RootPath
+        {
+            get { return settings.RootPath; }
+            set { settings.RootPath = value; }
+        }
+
+        public FileSystemProviderSettingsModel(FileSystemProviderSettings settings)
+        {
+            this.settings = settings;
+        }
+
+        public FileSystemProviderSettingsModel() : this(new FileSystemProviderSettings())
+        {
+        }
 
         public ValidationResult Validate()
         {
@@ -29,19 +48,11 @@ namespace SampleWordHelper.Providers.FileSystem
         }
 
         /// <summary>
-        /// Загружает настройки из объекта.
+        /// Создаёт объект с настройками.
         /// </summary>
-        public void LoadFrom(FileSystemProviderSettings settings)
+        public FileSystemProviderSettings CreateSettingsObject()
         {
-            RootPath = settings.RootPath;
-        }
-
-        /// <summary>
-        /// Сохраняет настройки в объект настроек.
-        /// </summary>
-        public void SaveTo(FileSystemProviderSettings settings)
-        {
-            settings.RootPath = RootPath;
+            return settings;
         }
     }
 }

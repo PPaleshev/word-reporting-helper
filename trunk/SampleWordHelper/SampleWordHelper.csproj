@@ -178,7 +178,6 @@
     <Compile Include="Core\IViewFactory.cs" />
     <Compile Include="Core\RuntimeContext.cs" />
     <Compile Include="Interface\SuspendFlag.cs" />
-    <Compile Include="Core\TaskPaneManager.cs" />
     <Compile Include="Core\ViewFactory.cs" />
     <Compile Include="Interface\IConfigurationEditorView.cs" />
     <Compile Include="Interface\IStructureView.cs" />
@@ -250,8 +249,8 @@
     <Compile Include="Providers\Core\ISettingsModel.cs" />
     <Compile Include="Providers\FileSystem\FileSystemCatalogProvider.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettings.cs" />
-    <Compile Include="Providers\FileSystem\ProviderState.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettingsModel.cs" />
+    <Compile Include="Providers\FileSystem\IProviderState.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>

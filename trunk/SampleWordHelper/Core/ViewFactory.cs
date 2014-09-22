@@ -35,7 +35,7 @@ namespace SampleWordHelper.Core
             return new MainView(ribbon, presenter);
         }
 
-        public IRibbonView CreateRibbonView(IRibbonPresenter presenter)
+        public IRibbonView CreateDocumentView(IRibbonPresenter presenter)
         {
             return new RibbonView(ribbon, presenter);
         }

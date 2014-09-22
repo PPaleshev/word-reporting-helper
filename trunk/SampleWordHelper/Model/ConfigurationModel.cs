@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Windows.Forms;
 using SampleWordHelper.Configuration;
 using SampleWordHelper.Providers.Core;
 
@@ -13,27 +12,9 @@ namespace SampleWordHelper.Model
     public class ConfigurationModel
     {
         /// <summary>
-        /// Секция с настройками приложения.
-        /// </summary>
-        readonly ReportHelperConfigurationSection section;
-
-        /// <summary>
         /// Отображение из имени провайдера в реализующий его класс.
         /// </summary>
         public IDictionary<string, ICatalogProvider> Providers { get; private set; }
-
-        /// <summary>
-        /// Название выбранного провайдера.
-        /// </summary>
-        public string CurrentProviderName { get; private set; }
-
-        /// <summary>
-        /// Флаг, равный true, если активный поставщик установлен, иначе false.
-        /// </summary>
-        public bool HasActiveProvider
-        {
-            get { return string.IsNullOrWhiteSpace(CurrentProviderName); }
-        }
 
         /// <summary>
         /// Создаёт конфигурацию приложения, загружая её из секции с названием <paramref name="sectionName"/>.
@@ -41,9 +22,17 @@ namespace SampleWordHelper.Model
         /// <param name="sectionName">Название секции, в которой содержатся настройки.</param>
         public ConfigurationModel(string sectionName)
         {
-            section = (ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName);
             Providers = new Dictionary<string, ICatalogProvider>();
-            LoadProvidersSafe();
+            LoadProvidersSafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
+        }
+
+        /// <summary>
+        /// Название выбранного провайдера.
+        /// </summary>
+        public string CurrentProviderName
+        {
+            get { return Properties.Settings.Default.CurrentProviderName; }
+            private set { Properties.Settings.Default.CurrentProviderName = value; }
         }
 
         /// <summary>
@@ -71,13 +60,10 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Безопасно с точки зрения исключений загружает все описанные в конфигурации провайдеры каталогов.
         /// </summary>
-        void LoadProvidersSafe()
+        void LoadProvidersSafe(ReportHelperConfigurationSection section)
         {
             foreach (CatalogProviderConfigurationElement providerElement in section.CatalogProviders)
                 LoadOneSafe(providerElement);
-            var providerName = Properties.Settings.Default.CurrentProviderName;
-            if (!string.IsNullOrWhiteSpace(providerName) && Providers.ContainsKey(providerName))
-                CurrentProviderName = providerName;
         }
 
         /// <summary>
@@ -115,7 +101,7 @@ namespace SampleWordHelper.Model
         /// Предыдущий активный поставщик каталога.
         /// В случае, если не поставщик не менялся, содержит ссылку на последнего активного поставщика.
         /// </summary>
-        public ICatalogProvider previousProvider;
+        public readonly ICatalogProvider previousProvider;
 
         public UpdateResult(bool providerChanged, ICatalogProvider previousProvider)
         {

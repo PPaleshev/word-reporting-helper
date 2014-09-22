@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SampleWordHelper.Configuration;
 using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Model

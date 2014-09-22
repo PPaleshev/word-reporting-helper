@@ -35,7 +35,6 @@ namespace SampleWordHelper.Interface
 
         public void SetValid(bool isValid)
         {
-            ribbon.buttonShowErrors.Visible = !isValid;
             ribbon.toggleStructureVisibility.Visible = isValid;
         }
 

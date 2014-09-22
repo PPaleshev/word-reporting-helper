@@ -23,9 +23,9 @@ namespace SampleWordHelper.Presentation
         readonly Dictionary<object, DocumentPresenter> documents = new Dictionary<object, DocumentPresenter>();
 
         /// <summary>
-        /// Флаг, равный true, если <see cref="OnDocumentChanged"/> вызывается до вызовов <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
+        /// Флаг, равный true, если <see cref="OnDocumentChanged"/> вызывается до <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
         /// Это означает, что документ был открыт при старте Microsoft Word.
-        /// В таких случаях среда не будет вызывать требуемых событий.
+        /// В таких случаях среда не будет вызывать <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
         /// </summary>
         bool documentOpenedExternally = true;
 
