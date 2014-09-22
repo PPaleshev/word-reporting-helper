@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using Microsoft.Office.Tools.Word;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
@@ -13,10 +12,12 @@ namespace SampleWordHelper.Presentation
         readonly IRibbonView ribbonView;
         readonly IStructureView structureView;
         readonly DocumentModel model;
+        readonly Document document;
 
         public DocumentPresenter(IRuntimeContext context, Document document)
         {
             this.context = context;
+            this.document = document;
             model = new DocumentModel();
             ribbonView = context.ViewFactory.CreateDocumentView(new RibbonEventFilter(context, this, document.GetKey()));
             structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
@@ -43,6 +44,7 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Run()
         {
+            //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
             model.IsStructureVisible = false;
             Activate();
         }
