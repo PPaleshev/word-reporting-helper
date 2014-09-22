@@ -12,14 +12,6 @@
             get { return "Структура каталога"; }
         }
 
-        /// <summary>
-        /// Ширина панели структуры по умолчанию.
-        /// </summary>
-        public int DefaultPanelSize
-        {
-            get { return 300; }
-        }
-
         public DocumentModel()
         {
             IsStructureVisible = false;

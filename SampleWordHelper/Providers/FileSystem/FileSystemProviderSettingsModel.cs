@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using SampleWordHelper.Configuration;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Providers.FileSystem
 {
-    internal class Settings : ISettingsModel
+    /// <summary>
+    /// Модель для редактирования настроек поставщика каталога на основе доступа к файловой системе.
+    /// </summary>
+    internal class FileSystemProviderSettingsModel : ISettingsModel
     {
         /// <summary>
         /// Путь к каталогу.
@@ -26,14 +28,20 @@ namespace SampleWordHelper.Providers.FileSystem
             return ValidationResult.CORRECT;
         }
 
-        public void LoadFrom(FileSystemProviderConfigurationSection section)
+        /// <summary>
+        /// Загружает настройки из объекта.
+        /// </summary>
+        public void LoadFrom(FileSystemProviderSettings settings)
         {
-            RootPath = section.RootPath;
+            RootPath = settings.RootPath;
         }
 
-        public void SaveTo(FileSystemProviderConfigurationSection section)
+        /// <summary>
+        /// Сохраняет настройки в объект настроек.
+        /// </summary>
+        public void SaveTo(FileSystemProviderSettings settings)
         {
-            section.RootPath = RootPath;
+            settings.RootPath = RootPath;
         }
     }
 }

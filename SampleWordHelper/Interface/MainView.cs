@@ -1,9 +1,4 @@
-﻿using System;
-using Microsoft.Office.Core;
-using Microsoft.Office.Tools.Ribbon;
-using SampleWordHelper.Core;
-using SampleWordHelper.Presentation;
-using CustomTaskPane = Microsoft.Office.Tools.CustomTaskPane;
+﻿using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Interface
 {
@@ -18,79 +13,28 @@ namespace SampleWordHelper.Interface
         readonly MainRibbon ribbon;
 
         /// <summary>
-        /// Экземпляр пользовательского контрола для отображения структуры каталога.
-        /// </summary>
-        readonly StructureTreeControl structureTree;
-
-        /// <summary>
-        /// Контейнер, в котором находится панель структуры.
-        /// </summary>
-        readonly CustomTaskPane paneContainer;
-
-        /// <summary>
-        /// Флаг для приостановки событий.
-        /// </summary>
-        readonly SuspendFlag suspendFlag = new SuspendFlag();
-
-        /// <summary>
         /// Менеджер текущего представления.
         /// </summary>
-        IMainPresenter presenter;
+        readonly IMainPresenter presenter;
 
         /// <summary>
         /// Создаёт новый экземпляр представления.
         /// </summary>
-        public MainView(MainRibbon ribbon, CustomTaskPane paneContainer)
+        public MainView(MainRibbon ribbon, IMainPresenter presenter)
         {
             this.ribbon = ribbon;
-            structureTree = (StructureTreeControl) paneContainer.Control;
-            this.paneContainer = paneContainer;
-        }
-
-        /// <summary>
-        /// Выполняет инициализацию представления.
-        /// </summary>
-        public void Setup(IMainPresenter presenter)
-        {
             this.presenter = presenter;
-            ribbon.toggleStructureVisibility.Click += OnStructureVisibilityClick;
-            ribbon.group1.DialogLauncherClick += SettingsLauncherDialogClick;
-            paneContainer.VisibleChanged += OnPaneVisibilityChanged;
+            this.ribbon.buttonSettings.Click += OnSettingsButtonClick;
         }
 
-        public void SetStructureVisibility(bool value)
+        void OnSettingsButtonClick(object sender, Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs e)
         {
-            using (suspendFlag.Suspend())
-            {
-                ribbon.toggleStructureVisibility.Checked = value;
-                paneContainer.Visible = value;
-            }
+            presenter.OnEditSettings();
         }
 
-        /// <summary>
-        /// Вызывается при закрытии панели структуры.
-        /// </summary>
-        void OnPaneVisibilityChanged(object sender, EventArgs e)
+        public void Dispose()
         {
-            if(!suspendFlag)
-                presenter.OnToggleStructureVisibility();
-        }
-
-        /// <summary>
-        /// Вызывается при нажатии на кнопку скрытия\отображения панели структуры.
-        /// </summary>
-        void OnStructureVisibilityClick(object sender, RibbonControlEventArgs e)
-        {
-            if (!suspendFlag)
-                presenter.OnToggleStructureVisibility();
-        }
-
-        /// <summary>
-        /// Вызывается при открытии диалога редактирования настроек подсистемы.
-        /// </summary>
-        void SettingsLauncherDialogClick(object sender, RibbonControlEventArgs e)
-        {
-            presenter.OnSettingsClicked();
+            ribbon.buttonSettings.Click -= OnSettingsButtonClick;
         }
     }
 }

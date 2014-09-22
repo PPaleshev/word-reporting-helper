@@ -7,17 +7,17 @@ namespace SampleWordHelper.Interface
     /// <summary>
     /// Интерфейс представления для редактирования параметров надстройки.
     /// </summary>
-    public interface ISettingsEditorView : IDisposable
+    public interface IConfigurationEditorView : IDisposable
     {
         /// <summary>
         /// Инициализирует представление.
         /// </summary>
-        void Initialize(SettingsEditorModel model);
+        void Initialize(ISettingsEditorModel model);
 
         /// <summary>
         /// Устанавливает новую модель параметров провайдера.
         /// </summary>
-        void SetProviderSettings(ISettingsModel model);
+        void UpdateProviderSettings();
 
         /// <summary>
         /// Устанавливает результат валидации модели.

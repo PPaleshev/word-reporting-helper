@@ -1,5 +1,4 @@
 ﻿using Microsoft.Office.Tools.Ribbon;
-using SampleWordHelper.Core;
 using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Interface
@@ -49,8 +48,6 @@ namespace SampleWordHelper.Interface
         public void Dispose()
         {
             ribbon.toggleStructureVisibility.Click -= OnToggleStructureClicked;
-            ribbon.group1.DialogLauncherClick -= OnDialogLauncherClicked;
-            ribbon.buttonShowErrors.Click -= OnShowErrors;
         }
 
         /// <summary>
@@ -58,25 +55,7 @@ namespace SampleWordHelper.Interface
         /// </summary>
         void SetupEvents()
         {
-            ribbon.buttonShowErrors.Click += OnShowErrors;
             ribbon.toggleStructureVisibility.Click += OnToggleStructureClicked;
-            ribbon.group1.DialogLauncherClick += OnDialogLauncherClicked;
-        }
-
-        /// <summary>
-        /// Вызывается для отображения ошибок.
-        /// </summary>
-        void OnShowErrors(object sender, RibbonControlEventArgs e)
-        {
-            presenter.OnShowErrors();
-        }
-
-        /// <summary>
-        /// Вызывается при нажатии на кнопке настроек.
-        /// </summary>
-        void OnDialogLauncherClicked(object sender, RibbonControlEventArgs e)
-        {
-            presenter.OnShowSettings();
         }
 
         /// <summary>

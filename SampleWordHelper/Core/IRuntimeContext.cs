@@ -1,6 +1,5 @@
 ﻿using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Word;
-using SampleWordHelper.Configuration;
 
 namespace SampleWordHelper.Core
 {
@@ -18,11 +17,6 @@ namespace SampleWordHelper.Core
         /// Ссылка на экземпляр Microsoft Word, в рамках которого работает текущая надстройка.
         /// </summary>
         Application Application { get; }
-
-        /// <summary>
-        /// Конфигурация приложения.
-        /// </summary>
-        ConfigurationModel Configuration { get; }
 
         /// <summary>
         /// Фабрика вспомогательных объектов для надстроек уровня приложения.

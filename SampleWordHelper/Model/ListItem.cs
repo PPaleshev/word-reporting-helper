@@ -1,14 +1,14 @@
 ﻿namespace SampleWordHelper.Model
 {
-    public class Item<T>
+    public class ListItem
     {
         public string DisplayName { get; private set; }
-        public T Object { get; private set; }
+        public string Value { get; private set; }
 
-        public Item(string displayName, T o)
+        public ListItem(string displayName, string value)
         {
             DisplayName = displayName;
-            Object = o;
+            Value = value;
         }
     }
 }

@@ -8,14 +8,14 @@ namespace SampleWordHelper.Model
     /// <summary>
     /// Модель для редактирования настроек приложения.
     /// </summary>
-    public class SettingsEditorModel
+    public class ConfigurationEditorModel : ISettingsEditorModel
     {
         readonly IDictionary<string, ICatalogProvider> providers;
 
         /// <summary>
         /// Массив с названиями всех доступных поставщиков.
         /// </summary>
-        public Item<string>[] Providers { get; private set; }
+        public IEnumerable<ListItem> Providers { get; private set; }
 
         /// <summary>
         /// Название выбранного поставщика.
@@ -28,21 +28,23 @@ namespace SampleWordHelper.Model
         /// </summary>
         public ISettingsModel ProviderSettingsModel { get; private set; }
 
-
-        public SettingsEditorModel(ConfigurationModel configuration)
+        public ConfigurationEditorModel(ConfigurationModel configurationModel)
         {
-            providers = new Dictionary<string, ICatalogProvider>(configuration.Providers);
-            Providers = providers.Keys.Select(s => new Item<string>("Yello", s)).ToArray();
-            SelectedProviderName = configuration.CurrentProviderName;
+            providers = new Dictionary<string, ICatalogProvider>(configurationModel.Providers);
+            Providers = providers.Keys.Select(s => new ListItem("Yello", s)).ToArray();
+            SelectedProviderName = configurationModel.CurrentProviderName;
             UpdateProviderSettings();
         }
 
-        public void UpdateSelectedProvider(Item<string> newItem)
+        public void UpdateSelectedProvider(ListItem newItem)
         {
-            SelectedProviderName = newItem.Object;
+            SelectedProviderName = newItem.Value;
             UpdateProviderSettings();
         }
 
+        /// <summary>
+        /// Обновляет конфигурацию провайдера.
+        /// </summary>
         void UpdateProviderSettings()
         {
             if (string.IsNullOrWhiteSpace(SelectedProviderName))
@@ -51,6 +53,9 @@ namespace SampleWordHelper.Model
             ProviderSettingsModel = provider.CreateSettingsModel();
         }
 
+        /// <summary>
+        /// Выполняет валидацию свойств модели.
+        /// </summary>
         public ValidationResult Validate()
         {
             if (string.IsNullOrWhiteSpace(SelectedProviderName))

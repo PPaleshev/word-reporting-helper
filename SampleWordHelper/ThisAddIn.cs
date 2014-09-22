@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
-using Microsoft.Office.Tools;
 using Microsoft.Office.Tools.Ribbon;
-using SampleWordHelper.Configuration;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
@@ -17,8 +11,16 @@ namespace SampleWordHelper
 {
     public partial class ThisAddIn
     {
+        /// <summary>
+        /// Экземпляр ленты. 
+        /// Лента создаётся до вызова <see cref="ThisAddIn_Startup"/> в методе <see cref="CreateRibbonObjects"/> и существует одна на всё приложение.
+        /// </summary>
         MainRibbon ribbon;
-        DocumentManager documentManager;
+
+        /// <summary>
+        /// Экземпляр основного менеджера приложения.
+        /// </summary>
+        MainPresenter presenter;
 
         /// <summary>
         /// Вызывается при старте приложения.
@@ -26,10 +28,10 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
-            var configurationModel = new ConfigurationModel("reportHelper", null);
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
-            var context = new RuntimeContext(Application, viewFactory, Globals.Factory, configurationModel);
-            documentManager = new DocumentManager(context);
+            var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
+            presenter = new MainPresenter(context);
+            presenter.Start();
         }
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
-            documentManager.Dispose();
+            presenter.SafeDispose();
         }
 
         /// <summary>
