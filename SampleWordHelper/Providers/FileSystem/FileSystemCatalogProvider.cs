@@ -1,5 +1,6 @@
 ﻿using System;
 using SampleWordHelper.Core;
+using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Providers.FileSystem
@@ -34,6 +35,11 @@ namespace SampleWordHelper.Providers.FileSystem
             state = new ActiveState(model.CreateSettingsObject());
             state.Initialize();
             return true;
+        }
+
+        public CatalogModel LoadCatalog(CatalogLoadMode mode)
+        {
+            return state.LoadCatalog(mode);
         }
 
         public void Shutdown()
