@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.NetworkInformation;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
@@ -38,7 +41,7 @@ namespace SampleWordHelper.Providers.FileSystem
     /// </summary>
     public class ActiveState : IProviderState
     {
-        const string FILTER = "*.docx";
+        
 
         /// <summary>
         /// Параметры работы текущего провайдера.
@@ -56,25 +59,10 @@ namespace SampleWordHelper.Providers.FileSystem
 
         public CatalogModel LoadCatalog(CatalogLoadMode mode)
         {
+            var builder = new CatalogBuilder(new DirectoryInfo(settings.RootPath));
             var catalog = new CatalogModel();
-            var root = new DirectoryInfo(settings.RootPath);
-            var rootUri = new Uri(root.FullName);
-            catalog.AddGroup(root.FullName, null, root.Name);
-            var items = root.GetFiles(FILTER);
-            foreach (var file in items)
-            {
-                var id = GetRelativePath(rootUri, file.FullName);
-                var parentId = GetRelativePath(rootUri, file.DirectoryName + "\\");
-                catalog.AddGroup();
-            }
+            builder.BuildCatalog(catalog);
             return catalog;
-        }
-
-        static string GetRelativePath(Uri root, string current)
-        {
-            var uri = new Uri(current);
-            var relUri = root.MakeRelativeUri(uri);
-            return Uri.UnescapeDataString(relUri.OriginalString);
         }
 
         public void Shutdown()

@@ -14,5 +14,12 @@ namespace SampleWordHelper.Interface
         {
             InitializeComponent();
         }
+
+        void TreeItemDrag(object sender, ItemDragEventArgs e)
+        {
+            var node = (TreeNode) e.Item;
+            if (node.Nodes.Count == 0)
+                DoDragDrop(node, DragDropEffects.All);
+        }
     }
 }
