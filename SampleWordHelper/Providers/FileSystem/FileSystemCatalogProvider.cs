@@ -6,11 +6,14 @@ namespace SampleWordHelper.Providers.FileSystem
 {
     public class FileSystemCatalogProvider: ICatalogProvider
     {
+        /// <summary>
+        /// Текущее состояние поставщика каталога.
+        /// </summary>
+        IProviderState state = new InactiveState();
+
         public ISettingsModel CreateSettingsModel()
         {
-            var model = new FileSystemProviderSettingsModel();
-            model.LoadFrom(LoadSettings());
-            return model;
+            return LoadSettings();
         }
 
         public void ApplyConfiguration(ISettingsModel configuration)
@@ -18,27 +21,41 @@ namespace SampleWordHelper.Providers.FileSystem
             var model = configuration as FileSystemProviderSettingsModel;
             if (model == null)
                 throw new ArgumentException("invalid settings model object type");
-            var settings = new FileSystemProviderSettings();
-            model.SaveTo(settings);
+            var settings = model.CreateSettingsObject();
             Properties.Settings.Default.FileSystemProviderConfiguration = settings.Serialize();
             Properties.Settings.Default.Save();
         }
 
-        public void Initialize(IRuntimeContext context)
+        public bool Initialize(IRuntimeContext context)
         {
+            var model = LoadSettings();
+            if (!model.Validate().IsValid)
+                return false;
+            state = new ActiveState(model.CreateSettingsObject());
+            state.Initialize();
+            return true;
         }
 
         public void Shutdown()
         {
+            try
+            {
+                state.Shutdown();
+            }
+            finally
+            {
+                state = new InactiveState();
+            }
         }
 
         /// <summary>
         /// Загружает объект настроек приложения.
         /// </summary>
-        static FileSystemProviderSettings LoadSettings()
+        static FileSystemProviderSettingsModel LoadSettings()
         {
             var settingXml = Properties.Settings.Default.FileSystemProviderConfiguration;
-            return !string.IsNullOrWhiteSpace(settingXml) ? FileSystemProviderSettings.Deserialize(settingXml) : new FileSystemProviderSettings();
+            var settings = !string.IsNullOrWhiteSpace(settingXml) ? FileSystemProviderSettings.Deserialize(settingXml) : new FileSystemProviderSettings();
+            return new FileSystemProviderSettingsModel(settings);
         }
     }
 }

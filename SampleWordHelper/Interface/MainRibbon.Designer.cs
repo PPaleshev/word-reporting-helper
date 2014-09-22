@@ -34,52 +34,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tab1 = this.Factory.CreateRibbonTab();
-            this.group1 = this.Factory.CreateRibbonGroup();
-            this.separator1 = this.Factory.CreateRibbonSeparator();
-            this.buttonSettings = this.Factory.CreateRibbonButton();
-            this.buttonShowErrors = this.Factory.CreateRibbonButton();
+            Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
             this.toggleStructureVisibility = this.Factory.CreateRibbonToggleButton();
+            this.separator = this.Factory.CreateRibbonSeparator();
+            this.buttonSettings = this.Factory.CreateRibbonButton();
+            this.tab1 = this.Factory.CreateRibbonTab();
+            group1 = this.Factory.CreateRibbonGroup();
+            group1.SuspendLayout();
             this.tab1.SuspendLayout();
-            this.group1.SuspendLayout();
-            // 
-            // tab1
-            // 
-            this.tab1.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office;
-            this.tab1.Groups.Add(this.group1);
-            this.tab1.Label = "Отчётность";
-            this.tab1.Name = "tab1";
             // 
             // group1
             // 
-            this.group1.Items.Add(this.toggleStructureVisibility);
-            this.group1.Items.Add(this.separator1);
-            this.group1.Items.Add(this.buttonSettings);
-            this.group1.Items.Add(this.buttonShowErrors);
-            this.group1.Label = "Управление";
-            this.group1.Name = "group1";
-            // 
-            // separator1
-            // 
-            this.separator1.Name = "separator1";
-            // 
-            // buttonSettings
-            // 
-            this.buttonSettings.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.buttonSettings.Image = global::SampleWordHelper.Properties.Resources.sprocket_light;
-            this.buttonSettings.Label = "Настройки";
-            this.buttonSettings.Name = "buttonSettings";
-            this.buttonSettings.ShowImage = true;
-            // 
-            // buttonShowErrors
-            // 
-            this.buttonShowErrors.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.buttonShowErrors.Image = global::SampleWordHelper.Properties.Resources.warning_triangle;
-            this.buttonShowErrors.Label = "Ошибки приложения";
-            this.buttonShowErrors.Name = "buttonShowErrors";
-            this.buttonShowErrors.ScreenTip = "Ошибки";
-            this.buttonShowErrors.ShowImage = true;
-            this.buttonShowErrors.SuperTip = "Ошибки, возникшие при загрузке приложения.";
+            group1.Items.Add(this.toggleStructureVisibility);
+            group1.Items.Add(this.separator);
+            group1.Items.Add(this.buttonSettings);
+            group1.Label = "Управление";
+            group1.Name = "group1";
             // 
             // toggleStructureVisibility
             // 
@@ -91,25 +61,45 @@
             this.toggleStructureVisibility.ShowImage = true;
             this.toggleStructureVisibility.SuperTip = "Показывает\\скрывает панель со структурой базы знаний.";
             // 
+            // separator
+            // 
+            this.separator.Name = "separator";
+            // 
+            // buttonSettings
+            // 
+            this.buttonSettings.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonSettings.Image = global::SampleWordHelper.Properties.Resources.sprocket_light;
+            this.buttonSettings.Label = "Настройки";
+            this.buttonSettings.Name = "buttonSettings";
+            this.buttonSettings.ScreenTip = "Основные настройки";
+            this.buttonSettings.ShowImage = true;
+            this.buttonSettings.SuperTip = "Позволяет установить требуемые параметры работы надстройки для повышения удобства" +
+    " работы.";
+            // 
+            // tab1
+            // 
+            this.tab1.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office;
+            this.tab1.Groups.Add(group1);
+            this.tab1.Label = "Отчётность";
+            this.tab1.Name = "tab1";
+            // 
             // MainRibbon
             // 
             this.Name = "MainRibbon";
             this.RibbonType = "Microsoft.Word.Document";
             this.Tabs.Add(this.tab1);
+            group1.ResumeLayout(false);
+            group1.PerformLayout();
             this.tab1.ResumeLayout(false);
             this.tab1.PerformLayout();
-            this.group1.ResumeLayout(false);
-            this.group1.PerformLayout();
 
         }
 
         #endregion
 
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleStructureVisibility;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonShowErrors;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonSettings;
-        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator1;
+        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator;
     }
 }

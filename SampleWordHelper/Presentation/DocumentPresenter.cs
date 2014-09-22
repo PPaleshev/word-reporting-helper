@@ -18,7 +18,7 @@ namespace SampleWordHelper.Presentation
         {
             this.context = context;
             model = new DocumentModel();
-            ribbonView = context.ViewFactory.CreateRibbonView(new RibbonEventFilter(context, this, document.GetKey()));
+            ribbonView = context.ViewFactory.CreateDocumentView(new RibbonEventFilter(context, this, document.GetKey()));
             structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
         }
 
@@ -29,20 +29,11 @@ namespace SampleWordHelper.Presentation
             structureView.SetVisibility(model.IsStructureVisible);
         }
 
-        public void OnShowErrors()
-        {
-//            if(context.Configuration.IsValid)
-//                return;
-//            var message = string.Join(Environment.NewLine, context.Configuration.Errors);
-//            MessageBox.Show(message);
-        }
-
         /// <summary>
         /// Выполняет активацию презентера при смене активного документа.
         /// </summary>
         public void Activate()
         {
-//            ribbonView.SetValid(context.Configuration.IsValid);
             ribbonView.SetStructureVisible(model.IsStructureVisible);
             structureView.SetVisibility(model.IsStructureVisible);
         }

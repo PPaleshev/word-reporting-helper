@@ -9,7 +9,7 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <summary>
         /// Объект для сериализации настроек.
         /// </summary>
-        static readonly XmlSerializer SERIALIZER = new XmlSerializer(typeof (FileSystemProviderSettings), "");
+        static readonly XmlSerializer SERIALIZER = new XmlSerializer(typeof (FileSystemProviderSettings));
 
         /// <summary>
         /// Путь к корню каталога.
@@ -31,9 +31,11 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         public string Serialize()
         {
+            var ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
             using (var writer = new StringWriter())
             {
-                SERIALIZER.Serialize(writer, this);
+                SERIALIZER.Serialize(writer, this, ns);
                 writer.Flush();
                 return writer.ToString();
             }

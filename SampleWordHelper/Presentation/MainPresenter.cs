@@ -3,6 +3,7 @@ using SampleWordHelper.Configuration;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
+using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Presentation
 {
@@ -50,9 +51,7 @@ namespace SampleWordHelper.Presentation
         {
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
-            var activeProvider = configurationModel.GetActiveProvider();
-            if (activeProvider != null)
-                activeProvider.Initialize(context);
+            ValidateProviderState(configurationModel.GetActiveProvider());
         }
 
         public void OnEditSettings()
@@ -71,7 +70,23 @@ namespace SampleWordHelper.Presentation
                     activeProvider.Initialize(context);
                 }
                 activeProvider.ApplyConfiguration(editorModel.ProviderSettingsModel);
+                ValidateProviderState(activeProvider);
             }
+        }
+
+        /// <summary>
+        /// Проверяет состояние провайдера.
+        /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
+        /// </summary>
+        void ValidateProviderState(ICatalogProvider activeProvider)
+        {
+            string message = null;
+            if (activeProvider == null)
+                message = "Требуется выбор поставщика каталога.";
+            else if (!activeProvider.Initialize(context))
+                message = "Требуется настройка текущего поставщика каталога.";
+            var isSuccess = string.IsNullOrWhiteSpace(message);
+            view.EnableAddinFeatures(isSuccess, message);
         }
 
         protected override void DisposeManaged()

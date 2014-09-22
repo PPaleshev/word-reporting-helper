@@ -22,7 +22,8 @@ namespace SampleWordHelper.Providers.Core
         /// Выполняет инициализацию провайдера.
         /// </summary>
         /// <param name="context">Контекст времени исполнения.</param>
-        void Initialize(IRuntimeContext context);
+        /// <returns>Возвращает true, если настройки успешно загружены и провайдер успешно проинициализирован, и false, если требуется настройка пользователем.</returns>
+        bool Initialize(IRuntimeContext context);
 
         /// <summary>
         /// Вызывается для завершения активности текущего провайдера.
