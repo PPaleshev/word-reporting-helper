@@ -30,6 +30,11 @@ namespace SampleWordHelper.Core
             this.paneFactory = paneFactory;
         }
 
+        public IMainView CreateMainView(IMainPresenter presenter)
+        {
+            return new MainView(ribbon, presenter);
+        }
+
         public IRibbonView CreateRibbonView(IRibbonPresenter presenter)
         {
             return new RibbonView(ribbon, presenter);
@@ -42,9 +47,9 @@ namespace SampleWordHelper.Core
             return new StructureTreeView(container, presenter);
         }
 
-        public ISettingsEditorView CreateSettingsView(ISettingsEditorPresenter presenter)
+        public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)
         {
-            return new SettingsForm(presenter);
+            return new ConfigurationEditorForm(presenter);
         }
     }
 }

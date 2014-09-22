@@ -34,9 +34,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Microsoft.Office.Tools.Ribbon.RibbonDialogLauncher ribbonDialogLauncherImpl1 = this.Factory.CreateRibbonDialogLauncher();
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
+            this.separator1 = this.Factory.CreateRibbonSeparator();
+            this.buttonSettings = this.Factory.CreateRibbonButton();
             this.buttonShowErrors = this.Factory.CreateRibbonButton();
             this.toggleStructureVisibility = this.Factory.CreateRibbonToggleButton();
             this.tab1.SuspendLayout();
@@ -51,14 +52,24 @@
             // 
             // group1
             // 
-            ribbonDialogLauncherImpl1.ScreenTip = "Настройки";
-            ribbonDialogLauncherImpl1.SuperTip = "Параметры системы управления документами. Позволяет задавать различные параметры " +
-    "источников данных.";
-            this.group1.DialogLauncher = ribbonDialogLauncherImpl1;
-            this.group1.Items.Add(this.buttonShowErrors);
             this.group1.Items.Add(this.toggleStructureVisibility);
+            this.group1.Items.Add(this.separator1);
+            this.group1.Items.Add(this.buttonSettings);
+            this.group1.Items.Add(this.buttonShowErrors);
             this.group1.Label = "Управление";
             this.group1.Name = "group1";
+            // 
+            // separator1
+            // 
+            this.separator1.Name = "separator1";
+            // 
+            // buttonSettings
+            // 
+            this.buttonSettings.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonSettings.Image = global::SampleWordHelper.Properties.Resources.sprocket_light;
+            this.buttonSettings.Label = "Настройки";
+            this.buttonSettings.Name = "buttonSettings";
+            this.buttonSettings.ShowImage = true;
             // 
             // buttonShowErrors
             // 
@@ -98,5 +109,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleStructureVisibility;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonShowErrors;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonSettings;
+        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator1;
     }
 }

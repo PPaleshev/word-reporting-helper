@@ -1,13 +1,11 @@
-﻿namespace SampleWordHelper.Interface
+﻿using System;
+
+namespace SampleWordHelper.Interface
 {
     /// <summary>
     /// Интерфейс основного представления.
     /// </summary>
-    public interface IMainView
+    public interface IMainView : IDisposable
     {
-        /// <summary>
-        /// Делает панель структуры видимой или скрывает её в зависимости от флага.
-        /// </summary>
-        void SetStructureVisibility(bool value);
     }
 }

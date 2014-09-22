@@ -9,6 +9,12 @@ namespace SampleWordHelper.Core
     public interface IViewFactory
     {
         /// <summary>
+        /// Создаёт экземпляр основного представления.
+        /// </summary>
+        /// <param name="presenter">Менеджер представления.</param>
+        IMainView CreateMainView(IMainPresenter presenter);
+
+        /// <summary>
         /// Создаёт представление для отображения ленты.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
@@ -22,8 +28,8 @@ namespace SampleWordHelper.Core
         IStructureView CreateStructureView(IStructurePresenter presenter, string title);
 
         /// <summary>
-        /// Создаёт представление для настройки аддина.
+        /// Создаёт представление для редактирования параметров надстройки.
         /// </summary>
-        ISettingsEditorView CreateSettingsView(ISettingsEditorPresenter presenter);
+        IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter);
     }
 }

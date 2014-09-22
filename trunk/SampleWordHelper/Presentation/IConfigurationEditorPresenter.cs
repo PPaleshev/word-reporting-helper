@@ -3,9 +3,9 @@ using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Presentation
 {
-    public interface ISettingsEditorPresenter: IDisposable
+    public interface IConfigurationEditorPresenter: IDisposable
     {
-        void OnSelectedProviderChanged(Item<string> newItem);
+        void OnSelectedProviderChanged(ListItem newListItem);
         void OnPropertyValueChanged();
     }
 }

@@ -7,28 +7,30 @@ using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Interface
 {
-    public partial class SettingsForm : Form, ISettingsEditorView
+    public partial class ConfigurationEditorForm : Form, IConfigurationEditorView
     {
-        readonly ISettingsEditorPresenter presenter;
+        readonly IConfigurationEditorPresenter presenter;
+        ISettingsEditorModel model;
 
-        public SettingsForm(ISettingsEditorPresenter presenter)
+        public ConfigurationEditorForm(IConfigurationEditorPresenter presenter)
         {
             this.presenter = presenter;
             InitializeComponent();
         }
 
-        public void Initialize(SettingsEditorModel model)
+        public void Initialize(ISettingsEditorModel model)
         {
+            this.model = model;
             listProviders.DisplayMember = "DisplayName";
-            listProviders.Items.AddRange(model.Providers);
+            listProviders.Items.AddRange(model.Providers.ToArray());
             if (!string.IsNullOrWhiteSpace(model.SelectedProviderName))
-                listProviders.SelectedItem = model.Providers.Single(item => item.Object.Equals(model.SelectedProviderName));
+                listProviders.SelectedItem = model.Providers.Single(item => item.Value.Equals(model.SelectedProviderName));
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 
-        public void SetProviderSettings(ISettingsModel model)
+        public void UpdateProviderSettings()
         {
-            propertyGrid1.SelectedObject = model;
+            propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 
         public void SetValid(bool isValid, string message)
@@ -36,9 +38,10 @@ namespace SampleWordHelper.Interface
             labelError.Text = message;
             panelError.Visible = !isValid;
             buttonSave.Enabled = isValid;
+            buttonSave.DialogResult = isValid ? DialogResult.OK : DialogResult.None;
         }
 
-        bool ISettingsEditorView.ShowDialog()
+        bool IConfigurationEditorView.ShowDialog()
         {
             var process = Process.GetCurrentProcess();
             var parent = new NativeWindow();
@@ -55,7 +58,7 @@ namespace SampleWordHelper.Interface
 
         void OnSelectedProviderChanged(object sender, System.EventArgs e)
         {
-            presenter.OnSelectedProviderChanged((Item<string>) listProviders.SelectedItem);
+            presenter.OnSelectedProviderChanged((ListItem) listProviders.SelectedItem);
         }
 
         void OnEditablePropertyValueChanged(object s, PropertyValueChangedEventArgs e)

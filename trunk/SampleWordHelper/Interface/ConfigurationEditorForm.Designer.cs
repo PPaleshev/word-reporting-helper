@@ -1,6 +1,6 @@
 ﻿namespace SampleWordHelper.Interface
 {
-    partial class SettingsForm
+    partial class ConfigurationEditorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -200,7 +200,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panelError);
             this.MaximizeBox = false;
-            this.Name = "SettingsForm";
+            this.Name = "ConfigurationEditorForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Настройки";

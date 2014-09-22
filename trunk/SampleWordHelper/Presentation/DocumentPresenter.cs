@@ -29,12 +29,6 @@ namespace SampleWordHelper.Presentation
             structureView.SetVisibility(model.IsStructureVisible);
         }
 
-        public void OnShowSettings()
-        {
-            using (var presenter = new SettingsEditorPresenter(context))
-                presenter.Run();
-        }
-
         public void OnShowErrors()
         {
 //            if(context.Configuration.IsValid)

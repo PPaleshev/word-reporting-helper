@@ -9,15 +9,5 @@
         /// Вызывается для переключения видимости панели структуры.
         /// </summary>
         void OnToggleStructureVisibility();
-
-        /// <summary>
-        /// Вызывается для редактирования настроек.
-        /// </summary>
-        void OnShowSettings();
-
-        /// <summary>
-        /// Вызывается для отображения ошибок загрузки приложения.
-        /// </summary>
-        void OnShowErrors();
     }
 }
