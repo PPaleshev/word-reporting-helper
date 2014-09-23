@@ -35,7 +35,7 @@
             treeNode1,
             treeNode2});
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.treeStructure = new System.Windows.Forms.TreeView();
             this.treeImages = new System.Windows.Forms.ImageList(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -44,7 +44,7 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.treeView1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.treeStructure, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -54,27 +54,27 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(300, 450);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // treeView1
+            // treeStructure
             // 
-            this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.treeView1.ImageIndex = 0;
-            this.treeView1.ImageList = this.treeImages;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Name = "treeView1";
+            this.treeStructure.AllowDrop = true;
+            this.treeStructure.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.treeStructure.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.treeStructure.ImageIndex = 0;
+            this.treeStructure.ImageList = this.treeImages;
+            this.treeStructure.Location = new System.Drawing.Point(3, 3);
+            this.treeStructure.Name = "treeStructure";
             treeNode1.Name = "Node1";
             treeNode1.Text = "Организационные документы";
             treeNode2.Name = "Node2";
             treeNode2.Text = "Прочее";
             treeNode3.Name = "Node0";
             treeNode3.Text = "Root";
-            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            this.treeStructure.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode3});
-            this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(294, 381);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeItemDrag);
+            this.treeStructure.SelectedImageIndex = 0;
+            this.treeStructure.Size = new System.Drawing.Size(294, 381);
+            this.treeStructure.TabIndex = 0;
             // 
             // treeImages
             // 
@@ -98,8 +98,8 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ImageList treeImages;
+        internal System.Windows.Forms.TreeView treeStructure;
 
     }
 }

@@ -159,6 +159,7 @@
     <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
     <Compile Include="Core\BackgroundTaskContext.cs" />
     <Compile Include="Design\FileSystemPathEditor.cs" />
+    <Compile Include="Interface\IDropTargetHost.cs" />
     <Compile Include="Model\ConfigurationModel.cs" />
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\BasicDisposable.cs" />
@@ -172,15 +173,16 @@
     <Compile Include="Model\ListItem.cs" />
     <Compile Include="Model\ValidationResult.cs" />
     <Compile Include="Native\NativeWindowSession.cs" />
-    <Compile Include="Native\OverlayWindow.cs">
+    <Compile Include="Interface\OverlayWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Native\OverlayWindow.Designer.cs">
+    <Compile Include="Interface\OverlayWindow.Designer.cs">
       <DependentUpon>OverlayWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Native\WinApi.cs" />
+    <Compile Include="Presentation\TreeDragDropPresenter.cs" />
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
-    <Compile Include="Presentation\IDragDropPresenter.cs" />
+    <Compile Include="Presentation\DragDropPresenters.cs" />
     <Compile Include="Presentation\MainPresenter.cs" />
     <Compile Include="Providers\Core\ICatalogProvider.cs" />
     <Compile Include="Model\CatalogProviderInfo.cs" />
@@ -238,7 +240,7 @@
     <EmbeddedResource Include="Interface\MainRibbon.resx">
       <DependentUpon>MainRibbon.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Native\OverlayWindow.resx">
+    <EmbeddedResource Include="Interface\OverlayWindow.resx">
       <DependentUpon>OverlayWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

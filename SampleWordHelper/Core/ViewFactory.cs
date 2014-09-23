@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Tools;
 using SampleWordHelper.Interface;
+using SampleWordHelper.Native;
 using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Core
@@ -50,6 +51,11 @@ namespace SampleWordHelper.Core
         public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)
         {
             return new ConfigurationEditorForm(presenter);
+        }
+
+        public IDropTargetHost CreateDropHost(IDropTargetPresenter presenter)
+        {
+            return new OverlayWindow(presenter);
         }
     }
 }

@@ -17,5 +17,12 @@ namespace SampleWordHelper.Interface
         /// Показывает\скрывает представление в зависимости от переданного флага.
         /// </summary>
         void SetVisibility(bool value);
+
+        /// <summary>
+        /// Начинает перетаскивание выбранного узла в дереве.
+        /// В качестве перетаскиваемых данных устанавливается <paramref name="dragData"/>.
+        /// </summary>
+        /// <param name="dragData">Объект с передаваемыми данными.</param>
+        void BeginDragNode(object dragData);
     }
 }
