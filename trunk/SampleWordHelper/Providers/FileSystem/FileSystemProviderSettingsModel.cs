@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
-using System.Security.AccessControl;
+using SampleWordHelper.Design;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
@@ -21,6 +22,8 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         [DisplayName("Путь к каталогу")]
         [Category("Основные")]
+        [Editor(typeof(FileSystemPathEditor),typeof(UITypeEditor))]
+        
         public string RootPath
         {
             get { return settings.RootPath; }

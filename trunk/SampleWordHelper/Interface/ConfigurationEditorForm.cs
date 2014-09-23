@@ -1,15 +1,24 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
 using SampleWordHelper.Model;
+using SampleWordHelper.Native;
 using SampleWordHelper.Presentation;
-using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Interface
 {
+    /// <summary>
+    /// Реализация представления для редактирования настроек.
+    /// </summary>
     public partial class ConfigurationEditorForm : Form, IConfigurationEditorView
     {
+        /// <summary>
+        /// Менеджер представления.
+        /// </summary>
         readonly IConfigurationEditorPresenter presenter;
+
+        /// <summary>
+        /// Модель представления.
+        /// </summary>
         ISettingsEditorModel model;
 
         public ConfigurationEditorForm(IConfigurationEditorPresenter presenter)
@@ -43,17 +52,8 @@ namespace SampleWordHelper.Interface
 
         bool IConfigurationEditorView.ShowDialog()
         {
-            var process = Process.GetCurrentProcess();
-            var parent = new NativeWindow();
-            parent.AssignHandle(process.MainWindowHandle);
-            try
-            {
-                return ShowDialog(parent) == DialogResult.OK;
-            }
-            finally
-            {
-                parent.ReleaseHandle();
-            }
+            using (var parent = NativeWindowSession.GetCurrentProcessMainWindow())
+                return ShowDialog(parent.window) == DialogResult.OK;
         }
 
         void OnSelectedProviderChanged(object sender, System.EventArgs e)

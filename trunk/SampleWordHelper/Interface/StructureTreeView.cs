@@ -10,8 +10,19 @@ namespace SampleWordHelper.Interface
     /// </summary>
     public class StructureTreeView: IStructureView
     {
+        /// <summary>
+        /// Контрол со структурой.
+        /// </summary>
         readonly StructureTreeControl control;
+
+        /// <summary>
+        /// Ссылка на контейнер, в коротом расположен контрол.
+        /// </summary>
         readonly CustomTaskPane container;
+
+        /// <summary>
+        /// Менеджер представления.
+        /// </summary>
         readonly IStructurePresenter presenter;
 
         public StructureTreeView(CustomTaskPane container, IStructurePresenter presenter)
@@ -49,6 +60,7 @@ namespace SampleWordHelper.Interface
         {
             container.VisibleChanged += ContainerVisibilityChanged;
             container.Width = 400;
+            
         }
 
         /// <summary>
