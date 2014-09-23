@@ -20,11 +20,6 @@ namespace SampleWordHelper.Presentation
         readonly IMainView view;
 
         /// <summary>
-        /// Токен, используемый при старте всех фоновых операций для их отмены при завершении.
-        /// </summary>
-        readonly CancellationTokenSource shutdown = new CancellationTokenSource();
-
-        /// <summary>
         /// Объект для отслеживания состояния документов.
         /// </summary>
         DocumentManager documentManager;
@@ -101,7 +96,16 @@ namespace SampleWordHelper.Presentation
 
         protected override void DisposeManaged()
         {
-            shutdown.Cancel(true);
+            try
+            {
+                var activeProvider = configurationModel.GetActiveProvider();
+                if (activeProvider != null)
+                    activeProvider.Shutdown();
+            }
+            catch
+            {
+                //TODO log it
+            }
             view.SafeDispose();
             documentManager.SafeDispose();
         }

@@ -15,11 +15,16 @@ namespace SampleWordHelper.Interface
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void TreeItemDrag(object sender, ItemDragEventArgs e)
         {
             var node = (TreeNode) e.Item;
             if (node.Nodes.Count == 0)
-                DoDragDrop(node, DragDropEffects.All);
+                DoDragDrop(new  , DragDropEffects.Copy);
         }
     }
 }

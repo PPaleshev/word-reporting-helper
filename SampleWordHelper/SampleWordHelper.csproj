@@ -158,6 +158,7 @@
     <Compile Include="Configuration\CatalogProviderConfigurationElement.cs" />
     <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
     <Compile Include="Core\BackgroundTaskContext.cs" />
+    <Compile Include="Design\FileSystemPathEditor.cs" />
     <Compile Include="Model\ConfigurationModel.cs" />
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\BasicDisposable.cs" />
@@ -166,10 +167,20 @@
     <Compile Include="Core\ValidationError.cs" />
     <Compile Include="Interface\StructureTreeView.cs" />
     <Compile Include="Model\ConfigurationEditorModel.cs" />
+    <Compile Include="Model\InsertionData.cs" />
     <Compile Include="Model\ISettingsEditorModel.cs" />
     <Compile Include="Model\ListItem.cs" />
     <Compile Include="Model\ValidationResult.cs" />
+    <Compile Include="Native\NativeWindowSession.cs" />
+    <Compile Include="Native\OverlayWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Native\OverlayWindow.Designer.cs">
+      <DependentUpon>OverlayWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Native\WinApi.cs" />
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
+    <Compile Include="Presentation\IDragDropPresenter.cs" />
     <Compile Include="Presentation\MainPresenter.cs" />
     <Compile Include="Providers\Core\ICatalogProvider.cs" />
     <Compile Include="Model\CatalogProviderInfo.cs" />
@@ -226,6 +237,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\MainRibbon.resx">
       <DependentUpon>MainRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Native\OverlayWindow.resx">
+      <DependentUpon>OverlayWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

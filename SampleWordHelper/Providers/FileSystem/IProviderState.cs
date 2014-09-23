@@ -41,8 +41,6 @@ namespace SampleWordHelper.Providers.FileSystem
     /// </summary>
     public class ActiveState : IProviderState
     {
-        
-
         /// <summary>
         /// Параметры работы текущего провайдера.
         /// </summary>
