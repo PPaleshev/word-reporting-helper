@@ -8,19 +8,22 @@ namespace SampleWordHelper.Presentation
 {
     public class DocumentPresenter: IRibbonPresenter, IStructurePresenter, IDisposable
     {
-        readonly IRuntimeContext context;
         readonly IRibbonView ribbonView;
         readonly IStructureView structureView;
         readonly DocumentModel model;
-        readonly Document document;
+        readonly IDragSourceController structureDragController;
 
         public DocumentPresenter(IRuntimeContext context, Document document)
         {
-            this.context = context;
-            this.document = document;
             model = new DocumentModel();
             ribbonView = context.ViewFactory.CreateDocumentView(new RibbonEventFilter(context, this, document.GetKey()));
             structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
+            structureDragController = new TreeDragDropController(context, structureView, new StructureModel(null));
+        }
+
+        public IDragSourceController DragController
+        {
+            get { return structureDragController; }
         }
 
         public void OnToggleStructureVisibility()
@@ -45,7 +48,7 @@ namespace SampleWordHelper.Presentation
         public void Run()
         {
             //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
-            model.IsStructureVisible = false;
+            model.IsStructureVisible = true;
             Activate();
         }
 
@@ -57,8 +60,9 @@ namespace SampleWordHelper.Presentation
 
         public void Dispose()
         {
-            ribbonView.Dispose();
-            structureView.Dispose();
+            structureDragController.SafeDispose();
+            ribbonView.SafeDispose();
+            structureView.SafeDispose();
         }
     }
 }

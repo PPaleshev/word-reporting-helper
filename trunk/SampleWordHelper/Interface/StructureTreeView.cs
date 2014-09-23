@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Windows.Forms;
 using Microsoft.Office.Tools;
 using SampleWordHelper.Model;
 using SampleWordHelper.Presentation;
@@ -33,13 +35,9 @@ namespace SampleWordHelper.Interface
             InitializeComponents();
         }
 
-        public object RawObject
-        {
-            get { return control; }
-        }
-
         public void Initialize(StructureModel model)
         {
+            container.Width = 300;
         }
 
         public void SetVisibility(bool value)
@@ -49,8 +47,11 @@ namespace SampleWordHelper.Interface
 
         public void Dispose()
         {
-            control.Dispose();
             container.VisibleChanged -= ContainerVisibilityChanged;
+            control.treeStructure.ItemDrag -= OnTreeItemDrag;
+            control.treeStructure.QueryContinueDrag -= OnContinueDragRequested;
+            control.treeStructure.DragLeave -= OnDraggingLeavedControlBounds;
+            control.Dispose();
         }
 
         /// <summary>
@@ -59,8 +60,46 @@ namespace SampleWordHelper.Interface
         void InitializeComponents()
         {
             container.VisibleChanged += ContainerVisibilityChanged;
-            container.Width = 400;
-            
+            var tree = control.treeStructure;
+            tree.ItemDrag += OnTreeItemDrag;
+            tree.QueryContinueDrag += OnContinueDragRequested;
+            tree.DragLeave += OnDraggingLeavedControlBounds;
+        }
+
+        /// <summary>
+        /// Вызывается для начала перетаскивания выбранного узла дерева.
+        /// </summary>
+        public void BeginDragNode(object dragData)
+        {
+            control.treeStructure.DoDragDrop(dragData, DragDropEffects.Copy);
+        }
+
+        /// <summary>
+        /// Вызывается при попытке начала перетаскивания узла дерева.
+        /// </summary>
+        void OnTreeItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+                return;
+            var node = (TreeNode) e.Item;
+            presenter.DragController.OnBeginDrag(node.Tag);
+        }
+
+        /// <summary>
+        /// Вызывается при выходе перетаскиваемого объекта за границы дерева со структурой.
+        /// </summary>
+        void OnDraggingLeavedControlBounds(object sender, EventArgs e)
+        {
+            presenter.DragController.OnLeave();
+        }
+
+        /// <summary>
+        /// Вызывается при определении необходимости продолжения текущей операции перетаскивания.
+        /// </summary>
+        void OnContinueDragRequested(object sender, QueryContinueDragEventArgs e)
+        {
+            var leftButtonPressed = Control.MouseButtons.HasFlag(MouseButtons.Left);
+            e.Action = presenter.DragController.CheckDraggingState(e.EscapePressed, leftButtonPressed);
         }
 
         /// <summary>

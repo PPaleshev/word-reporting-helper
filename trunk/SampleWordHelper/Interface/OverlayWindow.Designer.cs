@@ -36,10 +36,15 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(514, 408);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "OverlayWindow";
-            this.Opacity = 0.1D;
+            this.Opacity = 0.2D;
             this.Text = "OverlayWindow";
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.OnDragEnter);
+            this.DragOver += new System.Windows.Forms.DragEventHandler(this.OnDragOver);
+            this.DragLeave += new System.EventHandler(this.OnDraggingLeave);
             this.ResumeLayout(false);
 
         }

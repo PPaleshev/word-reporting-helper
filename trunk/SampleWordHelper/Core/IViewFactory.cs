@@ -31,5 +31,11 @@ namespace SampleWordHelper.Core
         /// Создаёт представление для редактирования параметров надстройки.
         /// </summary>
         IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter);
+
+        /// <summary>
+        /// Создаёт представление для приёма данных при перетаскивании.
+        /// </summary>
+        /// <param name="presenter">Менеджер представления.</param>
+        IDropTargetHost CreateDropHost(IDropTargetPresenter presenter);
     }
 }
