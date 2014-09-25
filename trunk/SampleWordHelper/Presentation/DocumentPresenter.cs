@@ -8,14 +8,42 @@ using Point = System.Drawing.Point;
 
 namespace SampleWordHelper.Presentation
 {
+    /// <summary>
+    /// Менеджер документа Word.
+    /// </summary>
     public class DocumentPresenter: IRibbonEventListener, IStructurePresenter, IDropCallback, IDisposable
     {
+        /// <summary>
+        /// Представление ленты.
+        /// </summary>
         readonly IRibbonView ribbonView;
+
+        /// <summary>
+        /// Общее представление документа.
+        /// </summary>
         readonly IDocumentView structureView;
+
+        /// <summary>
+        /// Модель документа.
+        /// </summary>
         readonly DocumentModel model;
+
+        /// <summary>
+        /// Вспомогательный класс для управления процессом перетаскивания (drag and drop).
+        /// </summary>
         readonly IDragSourceController dragController;
+
+        /// <summary>
+        /// Контекст времени исполнения надстройки.
+        /// </summary>
         readonly IRuntimeContext context;
 
+        /// <summary>
+        /// Создаёт новый экземпляр менеджера документа.
+        /// </summary>
+        /// <param name="context">Контекст исполнения надстройки.</param>
+        /// <param name="view">Экземпляр представления для управления лентой.</param>
+        /// <param name="catalog">Модель каталога.</param>
         public DocumentPresenter(IRuntimeContext context, IRibbonView view, CatalogModel catalog)
         {
             this.context = context;
@@ -51,7 +79,7 @@ namespace SampleWordHelper.Presentation
             if (context.Application.ActiveDocument == null)
                 return;
             var filePath = model.ExtractFilePathFromTransferredData(obj);
-            var range = (Range)context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
+            var range = (Range) context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
             range.InsertFile(filePath, ConfirmConversions: true);
         }
 
