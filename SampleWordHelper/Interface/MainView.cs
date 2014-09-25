@@ -54,6 +54,7 @@ namespace SampleWordHelper.Interface
         public void Dispose()
         {
             ribbon.buttonSettings.Click -= OnSettingsButtonClick;
+            ribbon.buttonReload.Click -= OnReloadCatalogButtonClick;
         }
 
         public void EnableAddinFeatures(bool enable, string message)
