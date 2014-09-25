@@ -35,7 +35,9 @@
         private void InitializeComponent()
         {
             Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainRibbon));
             this.toggleStructureVisibility = this.Factory.CreateRibbonToggleButton();
+            this.buttonReload = this.Factory.CreateRibbonButton();
             this.separator = this.Factory.CreateRibbonSeparator();
             this.buttonSettings = this.Factory.CreateRibbonButton();
             this.tab1 = this.Factory.CreateRibbonTab();
@@ -46,6 +48,7 @@
             // group1
             // 
             group1.Items.Add(this.toggleStructureVisibility);
+            group1.Items.Add(this.buttonReload);
             group1.Items.Add(this.separator);
             group1.Items.Add(this.buttonSettings);
             group1.Label = "Управление";
@@ -54,12 +57,22 @@
             // toggleStructureVisibility
             // 
             this.toggleStructureVisibility.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.toggleStructureVisibility.Image = global::SampleWordHelper.Properties.Resources.view_outline_detail;
+            this.toggleStructureVisibility.Image = ((System.Drawing.Image)(resources.GetObject("toggleStructureVisibility.Image")));
             this.toggleStructureVisibility.Label = "Показать\\скрыть структуру";
             this.toggleStructureVisibility.Name = "toggleStructureVisibility";
             this.toggleStructureVisibility.ScreenTip = "Структура";
             this.toggleStructureVisibility.ShowImage = true;
             this.toggleStructureVisibility.SuperTip = "Показывает\\скрывает панель со структурой базы знаний.";
+            // 
+            // buttonReload
+            // 
+            this.buttonReload.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonReload.Image = ((System.Drawing.Image)(resources.GetObject("buttonReload.Image")));
+            this.buttonReload.Label = "Обновить каталог";
+            this.buttonReload.Name = "buttonReload";
+            this.buttonReload.ScreenTip = "Обновить каталог";
+            this.buttonReload.ShowImage = true;
+            this.buttonReload.SuperTip = "Полностью перечитывает данные из текущего каталога.";
             // 
             // separator
             // 
@@ -68,7 +81,7 @@
             // buttonSettings
             // 
             this.buttonSettings.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.buttonSettings.Image = global::SampleWordHelper.Properties.Resources.sprocket_light;
+            this.buttonSettings.Image = global::SampleWordHelper.Properties.Resources.warning;
             this.buttonSettings.Label = "Настройки";
             this.buttonSettings.Name = "buttonSettings";
             this.buttonSettings.ScreenTip = "Основные настройки";
@@ -101,5 +114,6 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleStructureVisibility;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonSettings;
         internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonReload;
     }
 }

@@ -56,7 +56,7 @@ namespace SampleWordHelper.Native
         /// <returns>Возвращает дескриптор найденного окна.</returns>
         public static IntPtr FindMicrosoftWordDocumentWindow(string activeWindowTitle)
         {
-            var handle = FindWindow(WIN_CLASSES[0], activeWindowTitle);
+            var handle = FindWindow(WIN_CLASSES[0], string.IsNullOrWhiteSpace(activeWindowTitle) ? null : activeWindowTitle);
             for (var i = 1; i < WIN_CLASSES.Length; i++)
                 handle = FindWindowEx(handle, IntPtr.Zero, WIN_CLASSES[i], null);
             return handle;

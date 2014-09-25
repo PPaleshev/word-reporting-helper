@@ -29,11 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Организационные документы");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Прочее");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Root", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2});
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StructureTreeControl));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeStructure = new System.Windows.Forms.TreeView();
             this.treeImages = new System.Windows.Forms.ImageList(this.components);
@@ -64,23 +60,18 @@
             this.treeStructure.ImageList = this.treeImages;
             this.treeStructure.Location = new System.Drawing.Point(3, 3);
             this.treeStructure.Name = "treeStructure";
-            treeNode1.Name = "Node1";
-            treeNode1.Text = "Организационные документы";
-            treeNode2.Name = "Node2";
-            treeNode2.Text = "Прочее";
-            treeNode3.Name = "Node0";
-            treeNode3.Text = "Root";
-            this.treeStructure.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
             this.treeStructure.SelectedImageIndex = 0;
+            this.treeStructure.ShowNodeToolTips = true;
             this.treeStructure.Size = new System.Drawing.Size(294, 381);
             this.treeStructure.TabIndex = 0;
             // 
             // treeImages
             // 
-            this.treeImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.treeImages.ImageSize = new System.Drawing.Size(16, 16);
+            this.treeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("treeImages.ImageStream")));
             this.treeImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.treeImages.Images.SetKeyName(0, "closed-folder.png");
+            this.treeImages.Images.SetKeyName(1, "opened-folder.png");
+            this.treeImages.Images.SetKeyName(2, "document.png");
             // 
             // StructureTreeControl
             // 

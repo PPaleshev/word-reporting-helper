@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core;
+using SampleWordHelper.Interface;
+using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Presentation
 {
     /// <summary>
     /// Основной менеджер надстройки.
     /// </summary>
-    public class DocumentManager: IDisposable
+    public class DocumentManager: IRibbonEventListener, IDisposable
     {
         /// <summary>
         /// Контекст работы надстройки.
@@ -20,7 +23,17 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Отображение из ключа документа в управляющий им менеджер.
         /// </summary>
-        readonly Dictionary<object, DocumentPresenter> documents = new Dictionary<object, DocumentPresenter>();
+        readonly Dictionary<object, DocumentPresenter> presenters = new Dictionary<object, DocumentPresenter>();
+
+        /// <summary>
+        /// Экземпляр представления для управления элементами ленты.
+        /// </summary>
+        readonly IRibbonView ribbonView;
+
+        /// <summary>
+        /// Текущий экземпляр каталога.
+        /// </summary>
+        CatalogModel currentCatalog;
 
         /// <summary>
         /// Флаг, равный true, если <see cref="OnDocumentChanged"/> вызывается до <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
@@ -35,10 +48,24 @@ namespace SampleWordHelper.Presentation
         public DocumentManager(IRuntimeContext context)
         {
             this.context = context;
+            ribbonView = context.ViewFactory.CreateRibbonView(this);
             var application = context.Application;
             ((ApplicationEvents4_Event) application).NewDocument += OnNewDocument;
             application.DocumentOpen += OnDocumentOpened;
             application.DocumentChange += OnDocumentChanged;
+            currentCatalog = new CatalogModel();
+        }
+
+        /// <summary>
+        /// Вызывается для обновления каталога.
+        /// </summary>
+        /// <param name="catalog">Модель каталога.</param>
+        public void SetCatalog(CatalogModel catalog)
+        {
+            currentCatalog = catalog;
+            var subscribers = presenters.Values.ToArray();
+            foreach (var presenter in subscribers)
+                presenter.UpdateCatalog(currentCatalog);
         }
 
         /// <summary>
@@ -49,8 +76,8 @@ namespace SampleWordHelper.Presentation
             var toolDoc = context.ApplicationFactory.GetVstoObject(document);
             var key = toolDoc.GetKey();
             toolDoc.Shutdown += (sender, args) => OnDocumentShutdown(key);
-            var presenter = new DocumentPresenter(context, toolDoc);
-            documents.Add(key, presenter);
+            var presenter = new DocumentPresenter(context, ribbonView, currentCatalog);
+            presenters.Add(key, presenter);
             presenter.Run();
         }
 
@@ -60,7 +87,7 @@ namespace SampleWordHelper.Presentation
         bool TryGetPresenter(Document document, out DocumentPresenter presenter)
         {
             var vsto = context.ApplicationFactory.GetVstoObject(document);
-            return documents.TryGetValue(vsto.GetKey(), out presenter);
+            return presenters.TryGetValue(vsto.GetKey(), out presenter);
         }
 
         /// <summary>
@@ -90,14 +117,14 @@ namespace SampleWordHelper.Presentation
         void OnDocumentShutdown(object documentKey)
         {
             DocumentPresenter presenter;
-            if (!documents.TryGetValue(documentKey, out presenter))
+            if (!presenters.TryGetValue(documentKey, out presenter))
                 return;
-            documents.Remove(documentKey);
+            presenters.Remove(documentKey);
             presenter.Dispose();
         }
 
         /// <summary>
-        /// Вызывается при изменении документа.
+        /// Вызывается при изменении активного документа.
         /// </summary>
         void OnDocumentChanged()
         {
@@ -125,8 +152,19 @@ namespace SampleWordHelper.Presentation
             }
         }
 
+        public void OnToggleStructureVisibility()
+        {
+            var doc = context.Application.ActiveDocument;
+            if (doc == null)
+                return;
+            DocumentPresenter p;
+            if (TryGetPresenter(doc, out p))
+                p.OnToggleStructureVisibility();
+        }
+
         public void Dispose()
         {
+            ribbonView.Dispose();
             var application = context.Application;
             if (application == null)
                 return;

@@ -1,29 +1,34 @@
 ﻿using System;
-using Microsoft.Office.Tools.Word;
+using System.Windows.Forms;
+using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
+using Point = System.Drawing.Point;
 
 namespace SampleWordHelper.Presentation
 {
-    public class DocumentPresenter: IRibbonPresenter, IStructurePresenter, IDisposable
+    public class DocumentPresenter: IRibbonEventListener, IStructurePresenter, IDropCallback, IDisposable
     {
         readonly IRibbonView ribbonView;
-        readonly IStructureView structureView;
+        readonly IDocumentView structureView;
         readonly DocumentModel model;
-        readonly IDragSourceController structureDragController;
+        readonly IDragSourceController dragController;
+        readonly IRuntimeContext context;
 
-        public DocumentPresenter(IRuntimeContext context, Document document)
+        public DocumentPresenter(IRuntimeContext context, IRibbonView view, CatalogModel catalog)
         {
+            this.context = context;
+            ribbonView = view;
             model = new DocumentModel();
-            ribbonView = context.ViewFactory.CreateDocumentView(new RibbonEventFilter(context, this, document.GetKey()));
+            model.SetModel(catalog);
             structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
-            structureDragController = new TreeDragDropController(context, structureView, new StructureModel(null));
+            dragController = new TreeDragDropController(context, structureView, model, this);
         }
 
         public IDragSourceController DragController
         {
-            get { return structureDragController; }
+            get { return dragController; }
         }
 
         public void OnToggleStructureVisibility()
@@ -33,6 +38,23 @@ namespace SampleWordHelper.Presentation
             structureView.SetVisibility(model.IsStructureVisible);
         }
 
+        public void OnClosed()
+        {
+            model.IsStructureVisible = false;
+            ribbonView.SetStructureVisible(model.IsStructureVisible);
+        }
+
+        void IDropCallback.OnDrop(IDataObject obj, Point point)
+        {
+            if (!model.IsValidDropData(obj))
+                return;
+            if (context.Application.ActiveDocument == null)
+                return;
+            var filePath = model.ExtractFilePathFromTransferredData(obj);
+            var range = (Range)context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
+            range.InsertFile(filePath, ConfirmConversions: true);
+        }
+
         /// <summary>
         /// Выполняет активацию презентера при смене активного документа.
         /// </summary>
@@ -40,6 +62,7 @@ namespace SampleWordHelper.Presentation
         {
             ribbonView.SetStructureVisible(model.IsStructureVisible);
             structureView.SetVisibility(model.IsStructureVisible);
+            structureView.UpdateStructure(model);
         }
 
         /// <summary>
@@ -48,21 +71,37 @@ namespace SampleWordHelper.Presentation
         public void Run()
         {
             //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
-            model.IsStructureVisible = true;
+            model.IsStructureVisible = false;
             Activate();
         }
 
-        public void OnClosed()
+        /// <summary>
+        /// Вызывается при обновлении данных каталога.
+        /// </summary>
+        /// <param name="catalog">Обновлённая модель каталога.</param>
+        public void UpdateCatalog(CatalogModel catalog)
         {
-            model.IsStructureVisible = false;
-            ribbonView.SetStructureVisible(model.IsStructureVisible);
+            model.SetModel(catalog);
+            structureView.UpdateStructure(model);
         }
 
         public void Dispose()
         {
-            structureDragController.SafeDispose();
-            ribbonView.SafeDispose();
+            dragController.SafeDispose();
             structureView.SafeDispose();
         }
+    }
+
+    /// <summary>
+    /// Интерфейс обратного вызова для обработки успешного перетаскивания.
+    /// </summary>
+    public interface IDropCallback
+    {
+        /// <summary>
+        /// Вызывается при успешном перетаскивании указанного элемента каталога.
+        /// </summary>
+        /// <param name="obj">Перетащенный объект.</param>
+        /// <param name="point">Экранные координаты точки, в которой был сброшен объект.</param>
+        void OnDrop(IDataObject obj, Point point);
     }
 }

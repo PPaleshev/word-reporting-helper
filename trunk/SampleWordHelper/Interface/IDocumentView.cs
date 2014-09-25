@@ -1,4 +1,5 @@
-﻿using SampleWordHelper.Core;
+﻿using System.Windows.Forms;
+using SampleWordHelper.Core;
 using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Interface
@@ -6,12 +7,12 @@ namespace SampleWordHelper.Interface
     /// <summary>
     /// Интерфейс представления структуры каталога.
     /// </summary>
-    public interface IStructureView : IView
+    public interface IDocumentView : IView
     {
         /// <summary>
         /// Инициализирует представление данными модели.
         /// </summary>
-        void Initialize(StructureModel model);
+        void Initialize(DocumentModel model);
 
         /// <summary>
         /// Показывает\скрывает представление в зависимости от переданного флага.
@@ -23,6 +24,12 @@ namespace SampleWordHelper.Interface
         /// В качестве перетаскиваемых данных устанавливается <paramref name="dragData"/>.
         /// </summary>
         /// <param name="dragData">Объект с передаваемыми данными.</param>
-        void BeginDragNode(object dragData);
+        /// <param name="effect">Требуемый эффект для перетаскивания.</param>
+        void BeginDragNode(object dragData, DragDropEffects effect);
+
+        /// <summary>
+        /// Обновляет структуру каталога.
+        /// </summary>
+        void UpdateStructure(DocumentModel model);
     }
 }

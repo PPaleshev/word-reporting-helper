@@ -36,12 +36,12 @@ namespace SampleWordHelper.Core
             return new MainView(ribbon, presenter);
         }
 
-        public IRibbonView CreateDocumentView(IRibbonPresenter presenter)
+        public IRibbonView CreateRibbonView(IRibbonEventListener presenter)
         {
             return new RibbonView(ribbon, presenter);
         }
 
-        public IStructureView CreateStructureView(IStructurePresenter presenter, string title)
+        public IDocumentView CreateStructureView(IStructurePresenter presenter, string title)
         {
             var control = new StructureTreeControl();
             var container = paneFactory.Add(control, title);

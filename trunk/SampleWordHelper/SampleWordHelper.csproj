@@ -160,6 +160,7 @@
     <Compile Include="Core\BackgroundTaskContext.cs" />
     <Compile Include="Design\FileSystemPathEditor.cs" />
     <Compile Include="Interface\IDropTargetHost.cs" />
+    <Compile Include="Model\CatalogItemDto.cs" />
     <Compile Include="Model\ConfigurationModel.cs" />
     <Compile Include="Configuration\ReportHelperConfigurationSection.cs" />
     <Compile Include="Core\BasicDisposable.cs" />
@@ -194,7 +195,7 @@
     <Compile Include="Interface\SuspendFlag.cs" />
     <Compile Include="Core\ViewFactory.cs" />
     <Compile Include="Interface\IConfigurationEditorView.cs" />
-    <Compile Include="Interface\IStructureView.cs" />
+    <Compile Include="Interface\IDocumentView.cs" />
     <Compile Include="Interface\ITaskPanePresenter.cs" />
     <Compile Include="Interface\IRibbonView.cs" />
     <Compile Include="Interface\RibbonView.cs" />
@@ -218,7 +219,7 @@
     <Compile Include="Presentation\ConfigurationEditorPresenter.cs" />
     <Compile Include="Presentation\DocumentPresenter.cs" />
     <Compile Include="Presentation\IMainPresenter.cs" />
-    <Compile Include="Presentation\IRibbonPresenter.cs" />
+    <Compile Include="Presentation\IRibbonEventListener.cs" />
     <Compile Include="Presentation\IStructurePresenter.cs" />
     <Compile Include="Interface\MainRibbon.cs">
       <SubType>Component</SubType>
@@ -284,16 +285,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\document_letter_add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\view_outline_detail.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\warning_triangle.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\sprocket_light.png" />
+    <None Include="Resources\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\warning.png" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

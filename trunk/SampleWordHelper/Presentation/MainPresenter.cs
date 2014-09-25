@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Windows.Forms;
 using SampleWordHelper.Core;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
@@ -51,10 +51,11 @@ namespace SampleWordHelper.Presentation
         {
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
-            var activeProvider = configurationModel.GetActiveProvider();
+            var activeProvider = GetActiveProvider();
             if (!ValidateProviderState(activeProvider))
                 return;
             catalog = activeProvider.LoadCatalog(CatalogLoadMode.PARTIAL);
+            documentManager.SetCatalog(catalog);
         }
 
         public void OnEditSettings()
@@ -65,7 +66,7 @@ namespace SampleWordHelper.Presentation
                 if (!presenter.Edit())
                     return;
                 var result = configurationModel.Update(editorModel);
-                var activeProvider = configurationModel.GetActiveProvider();
+                var activeProvider = GetActiveProvider();
                 if (result.providerChanged)
                 {
                     if (result.previousProvider != null)
@@ -73,8 +74,22 @@ namespace SampleWordHelper.Presentation
                     activeProvider.Initialize(context);
                 }
                 activeProvider.ApplyConfiguration(editorModel.ProviderSettingsModel);
-                if (!ValidateProviderState(activeProvider))
-                    return;
+                ValidateProviderState(activeProvider);
+            }
+        }
+
+        public void OnUpdateCatalog()
+        {
+            var activeProvider = GetActiveProvider();
+            try
+            {
+                catalog = activeProvider.LoadCatalog(CatalogLoadMode.FULL);
+                documentManager.SetCatalog(catalog);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Не удалось обновить данные каталога.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //TODO PP: Log error
             }
         }
 
@@ -94,11 +109,19 @@ namespace SampleWordHelper.Presentation
             return isSuccess;
         }
 
+        /// <summary>
+        /// Возвращает экземпляр активного поставщика каталога.
+        /// </summary>
+        ICatalogProvider GetActiveProvider()
+        {
+            return configurationModel.GetActiveProvider();
+        }
+
         protected override void DisposeManaged()
         {
             try
             {
-                var activeProvider = configurationModel.GetActiveProvider();
+                var activeProvider = GetActiveProvider();
                 if (activeProvider != null)
                     activeProvider.Shutdown();
             }
