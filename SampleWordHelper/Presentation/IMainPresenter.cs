@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 namespace SampleWordHelper.Presentation
 {
@@ -12,5 +11,10 @@ namespace SampleWordHelper.Presentation
         /// Вызывается для отображения настроек приложения.
         /// </summary>
         void OnEditSettings();
+
+        /// <summary>
+        /// Вызывается для перезагрузки содержимого каталога.
+        /// </summary>
+        void OnUpdateCatalog();
     }
 }

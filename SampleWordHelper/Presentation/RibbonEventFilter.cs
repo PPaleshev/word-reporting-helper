@@ -7,12 +7,12 @@ namespace SampleWordHelper.Presentation
     /// Фильтр для событий ленты.
     /// Вызывает события оборачиваемого менеджера только в том случае, если управляемый этим менеджером документ является активным в данный момент.
     /// </summary>
-    public class RibbonEventFilter : IRibbonPresenter
+    public class RibbonEventFilter : IRibbonEventListener
     {
         /// <summary>
         /// Внутренний презентер, которому делегируются события.
         /// </summary>
-        readonly IRibbonPresenter innerPresenter;
+        readonly IRibbonEventListener innerPresenter;
 
         /// <summary>
         /// Ключ документа, которым управляет менеджер.
@@ -30,7 +30,7 @@ namespace SampleWordHelper.Presentation
         /// <param name="context">Контекст времени исполнения надстройки.</param>
         /// <param name="innerPresenter">Менеджер ленты.</param>
         /// <param name="documentKey">Уникальный ключ документа, которым управляет менеджер.</param>
-        public RibbonEventFilter(IRuntimeContext context, IRibbonPresenter innerPresenter, object documentKey)
+        public RibbonEventFilter(IRuntimeContext context, IRibbonEventListener innerPresenter, object documentKey)
         {
             key = documentKey;
             this.context = context;

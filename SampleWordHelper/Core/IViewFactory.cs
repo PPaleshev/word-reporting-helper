@@ -18,14 +18,14 @@ namespace SampleWordHelper.Core
         /// Создаёт представление для отображения ленты.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
-        IRibbonView CreateDocumentView(IRibbonPresenter presenter);
+        IRibbonView CreateRibbonView(IRibbonEventListener presenter);
 
         /// <summary>
         /// Создаёт представление для просмотра структуры каталога.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
         /// <param name="title">Заголовок отображаемого представления.</param>
-        IStructureView CreateStructureView(IStructurePresenter presenter, string title);
+        IDocumentView CreateStructureView(IStructurePresenter presenter, string title);
 
         /// <summary>
         /// Создаёт представление для редактирования параметров надстройки.

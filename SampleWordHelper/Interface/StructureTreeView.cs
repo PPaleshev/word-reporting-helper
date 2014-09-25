@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.Office.Tools;
 using SampleWordHelper.Model;
@@ -10,7 +9,7 @@ namespace SampleWordHelper.Interface
     /// <summary>
     /// Представление для отображения структуры каталога.
     /// </summary>
-    public class StructureTreeView: IStructureView
+    public class StructureTreeView: IDocumentView
     {
         /// <summary>
         /// Контрол со структурой.
@@ -35,9 +34,10 @@ namespace SampleWordHelper.Interface
             InitializeComponents();
         }
 
-        public void Initialize(StructureModel model)
+        public void Initialize(DocumentModel model)
         {
-            container.Width = 300;
+            container.Width = 400;
+            UpdateStructure(model);
         }
 
         public void SetVisibility(bool value)
@@ -69,9 +69,36 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Вызывается для начала перетаскивания выбранного узла дерева.
         /// </summary>
-        public void BeginDragNode(object dragData)
+        public void BeginDragNode(object dragData, DragDropEffects effect)
         {
-            control.treeStructure.DoDragDrop(dragData, DragDropEffects.Copy);
+            control.treeStructure.DoDragDrop(dragData, effect);
+        }
+
+        public void UpdateStructure(DocumentModel model)
+        {
+            var tree = control.treeStructure;
+            tree.Nodes.Clear();
+            foreach (var nodeId in model.GetRootNodes())
+                BuildNode(nodeId, model, tree.Nodes);
+            tree.ExpandAll();
+        }
+
+        /// <summary>
+        /// Строит узел дерева и все его дочерние элементы.
+        /// </summary>
+        /// <param name="nodeId">Идентификатор строящегося узла.</param>
+        /// <param name="model">Модель с данными структуры.</param>
+        /// <param name="target">Коллекция, в которую должен быть добавлен строящийся узел.</param>
+        static void BuildNode(string nodeId, DocumentModel model, TreeNodeCollection target)
+        {
+            var node = new TreeNode(model.GetText(nodeId));
+            node.ImageIndex = model.GetNodeType(nodeId) == NodeType.LEAF ? 2 : 0;
+            node.SelectedImageIndex = node.ImageIndex;
+            node.ToolTipText = model.GetHint(nodeId);
+            node.Tag = nodeId;
+            foreach (var childId in model.GetChildNodes(nodeId))
+                BuildNode(childId, model, node.Nodes);
+            target.Add(node);
         }
 
         /// <summary>

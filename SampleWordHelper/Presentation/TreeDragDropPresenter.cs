@@ -17,17 +17,23 @@ namespace SampleWordHelper.Presentation
     public class TreeDragDropController : IDragSourceController, IDropTargetPresenter
     {
         readonly IRuntimeContext context;
-        readonly IStructureView view;
-        readonly StructureModel model;
-        State state = State.NONE;
-        bool isDraggingOnTarget = false;
+        readonly IDocumentView view;
+        readonly DocumentModel model;
+        readonly IDropCallback callback;
+
         IDropTargetHost dropHost;
 
-        public TreeDragDropController(IRuntimeContext context, IStructureView view, StructureModel model)
+        State state = State.NONE;
+
+        bool isDraggingOnTarget = false;
+
+
+        public TreeDragDropController(IRuntimeContext context, IDocumentView view, DocumentModel model, IDropCallback callback)
         {
             this.context = context;
             this.view = view;
             this.model = model;
+            this.callback = callback;
         }
 
         public void Dispose()
@@ -43,7 +49,7 @@ namespace SampleWordHelper.Presentation
             if (!model.CanDragNode(item))
                 return;
             state = State.INITIATED;
-            view.BeginDragNode(model.CreateTransferObject(item));
+            view.BeginDragNode(model.CreateTransferObject(item), DragDropEffects.Copy);
         }
 
         void IDragSourceController.OnLeave()
@@ -105,11 +111,9 @@ namespace SampleWordHelper.Presentation
             Reset();
             try
             {
-                var window = context.Application.ActiveWindow;
-                var range = (Range)window.RangeFromPoint(point.X, point.Y);
-                var text = data.GetData(typeof (string)) as string;
-                range.InsertFile(@"d:\Projects\Fors\CSR\Ошибки.docx", ConfirmConversions: true);
-            } catch(Exception e)
+                callback.OnDrop(data, point);
+            }
+            catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }

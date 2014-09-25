@@ -89,10 +89,16 @@ namespace SampleWordHelper.Model
         /// </summary>
         public string Name { get; private set; }
 
-        protected CatalogEntry(string id, string name)
+        /// <summary>
+        /// Вид элемента.
+        /// </summary>
+        public EntryKind Kind { get; private set; } 
+
+        protected CatalogEntry(string id, string name, EntryKind kind)
         {
             Id = id;
             Name = name;
+            Kind = kind;
         }
     }
 
@@ -101,7 +107,7 @@ namespace SampleWordHelper.Model
     /// </summary>
     public class CatalogGroup : CatalogEntry
     {
-        public CatalogGroup(string id, string name) : base(id, name)
+        public CatalogGroup(string id, string name) : base(id, name, EntryKind.GROUP)
         {
         }
     }
@@ -116,9 +122,25 @@ namespace SampleWordHelper.Model
         /// </summary>
         public string FullPath { get; private set; }
 
-        public CatalogItem(string id, string name, string fullPath) : base(id, name)
+        public CatalogItem(string id, string name, string fullPath) : base(id, name, EntryKind.ITEM)
         {
             FullPath = fullPath;
         }
+    }
+
+    /// <summary>
+    /// Тип элемента каталога.
+    /// </summary>
+    public enum EntryKind
+    {
+        /// <summary>
+        /// Группа.
+        /// </summary>
+        GROUP,
+
+        /// <summary>
+        /// Элемент.
+        /// </summary>
+        ITEM
     }
 }

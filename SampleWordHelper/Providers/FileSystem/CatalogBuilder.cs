@@ -115,7 +115,7 @@ namespace SampleWordHelper.Providers.FileSystem
                 var current = stack.Pop();
                 catalog.AddGroup(current.id, current.parentId, current.name);
                 foreach (var item in current.items)
-                    catalog.AddItem(item.Item1, current.id, item.Item2.Name, item.Item2.FullName);
+                    catalog.AddItem(item.Item1, current.id, Path.GetFileNameWithoutExtension(item.Item2.Name), item.Item2.FullName);
                 foreach (var node in current.groups)
                     stack.Push(node.Value);
             }

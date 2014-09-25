@@ -16,7 +16,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Менеджер представления.
         /// </summary>
-        readonly IRibbonPresenter presenter;
+        readonly IRibbonEventListener presenter;
 
         /// <summary>
         /// Флаг для предотвращения обратных вызовов при обработке событий.
@@ -26,7 +26,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Создаёт новый экземпляр представления.
         /// </summary>
-        public RibbonView(MainRibbon ribbon, IRibbonPresenter presenter)
+        public RibbonView(MainRibbon ribbon, IRibbonEventListener presenter)
         {
             this.ribbon = ribbon;
             this.presenter = presenter;
