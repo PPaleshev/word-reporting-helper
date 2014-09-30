@@ -8,13 +8,18 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Массив с названиями всех доступных поставщиков.
         /// </summary>
-        IEnumerable<ListItem> Providers { get; }
+        IEnumerable<ListItem> Factories { get; }
 
         /// <summary>
         /// Название выбранного поставщика.
         /// Содержит <c>null</c>, если не задан.
         /// </summary>
-        string SelectedStrategyName { get; }
+        string SelectedProviderName { get; }
+
+        /// <summary>
+        /// Описание выбранного провайдера.
+        /// </summary>
+        string SelectedProviderDescription { get; }
 
         /// <summary>
         /// Модель настроек выбранного поставщика.

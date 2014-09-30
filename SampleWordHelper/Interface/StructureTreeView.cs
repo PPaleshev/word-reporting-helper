@@ -36,7 +36,6 @@ namespace SampleWordHelper.Interface
 
         public void Initialize(DocumentModel model)
         {
-            container.Width = 400;
             UpdateStructure(model);
         }
 
@@ -77,10 +76,20 @@ namespace SampleWordHelper.Interface
         public void UpdateStructure(DocumentModel model)
         {
             var tree = control.treeStructure;
-            tree.Nodes.Clear();
-            foreach (var nodeId in model.GetRootNodes())
-                BuildNode(nodeId, model, tree.Nodes);
-            tree.ExpandAll();
+            tree.BeginUpdate();
+            try
+            {
+                tree.Nodes.Clear();
+                foreach (var nodeId in model.GetRootNodes())
+                    BuildNode(nodeId, model, tree.Nodes);
+                tree.ExpandAll();
+            }
+            finally
+            {
+                tree.EndUpdate();
+                if (tree.Nodes.Count > 0)
+                    tree.TopNode = tree.SelectedNode = tree.Nodes[0];
+            }
         }
 
         /// <summary>

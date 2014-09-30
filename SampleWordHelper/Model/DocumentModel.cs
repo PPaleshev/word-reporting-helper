@@ -8,18 +8,8 @@ namespace SampleWordHelper.Model
     /// <summary>
     /// Модель представления для работы со структурой каталога.
     /// </summary>
-    public class DocumentModel : IDocumentModel
+    public class DocumentModel 
     {
-        public bool IsStructureVisible { get; set; }
-
-        /// <summary>
-        /// Заголовок панели структуры.
-        /// </summary>
-        public string PaneTitle
-        {
-            get { return "Структура каталога"; }
-        }
-
         /// <summary>
         /// Идентификатор корневого элемента.
         /// </summary>
@@ -47,6 +37,24 @@ namespace SampleWordHelper.Model
         {
             SetModel(new CatalogModel());
         }
+
+        /// <summary>
+        /// Флаг, равный true, если панель с данными видна, иначе false.
+        /// </summary>
+        public bool IsVisible { get; set; }
+
+        /// <summary>
+        /// Заголовок панели структуры.
+        /// </summary>
+        public string PaneTitle
+        {
+            get { return "Структура каталога"; }
+        }
+
+        /// <summary>
+        /// Текст для фильтрации элементов дерева.
+        /// </summary>
+        public string Filter { get; set; }
 
         /// <summary>
         /// Устанавливает новую модель каталога.

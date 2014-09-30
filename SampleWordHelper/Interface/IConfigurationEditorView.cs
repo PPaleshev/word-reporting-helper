@@ -17,7 +17,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Устанавливает новую модель параметров провайдера.
         /// </summary>
-        void UpdateProviderSettings();
+        void UpdateProviderInfo();
 
         /// <summary>
         /// Устанавливает результат валидации модели.

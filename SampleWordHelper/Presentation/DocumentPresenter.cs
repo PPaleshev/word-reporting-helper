@@ -61,15 +61,15 @@ namespace SampleWordHelper.Presentation
 
         public void OnToggleStructureVisibility()
         {
-            model.IsStructureVisible = !model.IsStructureVisible;
-            ribbonView.SetStructureVisible(model.IsStructureVisible);
-            structureView.SetVisibility(model.IsStructureVisible);
+            model.IsVisible = !model.IsVisible;
+            ribbonView.SetStructureVisible(model.IsVisible);
+            structureView.SetVisibility(model.IsVisible);
         }
 
         public void OnClosed()
         {
-            model.IsStructureVisible = false;
-            ribbonView.SetStructureVisible(model.IsStructureVisible);
+            model.IsVisible = false;
+            ribbonView.SetStructureVisible(model.IsVisible);
         }
 
         void IDropCallback.OnDrop(IDataObject obj, Point point)
@@ -88,8 +88,8 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Activate()
         {
-            ribbonView.SetStructureVisible(model.IsStructureVisible);
-            structureView.SetVisibility(model.IsStructureVisible);
+            ribbonView.SetStructureVisible(model.IsVisible);
+            structureView.SetVisibility(model.IsVisible);
             structureView.UpdateStructure(model);
         }
 
@@ -99,7 +99,7 @@ namespace SampleWordHelper.Presentation
         public void Run()
         {
             //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
-            model.IsStructureVisible = false;
+            model.IsVisible = false;
             Activate();
         }
 

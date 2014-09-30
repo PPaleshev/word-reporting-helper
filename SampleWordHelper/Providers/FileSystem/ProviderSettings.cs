@@ -4,12 +4,12 @@ using System.Xml.Serialization;
 namespace SampleWordHelper.Providers.FileSystem
 {
     [XmlRoot("FSPS")]
-    public class FileSystemProviderSettings
+    public class ProviderSettings
     {
         /// <summary>
         /// Объект для сериализации настроек.
         /// </summary>
-        static readonly XmlSerializer SERIALIZER = new XmlSerializer(typeof (FileSystemProviderSettings));
+        static readonly XmlSerializer SERIALIZER = new XmlSerializer(typeof (ProviderSettings));
 
         /// <summary>
         /// Путь к корню каталога.
@@ -18,12 +18,18 @@ namespace SampleWordHelper.Providers.FileSystem
         public string RootPath { get; set; }
 
         /// <summary>
+        /// Флаг, равный true, если при обходе каталога необходимо сохранять ветви, не содержащие файлов, иначе false.
+        /// </summary>
+        [XmlElement("Materialize")]
+        public bool MaterializeEmptyPaths { get; set; }
+
+        /// <summary>
         /// Загружает настройки из строки.
         /// </summary>
-        public static FileSystemProviderSettings Deserialize(string input)
+        public static ProviderSettings Deserialize(string input)
         {
             using (var reader = new StringReader(input))
-                return (FileSystemProviderSettings) SERIALIZER.Deserialize(reader);
+                return (ProviderSettings) SERIALIZER.Deserialize(reader);
         }
 
         /// <summary>
