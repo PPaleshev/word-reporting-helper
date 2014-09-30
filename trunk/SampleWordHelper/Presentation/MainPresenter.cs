@@ -7,6 +7,9 @@ using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Presentation
 {
+    /// <summary>
+    /// Менеджер главного представления.
+    /// </summary>
     public class MainPresenter : BasicDisposable, IMainPresenter
     {
         /// <summary>
@@ -25,11 +28,6 @@ namespace SampleWordHelper.Presentation
         DocumentManager documentManager;
 
         /// <summary>
-        /// Экземпляр поставщика данных.
-        /// </summary>
-        Provider provider;
-
-        /// <summary>
         /// Модель конфигурации приложения.
         /// </summary>
         ConfigurationModel configurationModel;
@@ -38,6 +36,11 @@ namespace SampleWordHelper.Presentation
         /// Модель каталога.
         /// </summary>
         CatalogModel catalog;
+
+        /// <summary>
+        /// Экземпляр провайдера.
+        /// </summary>
+        Provider provider;
 
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
@@ -56,8 +59,8 @@ namespace SampleWordHelper.Presentation
         {
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
-            provider = new Provider(configurationModel.GetCurrentProviderStrategy());
-            if (!ValidateProviderState())
+            provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
+            if (!InitializeAndValidate())
                 return;
             catalog = provider.LoadCatalog(CatalogLoadMode.PARTIAL);
             documentManager.SetCatalog(catalog);
@@ -70,15 +73,10 @@ namespace SampleWordHelper.Presentation
             {
                 if (!presenter.Edit())
                     return;
-                var result = configurationModel.Update(editorModel);
-                if (result.providerChanged)
-                {
-                    provider.Shutdown();
-                    provider = new Provider(configurationModel.GetCurrentProviderStrategy());
-                    provider.Initialize(context);
-                }
-                provider.ApplyConfiguration(editorModel.ProviderSettingsModel);
-                ValidateProviderState();
+                provider.Shutdown();
+                configurationModel.Update(editorModel);
+                provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
+                InitializeAndValidate();
             }
         }
 
@@ -100,10 +98,10 @@ namespace SampleWordHelper.Presentation
         /// Проверяет состояние провайдера.
         /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
         /// </summary>
-        bool ValidateProviderState()
+        bool InitializeAndValidate()
         {
             string message = null;
-            if (string.IsNullOrWhiteSpace(configurationModel.CurrentProviderName))
+            if (!configurationModel.HasConfiguredProvider)
                 message = "Требуется выбор поставщика каталога.";
             else if (!provider.Initialize(context))
                 message = "Требуется настройка текущего поставщика каталога.";

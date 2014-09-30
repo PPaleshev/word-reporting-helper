@@ -31,15 +31,16 @@ namespace SampleWordHelper.Interface
         {
             this.model = model;
             listProviders.DisplayMember = "DisplayName";
-            listProviders.Items.AddRange(model.Providers.ToArray());
-            if (!string.IsNullOrWhiteSpace(model.SelectedStrategyName))
-                listProviders.SelectedItem = model.Providers.Single(item => item.Value.Equals(model.SelectedStrategyName));
+            listProviders.Items.AddRange(model.Factories.ToArray());
+            if (!string.IsNullOrWhiteSpace(model.SelectedProviderName))
+                listProviders.SelectedItem = model.Factories.Single(item => item.Value.Equals(model.SelectedProviderName));
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 
-        public void UpdateProviderSettings()
+        public void UpdateProviderInfo()
         {
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
+            lblDescription.Text = model.SelectedProviderDescription;
         }
 
         public void SetValid(bool isValid, string message)

@@ -9,35 +9,43 @@ namespace SampleWordHelper.Model
     /// </summary>
     public class ConfigurationEditorModel : ISettingsEditorModel
     {
-        readonly IDictionary<string, IProviderStrategy> strategies;
+        /// <summary>
+        /// Отображение из названия провайдера в его стратегию.
+        /// </summary>
+        readonly IDictionary<string, IProviderFactory> factoriesMap;
 
         /// <summary>
-        /// Массив с названиями всех доступных поставщиков.
+        /// Массив с названиями всех доступных фабрик.
         /// </summary>
-        public IEnumerable<ListItem> Providers { get; private set; }
+        public IEnumerable<ListItem> Factories { get; private set; }
 
         /// <summary>
         /// Название выбранного поставщика.
         /// Содержит <c>null</c>, если не задан.
         /// </summary>
-        public string SelectedStrategyName { get; private set; }
+        public string SelectedProviderName { get; private set; }
+
+        /// <summary>
+        /// Описание выбранного поставщика.
+        /// </summary>
+        public string SelectedProviderDescription { get; private set; }
 
         /// <summary>
         /// Модель настроек выбранного поставщика.
         /// </summary>
         public ISettingsModel ProviderSettingsModel { get; private set; }
 
-        public ConfigurationEditorModel(ConfigurationModel configurationModel)
+        public ConfigurationEditorModel(IDictionary<string, IProviderFactory> factories, string currentName)
         {
-            strategies = new Dictionary<string, IProviderStrategy>(configurationModel.Strategies);
-            Providers = strategies.Keys.Select(s => new ListItem("Yello", s)).ToArray();
-            SelectedStrategyName = configurationModel.CurrentProviderName;
+            factoriesMap = new Dictionary<string, IProviderFactory>(factories);
+            Factories = factoriesMap.Select(pair => new ListItem(pair.Value.GetDescription().DisplayName, pair.Key)).ToArray();
+            SelectedProviderName = currentName;
             UpdateProviderSettings();
         }
 
         public void UpdateSelectedProvider(ListItem newItem)
         {
-            SelectedStrategyName = newItem.Value;
+            SelectedProviderName = newItem.Value;
             UpdateProviderSettings();
         }
 
@@ -46,10 +54,11 @@ namespace SampleWordHelper.Model
         /// </summary>
         void UpdateProviderSettings()
         {
-            if (string.IsNullOrWhiteSpace(SelectedStrategyName))
+            if (string.IsNullOrWhiteSpace(SelectedProviderName))
                 return;
-            var strategy = strategies[SelectedStrategyName];
-            ProviderSettingsModel = strategy.ConfigurationManager.CreateSettingsModel();
+            var factory = factoriesMap[SelectedProviderName];
+            ProviderSettingsModel = factory.CreateSettingsModel();
+            SelectedProviderDescription = factory.GetDescription().Description;
         }
 
         /// <summary>
@@ -57,7 +66,7 @@ namespace SampleWordHelper.Model
         /// </summary>
         public ValidationResult Validate()
         {
-            if (string.IsNullOrWhiteSpace(SelectedStrategyName))
+            if (string.IsNullOrWhiteSpace(SelectedProviderName))
                 return new ValidationResult("Для продолжения работы должен быть выбран активный поставщик каталога.");
             return ProviderSettingsModel != null ? ProviderSettingsModel.Validate() : ValidationResult.CORRECT;
         }

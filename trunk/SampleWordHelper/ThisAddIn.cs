@@ -28,6 +28,10 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
+//            var button = (Office.CommandBarButton)Application.CommandBars["Text"].Controls.Add(Office.MsoControlType.msoControlButton,Temporary: true);
+//            button.Caption = "Вставить же!";
+//            button.Style = Office.MsoButtonStyle.msoButtonCaption;
+//            button.Visible = true;
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
             var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
             presenter = new MainPresenter(context);

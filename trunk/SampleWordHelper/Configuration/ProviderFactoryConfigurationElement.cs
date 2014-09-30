@@ -7,7 +7,7 @@ namespace SampleWordHelper.Configuration
     /// <summary>
     /// Элемент конфигурации, описывающий компонент для доступа к базе знаний.
     /// </summary>
-    public class CatalogProviderConfigurationElement: ConfigurationElement
+    public class ProviderFactoryConfigurationElement: ConfigurationElement
     {
         /// <summary>
         /// Имя свойства, содержащего псевдоним провайдера.
@@ -15,7 +15,7 @@ namespace SampleWordHelper.Configuration
         const string NAME_PROPERTY = "name";
 
         /// <summary>
-        /// Имя свойства, содержащего класс, реализующий провайдер.
+        /// Имя свойства, содержащего класс, реализующий фабрику провайдера.
         /// </summary>
         const string CLASS_PROPERTY = "class";
 

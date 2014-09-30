@@ -12,9 +12,9 @@ namespace SampleWordHelper.Model
     public class ConfigurationModel
     {
         /// <summary>
-        /// Отображение из имени стратегии провайдера в реализующий её класс.
+        /// Отображение из имени фабрики провайдера в реализующий его класс.
         /// </summary>
-        public IDictionary<string, IProviderStrategy> Strategies { get; private set; }
+        public IDictionary<string, IProviderFactory> Factories { get; private set; }
 
         /// <summary>
         /// Создаёт конфигурацию приложения, загружая её из секции с названием <paramref name="sectionName"/>.
@@ -22,14 +22,14 @@ namespace SampleWordHelper.Model
         /// <param name="sectionName">Название секции, в которой содержатся настройки.</param>
         public ConfigurationModel(string sectionName)
         {
-            Strategies = new Dictionary<string, IProviderStrategy>();
-            LoadStrategySafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
+            Factories = new Dictionary<string, IProviderFactory>();
+            LoadFactoriesSafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
         }
 
         /// <summary>
         /// Название выбранного провайдера.
         /// </summary>
-        public string CurrentProviderName
+        public string CurrentFactoryName
         {
             get { return Properties.Settings.Default.CurrentProviderName; }
             private set { Properties.Settings.Default.CurrentProviderName = value; }
@@ -41,72 +41,56 @@ namespace SampleWordHelper.Model
         /// <returns></returns>
         public ConfigurationEditorModel CreateEditorModel()
         {
-            return new ConfigurationEditorModel(this);
+            return new ConfigurationEditorModel(Factories, CurrentFactoryName);
         }
 
         /// <summary>
         /// Обновляет текущую конфигурацию на основании отредактированной модели.
         /// </summary>
-        /// <param name="model"></param>
-        public UpdateResult Update(ConfigurationEditorModel model)
+        public void Update(ConfigurationEditorModel model)
         {
-            if (!Strategies.ContainsKey(model.SelectedStrategyName))
-                throw new ArgumentException("invalid provider name: " + model.SelectedStrategyName);
-            var result = new UpdateResult(!string.Equals(CurrentProviderName, model.SelectedStrategyName), GetCurrentProviderStrategy());
-            CurrentProviderName = model.SelectedStrategyName;
-            return result;
+            if (!Factories.ContainsKey(model.SelectedProviderName))
+                throw new ArgumentException("invalid provider name: " + model.SelectedProviderName);
+            CurrentFactoryName = model.SelectedProviderName;
+            Factories[CurrentFactoryName].ApplyConfiguration(model.ProviderSettingsModel);
         }
 
         /// <summary>
         /// Безопасно с точки зрения исключений загружает все описанные в конфигурации провайдеры каталогов.
         /// </summary>
-        void LoadStrategySafe(ReportHelperConfigurationSection section)
+        void LoadFactoriesSafe(ReportHelperConfigurationSection section)
         {
-            foreach (CatalogProviderConfigurationElement providerElement in section.CatalogProviders)
+            foreach (ProviderFactoryConfigurationElement providerElement in section.ProviderFactories)
                 LoadOneSafe(providerElement);
         }
 
         /// <summary>
         /// Безопасно с точки зрения исключений загружает описание провайдера.
         /// </summary>
-        void LoadOneSafe(CatalogProviderConfigurationElement providerElement)
+        void LoadOneSafe(ProviderFactoryConfigurationElement factoryElement)
         {
-            if (!typeof (IProviderStrategy).IsAssignableFrom(providerElement.Class))
+            if (!typeof(IProviderFactory).IsAssignableFrom(factoryElement.Class))
                 return;
-            var instance = (IProviderStrategy) Activator.CreateInstance(providerElement.Class);
-            Strategies.Add(providerElement.Name, instance);
+            var instance = (IProviderFactory) Activator.CreateInstance(factoryElement.Class);
+            Factories.Add(factoryElement.Name, instance);
         }
 
         /// <summary>
-        /// Возвращает поставщик каталога, используемый в данный момент.
-        /// Если поставщик каталога не установлен, возвращает <c>null</c>.
+        /// Возвращает true, если модель содержит выбранный провайдер, иначе false.
         /// </summary>
-        public IProviderStrategy GetCurrentProviderStrategy()
+        public bool HasConfiguredProvider
         {
-            return string.IsNullOrWhiteSpace(CurrentProviderName) ? NullProviderStrategy.INSTANCE : Strategies[CurrentProviderName];
+            get { return !string.IsNullOrWhiteSpace(CurrentFactoryName) && Factories.ContainsKey(CurrentFactoryName); }
         }
-    }
-
-    /// <summary>
-    /// Результат обновления конфигурации.
-    /// </summary>
-    public struct UpdateResult
-    {
-        /// <summary>
-        /// Флаг, равный true, если после обновления поставщик был изменён.
-        /// </summary>
-        public readonly bool providerChanged;
 
         /// <summary>
-        /// Предыдущий активный поставщик каталога.
-        /// В случае, если не поставщик не менялся, содержит ссылку на последнего активного поставщика.
+        /// Возвращает стратегию выбранного провайдера.
+        /// Если фабрика не сконфигурирована, возвращает <see cref="NullProviderStrategy"/>.
         /// </summary>
-        public readonly IProviderStrategy previousProvider;
-
-        public UpdateResult(bool providerChanged, IProviderStrategy previousProvider)
+        public ICatalogProviderStrategy GetConfiguredProviderStrategy()
         {
-            this.providerChanged = providerChanged;
-            this.previousProvider = previousProvider;
+            IProviderFactory f;
+            return string.IsNullOrWhiteSpace(CurrentFactoryName) || !Factories.TryGetValue(CurrentFactoryName, out f) ? new NullProviderStrategy() : f.CreateStrategy();
         }
     }
 }

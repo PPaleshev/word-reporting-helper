@@ -10,15 +10,15 @@ namespace SampleWordHelper.Configuration
         /// <summary>
         /// Название свойства для задания списка провайдеров каталога.
         /// </summary>
-        const string CATALOG_PROVIDERS_PROPERTY = "catalogProviders";
+        const string CATALOG_PROVIDERS_PROPERTY = "providerFactories";
 
         /// <summary>
         /// Возвращает коллекцию классов, управляющих схемой доступа к каталогу базы знаний.
         /// </summary>
         [ConfigurationProperty(CATALOG_PROVIDERS_PROPERTY, Options = ConfigurationPropertyOptions.IsTypeStringTransformationRequired)]
-        public CatalogProviderElementCollection CatalogProviders
+        public ProviderFactoryElementCollection ProviderFactories
         {
-            get { return (CatalogProviderElementCollection) base[CATALOG_PROVIDERS_PROPERTY]; }
+            get { return (ProviderFactoryElementCollection) base[CATALOG_PROVIDERS_PROPERTY]; }
         }
     }
 }

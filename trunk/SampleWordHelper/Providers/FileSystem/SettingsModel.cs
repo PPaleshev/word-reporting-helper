@@ -10,12 +10,12 @@ namespace SampleWordHelper.Providers.FileSystem
     /// <summary>
     /// Модель для редактирования настроек поставщика каталога на основе доступа к файловой системе.
     /// </summary>
-    internal class FileSystemProviderSettingsModel : ISettingsModel
+    internal class SettingsModel : ISettingsModel
     {
         /// <summary>
         /// Внутренний объект, которому делегируются свойства.
         /// </summary>
-        readonly FileSystemProviderSettings settings;
+        readonly ProviderSettings settings;
 
         /// <summary>
         /// Путь к каталогу.
@@ -30,12 +30,12 @@ namespace SampleWordHelper.Providers.FileSystem
             set { settings.RootPath = value; }
         }
 
-        public FileSystemProviderSettingsModel(FileSystemProviderSettings settings)
+        public SettingsModel(ProviderSettings settings)
         {
             this.settings = settings;
         }
 
-        public FileSystemProviderSettingsModel() : this(new FileSystemProviderSettings())
+        public SettingsModel() : this(new ProviderSettings())
         {
         }
 
@@ -53,7 +53,7 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <summary>
         /// Создаёт объект с настройками.
         /// </summary>
-        public FileSystemProviderSettings CreateSettingsObject()
+        public ProviderSettings CreateSettingsObject()
         {
             return settings;
         }

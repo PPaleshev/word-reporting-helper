@@ -155,8 +155,9 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="Configuration\CatalogProviderConfigurationElement.cs" />
-    <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
+    <Compile Include="Configuration\ProviderFactoryConfigurationElement.cs" />
+    <Compile Include="Configuration\ProviderFactoryElementCollection.cs" />
+    <Compile Include="Core\BackgroundTaskContext.cs" />
     <Compile Include="Design\FileSystemPathEditor.cs" />
     <Compile Include="Interface\IDropTargetHost.cs" />
     <Compile Include="Model\CatalogItemDto.cs" />
@@ -184,7 +185,7 @@
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
     <Compile Include="Presentation\DragDropPresenters.cs" />
     <Compile Include="Presentation\MainPresenter.cs" />
-    <Compile Include="Providers\Core\IProviderStrategy.cs" />
+    <Compile Include="Providers\Core\ICatalogProviderStrategy.cs" />
     <Compile Include="Model\CatalogProviderInfo.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Presentation\DocumentManager.cs" />
@@ -213,7 +214,6 @@
     <Compile Include="Interface\IMainView.cs" />
     <Compile Include="Interface\MainView.cs" />
     <Compile Include="Model\CatalogModel.cs" />
-    <Compile Include="Model\IDocumentModel.cs" />
     <Compile Include="Model\DocumentModel.cs" />
     <Compile Include="Presentation\ConfigurationEditorPresenter.cs" />
     <Compile Include="Presentation\DocumentPresenter.cs" />
@@ -263,17 +263,25 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Providers\Core\IConfigurationManager.cs" />
-    <Compile Include="Providers\Core\ICatalogStrategy.cs" />
+    <Compile Include="Providers\Core\IProviderFactory.cs" />
     <Compile Include="Providers\Core\ISettingsModel.cs" />
     <Compile Include="Providers\Core\CatalogLoadMode.cs" />
     <Compile Include="Providers\Core\NullProviderStrategy.cs" />
     <Compile Include="Providers\Core\Provider.cs" />
+    <Compile Include="Providers\Core\ProviderDescription.cs" />
+    <Compile Include="Providers\Core\UpdateCatalogCommand.cs" />
     <Compile Include="Providers\FileSystem\CatalogBuilder.cs" />
-    <Compile Include="Providers\FileSystem\ConfigurationManager.cs" />
-    <Compile Include="Providers\FileSystem\FileSystemProvider.cs" />
-    <Compile Include="Providers\FileSystem\FileSystemProviderSettings.cs" />
-    <Compile Include="Providers\FileSystem\FileSystemProviderSettingsModel.cs" />
+    <Compile Include="Providers\FileSystem\CatalogBuilder2.cs" />
+    <Compile Include="Providers\FileSystem\Experimental.IO\LongPathCommon.cs" />
+    <Compile Include="Providers\FileSystem\Experimental.IO\LongPathDirectory.cs" />
+    <Compile Include="Providers\FileSystem\Experimental.IO\LongPathFile.cs" />
+    <Compile Include="Providers\FileSystem\Experimental.IO\NativeMethods.cs" />
+    <Compile Include="Providers\FileSystem\Experimental.IO\SafeFindHandle.cs" />
+    <Compile Include="Providers\FileSystem\FileSystemProviderFactory.cs" />
+    <Compile Include="Providers\FileSystem\ProviderSettings.cs" />
+    <Compile Include="Providers\FileSystem\SettingsModel.cs" />
+    <Compile Include="Providers\FileSystem\ProviderStrategy.cs" />
+    <Compile Include="Providers\FileSystem\SettingsFacade.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>

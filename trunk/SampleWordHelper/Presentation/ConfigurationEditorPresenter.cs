@@ -28,7 +28,7 @@ namespace SampleWordHelper.Presentation
         public void OnSelectedProviderChanged(ListItem newListItem)
         {
             model.UpdateSelectedProvider(newListItem);
-            view.UpdateProviderSettings();
+            view.UpdateProviderInfo();
             InvalidateView();
         }
 

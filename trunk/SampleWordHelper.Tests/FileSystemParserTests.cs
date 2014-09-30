@@ -18,6 +18,14 @@ namespace SampleWordHelper.Tests
             parser.BuildCatalog(model);
         }
 
+        [Test]
+        public void ParserLongTests()
+        {
+            var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\оценка бизнеса", false);
+            var model = new CatalogModel();
+            parser.Build(model);
+        }
+
         [TestCase(@"d:\Projects\Private\WordHelper\SampleCatalog\")]
         [TestCase(@"d:\Projects\Private\WordHelper\SampleCatalog")]
         public void UriTests(string rootPath)
