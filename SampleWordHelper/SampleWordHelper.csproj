@@ -157,7 +157,6 @@
   <ItemGroup>
     <Compile Include="Configuration\CatalogProviderConfigurationElement.cs" />
     <Compile Include="Configuration\CatalogProviderElementCollection.cs" />
-    <Compile Include="Core\BackgroundTaskContext.cs" />
     <Compile Include="Design\FileSystemPathEditor.cs" />
     <Compile Include="Interface\IDropTargetHost.cs" />
     <Compile Include="Model\CatalogItemDto.cs" />
@@ -185,7 +184,7 @@
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
     <Compile Include="Presentation\DragDropPresenters.cs" />
     <Compile Include="Presentation\MainPresenter.cs" />
-    <Compile Include="Providers\Core\ICatalogProvider.cs" />
+    <Compile Include="Providers\Core\IProviderStrategy.cs" />
     <Compile Include="Model\CatalogProviderInfo.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Presentation\DocumentManager.cs" />
@@ -264,14 +263,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Providers\Core\IConfigurationManager.cs" />
+    <Compile Include="Providers\Core\ICatalogStrategy.cs" />
     <Compile Include="Providers\Core\ISettingsModel.cs" />
     <Compile Include="Providers\Core\CatalogLoadMode.cs" />
-    <Compile Include="Providers\Core\UpdateCatalogCommand.cs" />
+    <Compile Include="Providers\Core\NullProviderStrategy.cs" />
+    <Compile Include="Providers\Core\Provider.cs" />
     <Compile Include="Providers\FileSystem\CatalogBuilder.cs" />
-    <Compile Include="Providers\FileSystem\FileSystemCatalogProvider.cs" />
+    <Compile Include="Providers\FileSystem\ConfigurationManager.cs" />
+    <Compile Include="Providers\FileSystem\FileSystemProvider.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettings.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderSettingsModel.cs" />
-    <Compile Include="Providers\FileSystem\IProviderState.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>

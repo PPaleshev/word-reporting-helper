@@ -25,6 +25,11 @@ namespace SampleWordHelper.Presentation
         DocumentManager documentManager;
 
         /// <summary>
+        /// Экземпляр поставщика данных.
+        /// </summary>
+        Provider provider;
+
+        /// <summary>
         /// Модель конфигурации приложения.
         /// </summary>
         ConfigurationModel configurationModel;
@@ -51,10 +56,10 @@ namespace SampleWordHelper.Presentation
         {
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
-            var activeProvider = GetActiveProvider();
-            if (!ValidateProviderState(activeProvider))
+            provider = new Provider(configurationModel.GetCurrentProviderStrategy());
+            if (!ValidateProviderState())
                 return;
-            catalog = activeProvider.LoadCatalog(CatalogLoadMode.PARTIAL);
+            catalog = provider.LoadCatalog(CatalogLoadMode.PARTIAL);
             documentManager.SetCatalog(catalog);
         }
 
@@ -66,24 +71,22 @@ namespace SampleWordHelper.Presentation
                 if (!presenter.Edit())
                     return;
                 var result = configurationModel.Update(editorModel);
-                var activeProvider = GetActiveProvider();
                 if (result.providerChanged)
                 {
-                    if (result.previousProvider != null)
-                        result.previousProvider.Shutdown();
-                    activeProvider.Initialize(context);
+                    provider.Shutdown();
+                    provider = new Provider(configurationModel.GetCurrentProviderStrategy());
+                    provider.Initialize(context);
                 }
-                activeProvider.ApplyConfiguration(editorModel.ProviderSettingsModel);
-                ValidateProviderState(activeProvider);
+                provider.ApplyConfiguration(editorModel.ProviderSettingsModel);
+                ValidateProviderState();
             }
         }
 
         public void OnUpdateCatalog()
         {
-            var activeProvider = GetActiveProvider();
             try
             {
-                catalog = activeProvider.LoadCatalog(CatalogLoadMode.FULL);
+                catalog = provider.LoadCatalog(CatalogLoadMode.FULL);
                 documentManager.SetCatalog(catalog);
             }
             catch (Exception e)
@@ -97,33 +100,23 @@ namespace SampleWordHelper.Presentation
         /// Проверяет состояние провайдера.
         /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
         /// </summary>
-        bool ValidateProviderState(ICatalogProvider activeProvider)
+        bool ValidateProviderState()
         {
             string message = null;
-            if (activeProvider == null)
+            if (string.IsNullOrWhiteSpace(configurationModel.CurrentProviderName))
                 message = "Требуется выбор поставщика каталога.";
-            else if (!activeProvider.Initialize(context))
+            else if (!provider.Initialize(context))
                 message = "Требуется настройка текущего поставщика каталога.";
             var isSuccess = string.IsNullOrWhiteSpace(message);
             view.EnableAddinFeatures(isSuccess, message);
             return isSuccess;
         }
 
-        /// <summary>
-        /// Возвращает экземпляр активного поставщика каталога.
-        /// </summary>
-        ICatalogProvider GetActiveProvider()
-        {
-            return configurationModel.GetActiveProvider();
-        }
-
         protected override void DisposeManaged()
         {
             try
             {
-                var activeProvider = GetActiveProvider();
-                if (activeProvider != null)
-                    activeProvider.Shutdown();
+                provider.Shutdown();
             }
             catch
             {

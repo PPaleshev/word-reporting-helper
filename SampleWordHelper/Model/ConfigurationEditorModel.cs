@@ -9,7 +9,7 @@ namespace SampleWordHelper.Model
     /// </summary>
     public class ConfigurationEditorModel : ISettingsEditorModel
     {
-        readonly IDictionary<string, ICatalogProvider> providers;
+        readonly IDictionary<string, IProviderStrategy> strategies;
 
         /// <summary>
         /// Массив с названиями всех доступных поставщиков.
@@ -20,7 +20,7 @@ namespace SampleWordHelper.Model
         /// Название выбранного поставщика.
         /// Содержит <c>null</c>, если не задан.
         /// </summary>
-        public string SelectedProviderName { get; private set; }
+        public string SelectedStrategyName { get; private set; }
 
         /// <summary>
         /// Модель настроек выбранного поставщика.
@@ -29,15 +29,15 @@ namespace SampleWordHelper.Model
 
         public ConfigurationEditorModel(ConfigurationModel configurationModel)
         {
-            providers = new Dictionary<string, ICatalogProvider>(configurationModel.Providers);
-            Providers = providers.Keys.Select(s => new ListItem("Yello", s)).ToArray();
-            SelectedProviderName = configurationModel.CurrentProviderName;
+            strategies = new Dictionary<string, IProviderStrategy>(configurationModel.Strategies);
+            Providers = strategies.Keys.Select(s => new ListItem("Yello", s)).ToArray();
+            SelectedStrategyName = configurationModel.CurrentProviderName;
             UpdateProviderSettings();
         }
 
         public void UpdateSelectedProvider(ListItem newItem)
         {
-            SelectedProviderName = newItem.Value;
+            SelectedStrategyName = newItem.Value;
             UpdateProviderSettings();
         }
 
@@ -46,10 +46,10 @@ namespace SampleWordHelper.Model
         /// </summary>
         void UpdateProviderSettings()
         {
-            if (string.IsNullOrWhiteSpace(SelectedProviderName))
+            if (string.IsNullOrWhiteSpace(SelectedStrategyName))
                 return;
-            var provider = providers[SelectedProviderName];
-            ProviderSettingsModel = provider.CreateSettingsModel();
+            var strategy = strategies[SelectedStrategyName];
+            ProviderSettingsModel = strategy.ConfigurationManager.CreateSettingsModel();
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SampleWordHelper.Model
         /// </summary>
         public ValidationResult Validate()
         {
-            if (string.IsNullOrWhiteSpace(SelectedProviderName))
+            if (string.IsNullOrWhiteSpace(SelectedStrategyName))
                 return new ValidationResult("Для продолжения работы должен быть выбран активный поставщик каталога.");
             return ProviderSettingsModel != null ? ProviderSettingsModel.Validate() : ValidationResult.CORRECT;
         }

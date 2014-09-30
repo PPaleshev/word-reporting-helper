@@ -14,7 +14,7 @@ namespace SampleWordHelper.Model
         /// Название выбранного поставщика.
         /// Содержит <c>null</c>, если не задан.
         /// </summary>
-        string SelectedProviderName { get; }
+        string SelectedStrategyName { get; }
 
         /// <summary>
         /// Модель настроек выбранного поставщика.

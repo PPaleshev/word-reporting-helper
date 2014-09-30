@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ImageList treeImages;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StructureTreeControl));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeStructure = new System.Windows.Forms.TreeView();
-            this.treeImages = new System.Windows.Forms.ImageList(this.components);
+            treeImages = new System.Windows.Forms.ImageList(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,9 +56,9 @@
             this.treeStructure.AllowDrop = true;
             this.treeStructure.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.treeStructure.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.treeStructure.ImageIndex = 0;
-            this.treeStructure.ImageList = this.treeImages;
+            this.treeStructure.ImageList = treeImages;
             this.treeStructure.Location = new System.Drawing.Point(3, 3);
             this.treeStructure.Name = "treeStructure";
             this.treeStructure.SelectedImageIndex = 0;
@@ -67,11 +68,11 @@
             // 
             // treeImages
             // 
-            this.treeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("treeImages.ImageStream")));
-            this.treeImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.treeImages.Images.SetKeyName(0, "closed-folder.png");
-            this.treeImages.Images.SetKeyName(1, "opened-folder.png");
-            this.treeImages.Images.SetKeyName(2, "document.png");
+            treeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("treeImages.ImageStream")));
+            treeImages.TransparentColor = System.Drawing.Color.Transparent;
+            treeImages.Images.SetKeyName(0, "closed-folder.png");
+            treeImages.Images.SetKeyName(1, "opened-folder.png");
+            treeImages.Images.SetKeyName(2, "document.png");
             // 
             // StructureTreeControl
             // 
@@ -89,7 +90,6 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.ImageList treeImages;
         internal System.Windows.Forms.TreeView treeStructure;
 
     }
