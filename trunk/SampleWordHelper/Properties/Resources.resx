@@ -121,15 +121,6 @@
   <data name="warning_triangle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\warning_triangle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="sprocket_light" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sprocket_light.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="view_outline_detail" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\view_outline_detail.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="document_letter_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\document_letter_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

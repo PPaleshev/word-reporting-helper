@@ -32,8 +32,8 @@ namespace SampleWordHelper.Interface
             this.model = model;
             listProviders.DisplayMember = "DisplayName";
             listProviders.Items.AddRange(model.Providers.ToArray());
-            if (!string.IsNullOrWhiteSpace(model.SelectedProviderName))
-                listProviders.SelectedItem = model.Providers.Single(item => item.Value.Equals(model.SelectedProviderName));
+            if (!string.IsNullOrWhiteSpace(model.SelectedStrategyName))
+                listProviders.SelectedItem = model.Providers.Single(item => item.Value.Equals(model.SelectedStrategyName));
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 

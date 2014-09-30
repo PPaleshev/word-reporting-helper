@@ -12,9 +12,9 @@ namespace SampleWordHelper.Model
     public class ConfigurationModel
     {
         /// <summary>
-        /// Отображение из имени провайдера в реализующий его класс.
+        /// Отображение из имени стратегии провайдера в реализующий её класс.
         /// </summary>
-        public IDictionary<string, ICatalogProvider> Providers { get; private set; }
+        public IDictionary<string, IProviderStrategy> Strategies { get; private set; }
 
         /// <summary>
         /// Создаёт конфигурацию приложения, загружая её из секции с названием <paramref name="sectionName"/>.
@@ -22,8 +22,8 @@ namespace SampleWordHelper.Model
         /// <param name="sectionName">Название секции, в которой содержатся настройки.</param>
         public ConfigurationModel(string sectionName)
         {
-            Providers = new Dictionary<string, ICatalogProvider>();
-            LoadProvidersSafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
+            Strategies = new Dictionary<string, IProviderStrategy>();
+            LoadStrategySafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
         }
 
         /// <summary>
@@ -50,17 +50,17 @@ namespace SampleWordHelper.Model
         /// <param name="model"></param>
         public UpdateResult Update(ConfigurationEditorModel model)
         {
-            if (!Providers.ContainsKey(model.SelectedProviderName))
-                throw new ArgumentException("invalid provider name: " + model.SelectedProviderName);
-            var result = new UpdateResult(!string.Equals(CurrentProviderName, model.SelectedProviderName), GetActiveProvider());
-            CurrentProviderName = model.SelectedProviderName;
+            if (!Strategies.ContainsKey(model.SelectedStrategyName))
+                throw new ArgumentException("invalid provider name: " + model.SelectedStrategyName);
+            var result = new UpdateResult(!string.Equals(CurrentProviderName, model.SelectedStrategyName), GetCurrentProviderStrategy());
+            CurrentProviderName = model.SelectedStrategyName;
             return result;
         }
 
         /// <summary>
         /// Безопасно с точки зрения исключений загружает все описанные в конфигурации провайдеры каталогов.
         /// </summary>
-        void LoadProvidersSafe(ReportHelperConfigurationSection section)
+        void LoadStrategySafe(ReportHelperConfigurationSection section)
         {
             foreach (CatalogProviderConfigurationElement providerElement in section.CatalogProviders)
                 LoadOneSafe(providerElement);
@@ -71,19 +71,19 @@ namespace SampleWordHelper.Model
         /// </summary>
         void LoadOneSafe(CatalogProviderConfigurationElement providerElement)
         {
-            if (!typeof (ICatalogProvider).IsAssignableFrom(providerElement.Class))
+            if (!typeof (IProviderStrategy).IsAssignableFrom(providerElement.Class))
                 return;
-            var instance = (ICatalogProvider) Activator.CreateInstance(providerElement.Class);
-            Providers.Add(providerElement.Name, instance);
+            var instance = (IProviderStrategy) Activator.CreateInstance(providerElement.Class);
+            Strategies.Add(providerElement.Name, instance);
         }
 
         /// <summary>
         /// Возвращает поставщик каталога, используемый в данный момент.
         /// Если поставщик каталога не установлен, возвращает <c>null</c>.
         /// </summary>
-        public ICatalogProvider GetActiveProvider()
+        public IProviderStrategy GetCurrentProviderStrategy()
         {
-            return string.IsNullOrWhiteSpace(CurrentProviderName) ? null : Providers[CurrentProviderName];
+            return string.IsNullOrWhiteSpace(CurrentProviderName) ? NullProviderStrategy.INSTANCE : Strategies[CurrentProviderName];
         }
     }
 
@@ -101,9 +101,9 @@ namespace SampleWordHelper.Model
         /// Предыдущий активный поставщик каталога.
         /// В случае, если не поставщик не менялся, содержит ссылку на последнего активного поставщика.
         /// </summary>
-        public readonly ICatalogProvider previousProvider;
+        public readonly IProviderStrategy previousProvider;
 
-        public UpdateResult(bool providerChanged, ICatalogProvider previousProvider)
+        public UpdateResult(bool providerChanged, IProviderStrategy previousProvider)
         {
             this.providerChanged = providerChanged;
             this.previousProvider = previousProvider;
