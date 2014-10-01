@@ -1,7 +1,7 @@
 ﻿using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Application
 {
     /// <summary>
     /// Интерфейс фабрики представлений.

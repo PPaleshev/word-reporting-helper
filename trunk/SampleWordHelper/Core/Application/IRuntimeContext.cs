@@ -1,7 +1,6 @@
-﻿using Microsoft.Office.Interop.Word;
-using Microsoft.Office.Tools.Word;
+﻿using Microsoft.Office.Tools.Word;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Application
 {
     /// <summary>
     /// Контекст работы надстройки.
@@ -16,7 +15,7 @@ namespace SampleWordHelper.Core
         /// <summary>
         /// Ссылка на экземпляр Microsoft Word, в рамках которого работает текущая надстройка.
         /// </summary>
-        Application Application { get; }
+        Microsoft.Office.Interop.Word.Application Application { get; }
 
         /// <summary>
         /// Фабрика вспомогательных объектов для надстроек уровня приложения.

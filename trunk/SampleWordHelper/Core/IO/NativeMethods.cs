@@ -1,4 +1,5 @@
 ﻿//     Copyright (c) Microsoft Corporation.  All rights reserved.
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -6,7 +7,7 @@ using System.Text;
 using Microsoft.Win32.SafeHandles;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
-namespace Microsoft.Experimental.IO.Interop {
+namespace SampleWordHelper.Core.IO {
 
     internal static class NativeMethods {
         internal const int ERROR_FILE_NOT_FOUND = 0x2;

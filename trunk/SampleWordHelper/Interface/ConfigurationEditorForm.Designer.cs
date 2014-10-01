@@ -33,6 +33,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.listProviders = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblDescription = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -40,7 +41,6 @@
             this.labelError = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.lblDescription = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -108,6 +108,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Поставщик каталога";
             // 
+            // lblDescription
+            // 
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblDescription.Location = new System.Drawing.Point(9, 44);
+            this.lblDescription.Name = "lblDescription";
+            this.lblDescription.Size = new System.Drawing.Size(443, 42);
+            this.lblDescription.TabIndex = 0;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.propertyGrid1);
@@ -171,6 +181,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Info;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pictureBox1.Image = global::SampleWordHelper.Properties.Resources.warning_triangle;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(41, 41);
@@ -187,16 +198,6 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(467, 32);
             this.panel3.TabIndex = 7;
-            // 
-            // lblDescription
-            // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblDescription.Location = new System.Drawing.Point(9, 44);
-            this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(443, 42);
-            this.lblDescription.TabIndex = 0;
             // 
             // ConfigurationEditorForm
             // 

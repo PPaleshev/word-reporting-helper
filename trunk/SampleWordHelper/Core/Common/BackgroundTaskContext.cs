@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Common
 {
     /// <summary>
     /// Контекст выполнения фоновых операций.

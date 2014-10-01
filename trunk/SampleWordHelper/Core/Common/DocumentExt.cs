@@ -1,6 +1,6 @@
 ﻿using Microsoft.Office.Tools.Word;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Common
 {
     /// <summary>
     /// Вспомогательные методы.

@@ -1,13 +1,13 @@
 ﻿//     Copyright (c) Microsoft Corporation.  All rights reserved.
+
 using System;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.Experimental.IO.Interop;
 
-namespace Microsoft.Experimental.IO {
+namespace SampleWordHelper.Core.IO {
 
     internal static class LongPathCommon {
 

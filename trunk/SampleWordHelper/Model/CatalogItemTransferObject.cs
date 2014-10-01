@@ -6,7 +6,7 @@ namespace SampleWordHelper.Model
     /// DTO объект для передачи данных посредством технологии drag'n'drop.
     /// </summary>
     [Serializable]
-    public class CatalogItemDto
+    public class CatalogItemTransferObject
     {
         /// <summary>
         /// Идентификатор переносимого элемента.
@@ -16,7 +16,7 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Создаёт новый экземпляр DTO.
         /// </summary>
-        public CatalogItemDto(string itemId)
+        public CatalogItemTransferObject(string itemId)
         {
             ItemId = itemId;
         }

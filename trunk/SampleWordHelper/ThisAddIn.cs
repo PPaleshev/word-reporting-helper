@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
 using Office = Microsoft.Office.Core;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using SampleWordHelper.Providers.FileSystem;
 
 namespace SampleWordHelper.Model
 {
@@ -11,31 +12,21 @@ namespace SampleWordHelper.Model
     public class DocumentModel 
     {
         /// <summary>
-        /// Идентификатор корневого элемента.
+        /// Объект для сортировки элементов каталога.
         /// </summary>
-        static readonly string ROOT_ELEMENT_ID = Guid.NewGuid().ToString();
+        Comparer nodeComparer;
 
         /// <summary>
         /// Модель каталога, на основании которого строится модель.
         /// </summary>
-        CatalogModel catalog;
-
-        /// <summary>
-        /// Отображение из идентификатора элемента в описывающий его объект.
-        /// </summary>
-        readonly Dictionary<string, CatalogEntry> entries = new Dictionary<string, CatalogEntry>();
-
-        /// <summary>
-        /// Описание иерархии элементов.
-        /// </summary>
-        readonly Dictionary<string, List<string>> hierarchy = new Dictionary<string, List<string>>();
+        ICatalog catalog;
 
         /// <summary>
         /// Создаёт новый экземпляр модели документа.
         /// </summary>
         public DocumentModel()
         {
-            SetModel(new CatalogModel());
+            SetModel(new Catalog());
         }
 
         /// <summary>
@@ -59,13 +50,10 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Устанавливает новую модель каталога.
         /// </summary>
-        public void SetModel(CatalogModel catalog)
+        public void SetModel(ICatalog catalog)
         {
             this.catalog = catalog;
-            hierarchy.Clear();
-            entries.Clear();
-            FillNodes(ROOT_ELEMENT_ID, catalog.GetRootEntries());
-            OrderNodes();
+            nodeComparer = new Comparer(catalog);
         }
 
         /// <summary>
@@ -74,8 +62,7 @@ namespace SampleWordHelper.Model
         /// <param name="parentId">Идентификатор родительского узла.</param>
         public IEnumerable<string> GetChildNodes(string parentId)
         {
-            List<string> temp;
-            return !hierarchy.TryGetValue(parentId, out temp) ? Enumerable.Empty<string>() : new List<string>(temp);
+            return catalog.GetChildElements(parentId).OrderBy(id => id, nodeComparer);
         }
 
         /// <summary>
@@ -83,7 +70,7 @@ namespace SampleWordHelper.Model
         /// </summary>
         public IEnumerable<string> GetRootNodes()
         {
-            return GetChildNodes(ROOT_ELEMENT_ID);
+            return catalog.GetRootElements().OrderBy(s => s, nodeComparer);
         }
 
         /// <summary>
@@ -92,8 +79,7 @@ namespace SampleWordHelper.Model
         /// <param name="id">Идентификатор узла.</param>
         public string GetText(string id)
         {
-            CatalogEntry item;
-            return entries.TryGetValue(id, out item) ? item.Name : "";
+            return catalog.GetName(id);
         }
 
         /// <summary>
@@ -102,8 +88,7 @@ namespace SampleWordHelper.Model
         /// <param name="id">Идентификатор узла.</param>
         public string GetHint(string id)
         {
-            CatalogEntry entry;
-            return entries.TryGetValue(id, out entry) && entry.Kind == EntryKind.ITEM ? ((CatalogItem) entry).FullPath : "";
+            return catalog.IsGroup(id) ? "" : catalog.GetLocation(id);
         }
 
         /// <summary>
@@ -112,10 +97,7 @@ namespace SampleWordHelper.Model
         /// <param name="id">Идентификатор узла.</param>
         public NodeType GetNodeType(string id)
         {
-            CatalogEntry entry;
-            if (!entries.TryGetValue(id, out entry))
-                return NodeType.NONE;
-            return entry.Kind == EntryKind.ITEM ? NodeType.LEAF : NodeType.GROUP;
+            return catalog.IsGroup(id) ? NodeType.GROUP : NodeType.LEAF;
         }
 
         /// <summary>
@@ -125,10 +107,7 @@ namespace SampleWordHelper.Model
         public bool CanDragNode(object item)
         {
             var id = item as string;
-            if (string.IsNullOrWhiteSpace(id))
-                return false;
-            CatalogEntry entry;
-            return entries.TryGetValue(id, out entry) && entry.Kind == EntryKind.ITEM;
+            return !string.IsNullOrWhiteSpace(id) && !catalog.IsGroup(id);
         }
 
         /// <summary>
@@ -140,7 +119,7 @@ namespace SampleWordHelper.Model
             var id = item as string;
             if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidOperationException("unable to create trasfer object for specified item");
-            return new CatalogItemDto(id);
+            return new CatalogItemTransferObject(id);
         }
 
         /// <summary>
@@ -150,11 +129,10 @@ namespace SampleWordHelper.Model
         {
             if (!IsValidDropData(obj))
                 throw new InvalidOperationException("invalid drop data");
-            var dto = obj.GetData(typeof (CatalogItemDto)) as CatalogItemDto;
-            var entry = entries[dto.ItemId];
-            if (entry.Kind != EntryKind.ITEM)
+            var dto = obj.GetData(typeof (CatalogItemTransferObject)) as CatalogItemTransferObject;
+            if (catalog.IsGroup(dto.ItemId))
                 throw new InvalidOperationException("failed to drop whole group");
-            return ((CatalogItem) entry).FullPath;
+            return catalog.GetLocation(dto.ItemId);
         }
 
         /// <summary>
@@ -162,48 +140,32 @@ namespace SampleWordHelper.Model
         /// </summary>
         public bool IsValidDropData(IDataObject data)
         {
-            if (!data.GetDataPresent(typeof (CatalogItemDto)))
+            if (!data.GetDataPresent(typeof (CatalogItemTransferObject)))
                 return false;
-            var dto = data.GetData(typeof (CatalogItemDto)) as CatalogItemDto;
-            return dto != null && entries.ContainsKey(dto.ItemId);
+            var dto = data.GetData(typeof (CatalogItemTransferObject)) as CatalogItemTransferObject;
+            return dto != null && catalog.Contains(dto.ItemId);
         }
 
         /// <summary>
-        /// Заполняет внутренние структуры дерева элементов.
+        /// Класс для упорядочения элементов в дерева.
         /// </summary>
-        void FillNodes(string parentId, IEnumerable<CatalogEntry> items)
+        sealed class Comparer: IComparer<string>
         {
-            foreach (var item in items)
+            /// <summary>
+            /// Модель каталога.
+            /// </summary>
+            readonly ICatalog catalog;
+
+            public Comparer(ICatalog catalog)
             {
-                entries.Add(item.Id, item);
-                List<string> temp;
-                if (!hierarchy.TryGetValue(parentId, out temp))
-                    hierarchy[parentId] = temp = new List<string>();
-                temp.Add(item.Id);
-                FillNodes(item.Id, catalog.GetChildEntries(item.Id));
+                this.catalog = catalog;
             }
-        }
 
-        /// <summary>
-        /// Упорядочивает дочерние элементы узлов в порядке их следования.
-        /// </summary>
-        void OrderNodes()
-        {
-            foreach (var list in hierarchy.Values)
-                list.Sort(NodeIdComparison);
-        }
-
-        /// <summary>
-        /// Метод упорядочения идентификаторов узлов в порядке их следования в дереве.
-        /// </summary>
-        int NodeIdComparison(string first, string second)
-        {
-            var node1 = entries[first];
-            var node2 = entries[second];
-            var result = node1.Kind.CompareTo(node2.Kind);
-            if (result != 0)
-                return result;
-            return String.Compare(node1.Name, node2.Name, StringComparison.CurrentCultureIgnoreCase);
+            public int Compare(string first, string second)
+            {
+                var result = catalog.IsGroup(first).CompareTo(catalog.IsGroup(second));
+                return result != 0 ? result : string.Compare(catalog.GetName(first), catalog.GetName(second), StringComparison.CurrentCultureIgnoreCase);
+            }
         }
     }
 }

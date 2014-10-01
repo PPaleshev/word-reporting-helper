@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SampleWordHelper.Model;
 
-namespace SampleWordHelper.Model
+namespace SampleWordHelper.Providers.FileSystem
 {
     /// <summary>
     /// Модель каталога для структурированного представления содержимого базы знаний.
     /// </summary>
-    public class CatalogModel
+    public class Catalog : ICatalog
     {
         /// <summary>
         /// Идентификатор корневой группы.
@@ -16,7 +18,12 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Отображение из идентификатора группы в список содержащихся в ней элементов.
         /// </summary>
-        readonly Dictionary<string, List<CatalogEntry>> entryMap = new Dictionary<string, List<CatalogEntry>>();
+        readonly Dictionary<string, List<string>> hierarchy = new Dictionary<string, List<string>>();
+
+        /// <summary>
+        /// Отображение из идентификатора элемента в описывающий его объект.
+        /// </summary>
+        readonly Dictionary<string, CatalogElement> entries = new Dictionary<string, CatalogElement>();
 
         /// <summary>
         /// Добавляет новое описание группы.
@@ -24,10 +31,10 @@ namespace SampleWordHelper.Model
         /// <param name="id">Идентификатор группы.</param>
         /// <param name="parentId">Ссылка на родителя.</param>
         /// <param name="name">Название группы.</param>
-        public void AddGroup(string id, string parentId, string name)
+        /// <param name="path">Путь к группе.</param>
+        public void AddGroup(string id, string parentId, string name, string path)
         {
-            var group = new CatalogGroup(id, name);
-            AddRecord(parentId, group);
+            AddRecord(parentId, id, name, path, ElementKind.GROUP);
         }
 
         /// <summary>
@@ -39,45 +46,81 @@ namespace SampleWordHelper.Model
         /// <param name="filePath">Путь к файлу.</param>
         public void AddItem(string id, string parentId, string name, string filePath)
         {
-            var item = new CatalogItem(id, name, filePath);
-            AddRecord(parentId, item);
+            AddRecord(parentId, id, name, filePath, ElementKind.ITEM);
         }
 
         /// <summary>
         /// Возвращает перечисление корневых элементов.
         /// </summary>
-        public IEnumerable<CatalogEntry> GetRootEntries()
+        public IEnumerable<string> GetRootElements()
         {
-            return GetChildEntries(ROOT_KEY);
+            return GetChildElements(ROOT_KEY);
         }
 
         /// <summary>
         /// Возвращает перечисление дочерних элементов.
         /// </summary>
         /// <param name="parentId">Идентификатор родительской группы.</param>
-        public IEnumerable<CatalogEntry> GetChildEntries(string parentId)
+        public IEnumerable<string> GetChildElements(string parentId)
         {
-            List<CatalogEntry> entries;
-            return entryMap.TryGetValue(parentId, out entries) ? new List<CatalogEntry>(entries) : Enumerable.Empty<CatalogEntry>();
+            List<string> child;
+            return hierarchy.TryGetValue(parentId, out child) ? new List<string>(child) : Enumerable.Empty<string>();
+        }
+
+        public string GetName(string id)
+        {
+            return GetElementOrThrow(id).Name;
+        }
+
+        public string GetDescription(string id)
+        {
+            return "";
+        }
+        
+        public string GetLocation(string id)
+        {
+            return GetElementOrThrow(id).Path;
+        }
+
+        public bool IsGroup(string id)
+        {
+            return GetElementOrThrow(id).Kind == ElementKind.GROUP;
+        }
+
+        public bool Contains(string id)
+        {
+            return entries.ContainsKey(id);
+        }
+
+        /// <summary>
+        /// Возвращает элемент по его идентификатору или бросает исключение, если такого не найдено.
+        /// </summary>
+        CatalogElement GetElementOrThrow(string id)
+        {
+            CatalogElement element;
+            if (entries.TryGetValue(id, out element))
+                return element;
+            throw new ArgumentException("invalid entry id");
         }
 
         /// <summary>
         /// Добавляет запись во внутреннюю структуру.
         /// </summary>
-        void AddRecord(string parentId, CatalogEntry entry)
+        void AddRecord(string parentId, string id, string name, string path, ElementKind kind)
         {
             parentId = string.IsNullOrWhiteSpace(parentId) ? ROOT_KEY : parentId;
-            List<CatalogEntry> list;
-            if (!entryMap.TryGetValue(parentId, out list))
-                entryMap.Add(parentId, list = new List<CatalogEntry>());
-            list.Add(entry);
+            List<string> list;
+            if (!hierarchy.TryGetValue(parentId, out list))
+                hierarchy.Add(parentId, list = new List<string>());
+            list.Add(id);
+            entries.Add(id, new CatalogElement(id, name, path, kind));
         }
     }
 
     /// <summary>
     /// Элемент каталога.
     /// </summary>
-    public abstract class CatalogEntry
+    sealed class CatalogElement
     {
         /// <summary>
         /// Идентификатор элемента.
@@ -90,48 +133,28 @@ namespace SampleWordHelper.Model
         public string Name { get; private set; }
 
         /// <summary>
+        /// Путь к элементу.
+        /// </summary>
+        public string Path { get; private set; }
+
+        /// <summary>
         /// Вид элемента.
         /// </summary>
-        public EntryKind Kind { get; private set; } 
+        public ElementKind Kind { get; private set; }
 
-        protected CatalogEntry(string id, string name, EntryKind kind)
+        public CatalogElement(string id, string name, string path, ElementKind kind)
         {
             Id = id;
             Name = name;
             Kind = kind;
-        }
-    }
-
-    /// <summary>
-    /// Представляет собой группу элементов каталога.
-    /// </summary>
-    public class CatalogGroup : CatalogEntry
-    {
-        public CatalogGroup(string id, string name) : base(id, name, EntryKind.GROUP)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Представляет собой элемент-лист.
-    /// </summary>
-    public class CatalogItem : CatalogEntry
-    {
-        /// <summary>
-        /// Полный путь к файлу.
-        /// </summary>
-        public string FullPath { get; private set; }
-
-        public CatalogItem(string id, string name, string fullPath) : base(id, name, EntryKind.ITEM)
-        {
-            FullPath = fullPath;
+            Path = path;
         }
     }
 
     /// <summary>
     /// Тип элемента каталога.
     /// </summary>
-    public enum EntryKind
+    public enum ElementKind
     {
         /// <summary>
         /// Группа.

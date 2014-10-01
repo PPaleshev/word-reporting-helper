@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Common
 {
     /// <summary>
     /// Базовый класс для обеспечения очистки ресурсов.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
@@ -35,7 +36,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Модель каталога.
         /// </summary>
-        CatalogModel catalog;
+        ICatalog catalog;
 
         /// <summary>
         /// Экземпляр провайдера.
@@ -60,10 +61,8 @@ namespace SampleWordHelper.Presentation
             configurationModel = new ConfigurationModel("reportHelper");
             documentManager = new DocumentManager(context);
             provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
-            if (!InitializeAndValidate())
-                return;
-            catalog = provider.LoadCatalog(CatalogLoadMode.PARTIAL);
-            documentManager.SetCatalog(catalog);
+            if (InitializeAndValidate())
+                UpdateCatalog();
         }
 
         public void OnEditSettings()
@@ -76,22 +75,14 @@ namespace SampleWordHelper.Presentation
                 provider.Shutdown();
                 configurationModel.Update(editorModel);
                 provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
-                InitializeAndValidate();
+                if (InitializeAndValidate())
+                    UpdateCatalog();
             }
         }
 
         public void OnUpdateCatalog()
         {
-            try
-            {
-                catalog = provider.LoadCatalog(CatalogLoadMode.FULL);
-                documentManager.SetCatalog(catalog);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Не удалось обновить данные каталога.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //TODO PP: Log error
-            }
+            UpdateCatalog();
         }
 
         /// <summary>
@@ -108,6 +99,23 @@ namespace SampleWordHelper.Presentation
             var isSuccess = string.IsNullOrWhiteSpace(message);
             view.EnableAddinFeatures(isSuccess, message);
             return isSuccess;
+        }
+
+        /// <summary>
+        /// Перезагружает текущий каталог и обновляет его данные.
+        /// </summary>
+        void UpdateCatalog()
+        {
+            try
+            {
+                catalog = provider.LoadCatalog();
+                documentManager.UpdateCatalog(catalog);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Не удалось обновить данные каталога.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //TODO PP: Log error
+            }
         }
 
         protected override void DisposeManaged()

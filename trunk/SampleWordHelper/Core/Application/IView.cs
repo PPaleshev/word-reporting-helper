@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Application
 {
     /// <summary>
     /// Общий интерфейс всех представлений.

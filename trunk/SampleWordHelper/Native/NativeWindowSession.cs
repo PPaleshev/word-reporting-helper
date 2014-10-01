@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows.Forms;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Common;
 
 namespace SampleWordHelper.Native
 {
