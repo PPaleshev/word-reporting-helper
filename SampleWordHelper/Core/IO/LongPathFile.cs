@@ -1,11 +1,11 @@
 ﻿//     Copyright (c) Microsoft Corporation.  All rights reserved.
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Microsoft.Experimental.IO.Interop;
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Experimental.IO {
+namespace SampleWordHelper.Core.IO {
 
     /// <summary>
     ///     Provides static methods for creating, copying, deleting, moving, and opening of files

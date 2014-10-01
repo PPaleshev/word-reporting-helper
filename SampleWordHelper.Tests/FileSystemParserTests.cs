@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using SampleWordHelper.Model;
 using SampleWordHelper.Providers.FileSystem;
 
 namespace SampleWordHelper.Tests
@@ -14,15 +13,15 @@ namespace SampleWordHelper.Tests
         public void ParserTests()
         {
             var parser = new CatalogBuilder(new DirectoryInfo(@"d:\Projects\Private\WordHelper\SampleCatalog"));
-            var model = new CatalogModel();
+            var model = new Catalog();
             parser.BuildCatalog(model);
         }
 
         [Test]
         public void ParserLongTests()
         {
-            var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\оценка бизнеса", false);
-            var model = new CatalogModel();
+            var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\", false, new LocalCache(@"c:\", @"e:\", false));
+            var model = new Catalog();
             parser.Build(model);
         }
 

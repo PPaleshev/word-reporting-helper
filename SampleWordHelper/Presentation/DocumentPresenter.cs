@@ -1,7 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
+using SampleWordHelper.Core.IO;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
 using Point = System.Drawing.Point;
@@ -44,7 +48,7 @@ namespace SampleWordHelper.Presentation
         /// <param name="context">Контекст исполнения надстройки.</param>
         /// <param name="view">Экземпляр представления для управления лентой.</param>
         /// <param name="catalog">Модель каталога.</param>
-        public DocumentPresenter(IRuntimeContext context, IRibbonView view, CatalogModel catalog)
+        public DocumentPresenter(IRuntimeContext context, IRibbonView view, ICatalog catalog)
         {
             this.context = context;
             ribbonView = view;
@@ -79,8 +83,11 @@ namespace SampleWordHelper.Presentation
             if (context.Application.ActiveDocument == null)
                 return;
             var filePath = model.ExtractFilePathFromTransferredData(obj);
-            var range = (Range) context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
-            range.InsertFile(filePath, ConfirmConversions: true);
+            using (var safeFile = new SafeFilePath(filePath))
+            {
+                var range = (Range) context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
+                range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
+            }
         }
 
         /// <summary>
@@ -107,7 +114,7 @@ namespace SampleWordHelper.Presentation
         /// Вызывается при обновлении данных каталога.
         /// </summary>
         /// <param name="catalog">Обновлённая модель каталога.</param>
-        public void UpdateCatalog(CatalogModel catalog)
+        public void UpdateCatalog(ICatalog catalog)
         {
             model.SetModel(catalog);
             structureView.UpdateStructure(model);

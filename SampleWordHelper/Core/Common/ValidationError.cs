@@ -1,4 +1,4 @@
-﻿namespace SampleWordHelper.Core
+﻿namespace SampleWordHelper.Core.Common
 {
     /// <summary>
     /// Класс, описывающий ошибку валидации.

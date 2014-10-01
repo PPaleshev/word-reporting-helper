@@ -5,8 +5,11 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
+using SampleWordHelper.Providers.FileSystem;
 
 namespace SampleWordHelper.Presentation
 {
@@ -33,7 +36,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Текущий экземпляр каталога.
         /// </summary>
-        CatalogModel currentCatalog;
+        ICatalog currentCatalog;
 
         /// <summary>
         /// Флаг, равный true, если <see cref="OnDocumentChanged"/> вызывается до <see cref="OnNewDocument"/> и <see cref="OnDocumentOpened"/>.
@@ -53,14 +56,14 @@ namespace SampleWordHelper.Presentation
             ((ApplicationEvents4_Event) application).NewDocument += OnNewDocument;
             application.DocumentOpen += OnDocumentOpened;
             application.DocumentChange += OnDocumentChanged;
-            currentCatalog = new CatalogModel();
+            currentCatalog = new Catalog();
         }
 
         /// <summary>
         /// Вызывается для обновления каталога.
         /// </summary>
         /// <param name="catalog">Модель каталога.</param>
-        public void SetCatalog(CatalogModel catalog)
+        public void UpdateCatalog(ICatalog catalog)
         {
             currentCatalog = catalog;
             var subscribers = presenters.Values.ToArray();

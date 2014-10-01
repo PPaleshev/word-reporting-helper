@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
 using SampleWordHelper.Native;

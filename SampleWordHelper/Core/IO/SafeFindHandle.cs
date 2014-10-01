@@ -1,8 +1,8 @@
 ﻿//     Copyright (c) Microsoft Corporation.  All rights reserved.
-using System;
+
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Experimental.IO.Interop {
+namespace SampleWordHelper.Core.IO {
     internal sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid {
         internal SafeFindHandle()
             : base(true) {

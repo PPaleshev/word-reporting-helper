@@ -1,11 +1,11 @@
 ﻿//     Copyright (c) Microsoft Corporation.  All rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Experimental.IO.Interop;
 
-namespace Microsoft.Experimental.IO {
+namespace SampleWordHelper.Core.IO {
 
     /// <summary>
     ///     Provides methods for creating, deleting, moving and enumerating directories and 

@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Configuration;
+using System.IO;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace SampleWordHelper.Providers.FileSystem
@@ -15,13 +18,34 @@ namespace SampleWordHelper.Providers.FileSystem
         /// Путь к корню каталога.
         /// </summary>
         [XmlElement("Root")]
-        public string RootPath { get; set; }
+        public string RootDirectory { get; set; }
 
         /// <summary>
         /// Флаг, равный true, если при обходе каталога необходимо сохранять ветви, не содержащие файлов, иначе false.
         /// </summary>
         [XmlElement("Materialize")]
         public bool MaterializeEmptyPaths { get; set; }
+
+//        /// <summary>
+//        /// Путь к каталогу, в котором будет храниться кэш с файлами.
+//        /// </summary>
+//        [XmlElement("CacheDir")]
+//        [XmlIgnore]
+//        public string CacheDirectory { get; set; }
+//
+//        /// <summary>
+//        /// Флаг, равный true, если должно быть использовано локальное кэширование, иначе false.
+//        /// </summary>
+//        [XmlElement("UseCache")]
+//        public bool UseLocalCache { get; set; }
+
+        /// <summary>
+        /// Создаёт новый экземпляр настроек.
+        /// </summary>
+        public ProviderSettings()
+        {
+            MaterializeEmptyPaths = false;
+        }
 
         /// <summary>
         /// Загружает настройки из строки.

@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 
 namespace SampleWordHelper.Presentation
 {

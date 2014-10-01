@@ -3,7 +3,7 @@ using SampleWordHelper.Interface;
 using SampleWordHelper.Native;
 using SampleWordHelper.Presentation;
 
-namespace SampleWordHelper.Core
+namespace SampleWordHelper.Core.Application
 {
     /// <summary>
     /// Экземпляр фабрики представлений.

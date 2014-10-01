@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Interface

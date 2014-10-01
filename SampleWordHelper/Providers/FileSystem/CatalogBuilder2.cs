@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SampleWordHelper.Model;
-using Microsoft.Experimental.IO;
+using SampleWordHelper.Core.IO;
 
 namespace SampleWordHelper.Providers.FileSystem
 {
@@ -15,43 +13,61 @@ namespace SampleWordHelper.Providers.FileSystem
         const string SEARCH_PATTERN = "*.docx";
 
         /// <summary>
-        /// Разделитель элементов URI.
+        /// Флаг, равный true, если нужно сохранять пустые ветви, иначе false.
         /// </summary>
-        const char URI_SEPARATOR = '/';
-
         readonly bool materializeEmptyPaths;
+
+        /// <summary>
+        /// Локальный кэш, используемый для временного хранения файлов.
+        /// </summary>
+        readonly LocalCache cache;
+
+        /// <summary>
+        /// Полный путь к корневой директории каталога.
+        /// </summary>
         readonly string rootDirectory;
+
+        /// <summary>
+        /// Uri корневой директории каталога.
+        /// </summary>
         readonly Uri rootUri;
 
-        public CatalogBuilder2(string rootDirectory, bool materializeEmptyPaths)
+        public CatalogBuilder2(string rootDirectory, bool materializeEmptyPaths, LocalCache cache)
         {
             this.rootDirectory = rootDirectory;
             this.materializeEmptyPaths = materializeEmptyPaths;
-            rootUri = new Uri(EnsureDirectory(rootDirectory));
+            this.cache = cache;
+            rootUri = new Uri(FileSystemUtils.EnsureDirectory(rootDirectory));
         }
 
-        public void Build(CatalogModel catalog)
+        public void Build(Catalog catalog)
         {
             foreach (var file in LongPathDirectory.EnumerateFiles(rootDirectory, SEARCH_PATTERN))
-                AddFile(catalog, file, "");
+                AddFile(catalog, file, null);
             foreach (var directory in LongPathDirectory.EnumerateDirectories(rootDirectory))
-                ProcessDirectory(directory, null, catalog);
+                ScanDirectory(directory, null, catalog);
         }
 
-        bool ProcessDirectory(string directoryFullName, string parentId, CatalogModel catalog)
+        /// <summary>
+        /// Выполняет сканирование директории.
+        /// </summary>
+        /// <param name="directoryFullName">Полный путь к директории.</param>
+        /// <param name="parentId">Идентификатор родительской директории.</param>
+        /// <param name="catalog">Каталог, в который складываются результаты поиска.</param>
+        /// <returns>Возвращает true, если директория или одна из её поддиректорий содержат искомые файлы, иначе false.</returns>
+        bool ScanDirectory(string directoryFullName, string parentId, Catalog catalog)
         {
-            var shortName = Path.GetFileName(EnsureFile(directoryFullName));
-            var id = GetRelativePath(directoryFullName, true);
+            var id = FileSystemUtils.GetRelativePath(rootUri, directoryFullName, true);
             var files = LongPathDirectory.EnumerateFiles(directoryFullName, SEARCH_PATTERN);
-            var materializeThis = false;
+            var materializeThis = materializeEmptyPaths;
             foreach (var file in files)
             {
                 materializeThis = true;
                 AddFile(catalog, file, id);
             }
-            materializeThis = LongPathDirectory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ProcessDirectory(dir, id, catalog));
+            materializeThis = LongPathDirectory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ScanDirectory(dir, id, catalog));
             if (materializeThis)
-                catalog.AddGroup(id, parentId, shortName);
+                AddGroup(catalog, directoryFullName, id, parentId);
             return materializeThis;
         }
 
@@ -61,37 +77,24 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <param name="catalog">Каталог.</param>
         /// <param name="file">Полный путь к файлу.</param>
         /// <param name="parent">Идентификатор родителя.</param>
-        void AddFile(CatalogModel catalog, string file, string parent)
+        void AddFile(Catalog catalog, string file, string parent)
         {
-            catalog.AddItem(GetRelativePath(file, false), parent, Path.GetFileNameWithoutExtension(file), file);
+            var filePath = cache != null ? cache.TranslateFileName(file) : file;
+            catalog.AddItem(FileSystemUtils.GetRelativePath(rootUri, file, false), parent, Path.GetFileNameWithoutExtension(file), filePath);
         }
 
         /// <summary>
-        /// Возвращает полный путь к каталогу с добавлением <see cref="Path.DirectorySeparatorChar"/> в конец при его отсутствии.
+        /// Добавляет группу в каталог.
         /// </summary>
-        static string EnsureDirectory(string path)
+        /// <param name="catalog">Каталог.</param>
+        /// <param name="directory">Полный путь к директории.</param>
+        /// <param name="id">Идентификатор директории. </param>
+        /// <param name="parent">Идентификатор родителя.</param>
+        void AddGroup(Catalog catalog, string directory, string id, string parent)
         {
-            if (path[path.Length - 1] != Path.DirectorySeparatorChar)
-                path += Path.DirectorySeparatorChar;
-            return path;
-        }
-
-        static string EnsureFile(string path)
-        {
-            return path[path.Length - 1] == Path.DirectorySeparatorChar ? path.Substring(0, path.Length - 1) : path;
-        }
-
-        /// <summary>
-        /// Возвращает путь относительно корневого каталога.
-        /// </summary>
-        /// <param name="fullName">Текущий путь.</param>
-        /// <param name="directory">true, если <paramref name="fullName"/> представляет путь к каталогу, и false, если к файлу.</param>
-        /// <remarks>Вырезает из конца результата все символы <see cref="URI_SEPARATOR"/>.</remarks>
-        string GetRelativePath(string fullName, bool directory)
-        {
-            var path = directory ? EnsureDirectory(fullName) : fullName;
-            var relUri = rootUri.MakeRelativeUri(new Uri(EnsureDirectory(path)));
-            return Uri.UnescapeDataString(relUri.OriginalString).TrimEnd(URI_SEPARATOR);
+            var shortName = Path.GetFileName(FileSystemUtils.EnsureFile(directory));
+            var dirPath = cache != null ? cache.TranslateFileName(directory) : directory;
+            catalog.AddGroup(id, parent, shortName, dirPath);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SampleWordHelper.Core;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Providers.Core
@@ -18,8 +19,7 @@ namespace SampleWordHelper.Providers.Core
         /// <summary>
         /// Выполняет создание модели каталога.
         /// </summary>
-        /// <param name="mode">Режим загрузки каталога.</param>
-        CatalogModel LoadCatalog(CatalogLoadMode mode);
+        ICatalog LoadCatalog();
 
         /// <summary>
         /// Вызывается для завершения активности текущего провайдера.

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Providers.FileSystem
 {
     /// <summary>
     /// Вспомогательный класс для построения модели каталога.
     /// </summary>
+    [Obsolete]
     public class CatalogBuilder
     {
         /// <summary>
@@ -40,7 +40,7 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <summary>
         /// Заполняет каталог данными.
         /// </summary>
-        public void BuildCatalog(CatalogModel catalog)
+        public void BuildCatalog(Catalog catalog)
         {
             var rootNode = new Node(root.Name, null, null);
             var index = new Dictionary<string, Node>();
@@ -103,7 +103,7 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         /// <param name="rootNode">Корневой элемент дерева.</param>
         /// <param name="catalog">Каталог.</param>
-        static void FillCatalog(Node rootNode, CatalogModel catalog)
+        static void FillCatalog(Node rootNode, Catalog catalog)
         {
             var stack = new Stack<Node>();
             foreach (var levelOneNode in rootNode.groups)
@@ -113,7 +113,7 @@ namespace SampleWordHelper.Providers.FileSystem
             while (stack.Count > 0)
             {
                 var current = stack.Pop();
-                catalog.AddGroup(current.id, current.parentId, current.name);
+                catalog.AddGroup(current.id, current.parentId, current.name, current.id);
                 foreach (var item in current.items)
                     catalog.AddItem(item.Item1, current.id, Path.GetFileNameWithoutExtension(item.Item2.Name), item.Item2.FullName);
                 foreach (var node in current.groups)
