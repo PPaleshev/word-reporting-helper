@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
@@ -134,6 +133,8 @@ namespace SampleWordHelper.Presentation
             try
             {
                 if (context.Application.Documents.Count == 0)
+                    return;
+                if (context.Application.ActiveProtectedViewWindow != null)
                     return;
                 var activeDocument = context.Application.ActiveDocument;
                 if (activeDocument == null)

@@ -111,6 +111,17 @@ namespace SampleWordHelper.Model
         }
 
         /// <summary>
+        /// Возвращает путь к файлу по его идентификатору.
+        /// </summary>
+        public string GetFilePathForId(object item)
+        {
+            var id = item as string;
+            if (string.IsNullOrWhiteSpace(id) || !catalog.Contains(id))
+                throw new InvalidOperationException();
+            return catalog.GetLocation(id);
+        }
+
+        /// <summary>
         /// Создаёт транспортный объект для перемещения посредством drag'n'drop.
         /// </summary>
         /// <param name="item">Объект, для которого нужно создать объект передачи.</param>

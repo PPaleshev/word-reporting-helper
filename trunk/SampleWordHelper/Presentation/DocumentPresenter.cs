@@ -88,6 +88,20 @@ namespace SampleWordHelper.Presentation
                 var range = (Range) context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
                 range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
             }
+            context.Application.ActiveWindow.SetFocus();
+        }
+
+        public void OnNodeDoubleClicked(object item)
+        {
+            if (!model.CanDragNode(item) || context.Application.ActiveDocument == null)
+                return;
+            var filePath = model.GetFilePathForId(item);
+            using (var safeFile = new SafeFilePath(filePath))
+            {
+                var range = context.Application.Selection;
+                range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
+            }
+            context.Application.ActiveWindow.SetFocus();
         }
 
         /// <summary>

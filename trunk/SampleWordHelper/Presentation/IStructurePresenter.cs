@@ -16,5 +16,11 @@ namespace SampleWordHelper.Presentation
         /// Вызывается при закрытии панели структуры каталога.
         /// </summary>
         void OnClosed();
+
+        /// <summary>
+        /// Вызывается при двойном клике на узел дерева.
+        /// </summary>
+        /// <param name="item">Выбранный элемент.</param>
+        void OnNodeDoubleClicked(object item);
     }
 }
