@@ -181,7 +181,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Info;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pictureBox1.Image = global::SampleWordHelper.Properties.Resources.warning_triangle;
+            this.pictureBox1.Image = global::SampleWordHelper.Properties.Resources.error;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(41, 41);

@@ -50,8 +50,10 @@ namespace SampleWordHelper.Interface
             control.treeStructure.ItemDrag -= OnTreeItemDrag;
             control.treeStructure.QueryContinueDrag -= OnContinueDragRequested;
             control.treeStructure.DragLeave -= OnDraggingLeavedControlBounds;
+            control.treeStructure.NodeMouseDoubleClick -= OnNodeDoubleClicked;
             control.Dispose();
         }
+
 
         /// <summary>
         /// Выполняет инициализацию компонентов представления.
@@ -63,6 +65,7 @@ namespace SampleWordHelper.Interface
             tree.ItemDrag += OnTreeItemDrag;
             tree.QueryContinueDrag += OnContinueDragRequested;
             tree.DragLeave += OnDraggingLeavedControlBounds;
+            tree.NodeMouseDoubleClick += OnNodeDoubleClicked;
         }
 
         /// <summary>
@@ -136,6 +139,16 @@ namespace SampleWordHelper.Interface
         {
             var leftButtonPressed = Control.MouseButtons.HasFlag(MouseButtons.Left);
             e.Action = presenter.DragController.CheckDraggingState(e.EscapePressed, leftButtonPressed);
+        }
+
+        /// <summary>
+        /// Вызывается при двойном клике на узел дерева.
+        /// </summary>
+        void OnNodeDoubleClicked(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if(e.Button!=MouseButtons.Left)
+                return;
+            presenter.OnNodeDoubleClicked(e.Node.Tag);
         }
 
         /// <summary>
