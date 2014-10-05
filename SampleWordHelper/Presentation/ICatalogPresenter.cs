@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace SampleWordHelper.Presentation
+﻿namespace SampleWordHelper.Presentation
 {
     /// <summary>
-    /// Интерфейс менеджера представления структуры каталога.
+    /// Интерфейс менеджера представления каталога.
     /// </summary>
-    public interface IStructurePresenter
+    public interface ICatalogPresenter
     {
         /// <summary>
         /// Объект для управления операциями перетаскивания.
@@ -22,5 +20,11 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         /// <param name="item">Выбранный элемент.</param>
         void OnNodeDoubleClicked(object item);
+
+        /// <summary>
+        /// Вызывается при изменении поискового фильтра.
+        /// </summary>
+        /// <param name="filterText">Текст фильтра.</param>
+        void OnFilterTextChanged(string filterText);
     }
 }

@@ -4,4 +4,9 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Microsoft Office\Office14\WINWORD.EXE</StartProgram>
   </PropertyGroup>
+  <PropertyGroup>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+  </PropertyGroup>
 </Project>

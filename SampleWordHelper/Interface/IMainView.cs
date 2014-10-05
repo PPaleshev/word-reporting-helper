@@ -13,5 +13,10 @@ namespace SampleWordHelper.Interface
         /// <param name="enable">True, если возможности доступны, false в противном случае.</param>
         /// <param name="message">Текст сообщения, отображаемого над кнопкой настроек.</param>
         void EnableAddinFeatures(bool enable, string message);
+
+        /// <summary>
+        /// В зависимости от значения <paramref name="pressed"/> нажимает или отжимает кнопку, показывающую видимость каталога.
+        /// </summary>
+        void SetCatalogButtonPressed(bool pressed);
     }
 }

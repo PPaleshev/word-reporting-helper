@@ -1,6 +1,5 @@
 ﻿using Microsoft.Office.Tools;
 using SampleWordHelper.Interface;
-using SampleWordHelper.Native;
 using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Core.Application
@@ -36,12 +35,7 @@ namespace SampleWordHelper.Core.Application
             return new MainView(ribbon, presenter);
         }
 
-        public IRibbonView CreateRibbonView(IRibbonEventListener presenter)
-        {
-            return new RibbonView(ribbon, presenter);
-        }
-
-        public IDocumentView CreateStructureView(IStructurePresenter presenter, string title)
+        public IDocumentView CreateStructureView(ICatalogPresenter presenter, string title)
         {
             var control = new StructureTreeControl();
             var container = paneFactory.Add(control, title);
@@ -51,6 +45,11 @@ namespace SampleWordHelper.Core.Application
         public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)
         {
             return new ConfigurationEditorForm(presenter);
+        }
+
+        public IWaitingView CreateWaitingView()
+        {
+            return new WaitingForm();
         }
 
         public IDropTargetHost CreateDropHost(IDropTargetPresenter presenter)

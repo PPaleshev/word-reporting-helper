@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace SampleWordHelper.Native
+namespace SampleWordHelper.Core.Native
 {
     /// <summary>
     /// Вспомогательный класс для вызова методов WinAPI.

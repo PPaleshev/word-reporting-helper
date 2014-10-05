@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
 
-namespace SampleWordHelper.Native
+namespace SampleWordHelper.Interface
 {
     /// <summary>
     /// Вспомогательное окно, используемое для осуществления операции drag'n'drop в рабочую область документа Microsoft Word.

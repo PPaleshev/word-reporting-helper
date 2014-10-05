@@ -1,22 +1,22 @@
-﻿using System;
-using System.Windows.Forms;
-using SampleWordHelper.Core.Application;
+﻿using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
+using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
+using ApplicationContext = SampleWordHelper.Core.Application.ApplicationContext;
 
 namespace SampleWordHelper.Presentation
 {
     /// <summary>
     /// Менеджер главного представления.
     /// </summary>
-    public class MainPresenter : BasicDisposable, IMainPresenter
+    public class MainPresenter : BasicDisposable, IMainPresenter, ICatalogPaneCallback
     {
         /// <summary>
         /// Контекст времени выполнения приложения.
         /// </summary>
-        readonly IRuntimeContext context;
+        readonly ApplicationContext context;
 
         /// <summary>
         /// Основное представление приложения.
@@ -24,19 +24,24 @@ namespace SampleWordHelper.Presentation
         readonly IMainView view;
 
         /// <summary>
+        /// Слушатель событий окружения.
+        /// </summary>
+        readonly ApplicationEventsListener eventListener;
+
+        /// <summary>
         /// Объект для отслеживания состояния документов.
         /// </summary>
-        DocumentManager documentManager;
+        readonly DocumentManager documentManager;
+
+        /// <summary>
+        /// Механизм поиска.
+        /// </summary>
+        SearchEngine searchEngine;
 
         /// <summary>
         /// Модель конфигурации приложения.
         /// </summary>
         ConfigurationModel configurationModel;
-
-        /// <summary>
-        /// Модель каталога.
-        /// </summary>
-        ICatalog catalog;
 
         /// <summary>
         /// Экземпляр провайдера.
@@ -46,11 +51,14 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
         /// </summary>
-        /// <param name="context">Контекст времени исполнения приложения.</param>
-        public MainPresenter(IRuntimeContext context)
+        /// <param name="runtimeContext">Контекст времени исполнения приложения.</param>
+        public MainPresenter(IRuntimeContext runtimeContext)
         {
-            this.context = context;
-            view = context.ViewFactory.CreateMainView(this);
+            searchEngine = new SearchEngine(new WordDocumentContentProvider(runtimeContext.Application));
+            context = new ApplicationContext(runtimeContext, new EmptyCatalog(), searchEngine);
+            view = runtimeContext.ViewFactory.CreateMainView(this);
+            documentManager = new DocumentManager(context, this);
+            eventListener = new ApplicationEventsListener(runtimeContext, documentManager);
         }
 
         /// <summary>
@@ -59,16 +67,16 @@ namespace SampleWordHelper.Presentation
         public void Start()
         {
             configurationModel = new ConfigurationModel("reportHelper");
-            documentManager = new DocumentManager(context);
             provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
             if (InitializeAndValidate())
                 UpdateCatalog();
+            eventListener.Listen();
         }
 
         public void OnEditSettings()
         {
             var editorModel = configurationModel.CreateEditorModel();
-            using (var presenter = new ConfigurationEditorPresenter(context.ViewFactory, editorModel))
+            using (var presenter = new ConfigurationEditorPresenter(context.Environment.ViewFactory, editorModel))
             {
                 if (!presenter.Edit())
                     return;
@@ -85,6 +93,16 @@ namespace SampleWordHelper.Presentation
             UpdateCatalog();
         }
 
+        public void OnToggleCatalogVisibility()
+        {
+            documentManager.ToggleCatalogVisibility();
+        }
+
+        public void OnVisibilityChanged(bool visible)
+        {
+            view.SetCatalogButtonPressed(visible);
+        }
+
         /// <summary>
         /// Проверяет состояние провайдера.
         /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
@@ -94,7 +112,7 @@ namespace SampleWordHelper.Presentation
             string message = null;
             if (!configurationModel.HasConfiguredProvider)
                 message = "Требуется выбор поставщика каталога.";
-            else if (!provider.Initialize(context))
+            else if (!provider.Initialize(context.Environment))
                 message = "Требуется настройка текущего поставщика каталога.";
             var isSuccess = string.IsNullOrWhiteSpace(message);
             view.EnableAddinFeatures(isSuccess, message);
@@ -106,16 +124,11 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void UpdateCatalog()
         {
-            try
-            {
-                catalog = provider.LoadCatalog();
-                documentManager.UpdateCatalog(catalog);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Не удалось обновить данные каталога.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //TODO PP: Log error
-            }
+            context.Catalog = provider.LoadCatalog();
+            documentManager.UpdateCatalog();
+            using (var presenter = new SearchIndexPresenter(context.Environment))
+            using (eventListener.SuspendEvents())
+                presenter.Run(context.Catalog, searchEngine);
         }
 
         protected override void DisposeManaged()
@@ -130,6 +143,7 @@ namespace SampleWordHelper.Presentation
             }
             view.SafeDispose();
             documentManager.SafeDispose();
+            searchEngine.SafeDispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SampleWordHelper.Native
+﻿namespace SampleWordHelper.Interface
 {
     partial class OverlayWindow
     {

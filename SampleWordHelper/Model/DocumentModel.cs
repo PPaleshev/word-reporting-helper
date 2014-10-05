@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using SampleWordHelper.Providers.FileSystem;
 
 namespace SampleWordHelper.Model
 {
     /// <summary>
     /// Модель представления для работы со структурой каталога.
     /// </summary>
+    /// TODO: представить некий срез, содержащий определённый набор данных.
     public class DocumentModel 
     {
         /// <summary>
@@ -22,11 +22,16 @@ namespace SampleWordHelper.Model
         ICatalog catalog;
 
         /// <summary>
+        /// Отфильтрованное представление элементов.
+        /// </summary>
+        NodeView currentView;
+
+        /// <summary>
         /// Создаёт новый экземпляр модели документа.
         /// </summary>
         public DocumentModel()
         {
-            SetModel(new Catalog());
+            SetModel(new EmptyCatalog());
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Текст для фильтрации элементов дерева.
         /// </summary>
-        public string Filter { get; set; }
+        public string Filter { get; private set; }
 
         /// <summary>
         /// Устанавливает новую модель каталога.
@@ -53,7 +58,28 @@ namespace SampleWordHelper.Model
         public void SetModel(ICatalog catalog)
         {
             this.catalog = catalog;
+            if (!string.IsNullOrWhiteSpace(Filter))
+                currentView = new NodeView(catalog, Filter);
             nodeComparer = new Comparer(catalog);
+        }
+
+        /// <summary>
+        /// Устанавливает фильтр для элементов дерева.
+        /// </summary>
+        /// <param name="filter">Текст фильтра или пустое значение при его отсутствии.</param>
+        public void UpdateFilter(string filter)
+        {
+            Filter = filter;
+            currentView = string.IsNullOrWhiteSpace(filter) ? null : new NodeView(catalog, filter);
+        }
+
+        /// <summary>
+        /// Возвращает перечисление идентификаторов корневых элементов.
+        /// </summary>
+        public IEnumerable<string> GetRootNodes()
+        {
+            var roots = HasFilter ? currentView.GetRootElements() : catalog.GetRootElements();
+            return roots.OrderBy(s => s, nodeComparer);
         }
 
         /// <summary>
@@ -62,15 +88,8 @@ namespace SampleWordHelper.Model
         /// <param name="parentId">Идентификатор родительского узла.</param>
         public IEnumerable<string> GetChildNodes(string parentId)
         {
-            return catalog.GetChildElements(parentId).OrderBy(id => id, nodeComparer);
-        }
-
-        /// <summary>
-        /// Возвращает перечисление идентификаторов корневых элементов.
-        /// </summary>
-        public IEnumerable<string> GetRootNodes()
-        {
-            return catalog.GetRootElements().OrderBy(s => s, nodeComparer);
+            var elements = HasFilter ? currentView.GetChildElements(parentId) : catalog.GetChildElements(parentId);
+            return elements.OrderBy(id => id, nodeComparer);
         }
 
         /// <summary>
@@ -116,7 +135,7 @@ namespace SampleWordHelper.Model
         public string GetFilePathForId(object item)
         {
             var id = item as string;
-            if (string.IsNullOrWhiteSpace(id) || !catalog.Contains(id))
+            if (string.IsNullOrWhiteSpace(id) || !(HasFilter ? currentView.Contains(id) : catalog.Contains(id)))
                 throw new InvalidOperationException();
             return catalog.GetLocation(id);
         }
@@ -155,6 +174,11 @@ namespace SampleWordHelper.Model
                 return false;
             var dto = data.GetData(typeof (CatalogItemTransferObject)) as CatalogItemTransferObject;
             return dto != null && catalog.Contains(dto.ItemId);
+        }
+
+        bool HasFilter
+        {
+            get { return !string.IsNullOrWhiteSpace(Filter); }
         }
 
         /// <summary>

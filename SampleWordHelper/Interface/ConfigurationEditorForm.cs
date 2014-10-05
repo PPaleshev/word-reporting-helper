@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
+using SampleWordHelper.Core.Native;
 using SampleWordHelper.Model;
-using SampleWordHelper.Native;
 using SampleWordHelper.Presentation;
 
 namespace SampleWordHelper.Interface

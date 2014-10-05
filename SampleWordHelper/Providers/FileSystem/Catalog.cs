@@ -49,18 +49,16 @@ namespace SampleWordHelper.Providers.FileSystem
             AddRecord(parentId, id, name, filePath, ElementKind.ITEM);
         }
 
-        /// <summary>
-        /// Возвращает перечисление корневых элементов.
-        /// </summary>
+        public IEnumerable<string> All()
+        {
+            return entries.Keys;
+        }
+
         public IEnumerable<string> GetRootElements()
         {
             return GetChildElements(ROOT_KEY);
         }
 
-        /// <summary>
-        /// Возвращает перечисление дочерних элементов.
-        /// </summary>
-        /// <param name="parentId">Идентификатор родительской группы.</param>
         public IEnumerable<string> GetChildElements(string parentId)
         {
             List<string> child;
