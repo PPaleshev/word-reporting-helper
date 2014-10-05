@@ -223,7 +223,7 @@
     <Compile Include="Core\Common\BackgroundTaskContext.cs" />
     <Compile Include="Core\IO\FileSystemUtils.cs" />
     <Compile Include="Core\IO\SafeFilePath.cs" />
-    <Compile Include="Design\FileSystemPathEditor.cs" />
+    <Compile Include="Core\Design\FileSystemPathEditor.cs" />
     <Compile Include="Indexation\IProgressMonitor.cs" />
     <Compile Include="Indexation\ISearchEngine.cs" />
     <Compile Include="Indexation\SearchEngine.cs" />

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
+using SampleWordHelper.Core.Design;
 using SampleWordHelper.Core.IO;
-using SampleWordHelper.Design;
 using SampleWordHelper.Model;
 using SampleWordHelper.Providers.Core;
 
