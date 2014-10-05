@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 
-namespace SampleWordHelper.Design
+namespace SampleWordHelper.Core.Design
 {
     /// <summary>
     /// Редактор для свойств, содержащих пути в файловой системе.
