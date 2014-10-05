@@ -24,9 +24,14 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Менеджер представления.
         /// </summary>
-        readonly IStructurePresenter presenter;
+        readonly ICatalogPresenter presenter;
 
-        public StructureTreeView(CustomTaskPane container, IStructurePresenter presenter)
+        /// <summary>
+        /// Флаг для предотвращения обратных вызовов.
+        /// </summary>
+        readonly SuspendFlag suspendEvents = new SuspendFlag();
+
+        public StructureTreeView(CustomTaskPane container, ICatalogPresenter presenter)
         {
             control = (StructureTreeControl) container.Control;
             this.container = container;
@@ -34,26 +39,22 @@ namespace SampleWordHelper.Interface
             InitializeComponents();
         }
 
-        public void Initialize(DocumentModel model)
-        {
-            UpdateStructure(model);
-        }
-
         public void SetVisibility(bool value)
         {
             container.Visible = value;
         }
 
+        public void SetFilterText(string filterText)
+        {
+            using (suspendEvents.Suspend())
+                control.textSearch.Text = filterText;
+        }
+
         public void Dispose()
         {
             container.VisibleChanged -= ContainerVisibilityChanged;
-            control.treeStructure.ItemDrag -= OnTreeItemDrag;
-            control.treeStructure.QueryContinueDrag -= OnContinueDragRequested;
-            control.treeStructure.DragLeave -= OnDraggingLeavedControlBounds;
-            control.treeStructure.NodeMouseDoubleClick -= OnNodeDoubleClicked;
             control.Dispose();
         }
-
 
         /// <summary>
         /// Выполняет инициализацию компонентов представления.
@@ -61,11 +62,14 @@ namespace SampleWordHelper.Interface
         void InitializeComponents()
         {
             container.VisibleChanged += ContainerVisibilityChanged;
+            control.textSearch.TextChanged += SearchFilterChanged;
+            control.textSearch.KeyPress += CheckResetSearchFilter;
             var tree = control.treeStructure;
             tree.ItemDrag += OnTreeItemDrag;
             tree.QueryContinueDrag += OnContinueDragRequested;
             tree.DragLeave += OnDraggingLeavedControlBounds;
             tree.NodeMouseDoubleClick += OnNodeDoubleClicked;
+            tree.KeyPress += CheckResetSearchFilter;
         }
 
         /// <summary>
@@ -158,6 +162,27 @@ namespace SampleWordHelper.Interface
         {
             if (!container.Visible)
                 presenter.OnClosed();
+        }
+
+        /// <summary>
+        /// Вызывается при обновлении текста фильтра.
+        /// </summary>
+        void SearchFilterChanged(object sender, EventArgs e)
+        {
+            if (suspendEvents)
+                return;
+            presenter.OnFilterTextChanged(control.textSearch.Text);
+        }
+
+        /// <summary>
+        /// Вызывается при сбросе активного фильтра.
+        /// </summary>
+        void CheckResetSearchFilter(object sender, KeyPressEventArgs e)
+        {
+            if (Keys.Escape != (Keys) e.KeyChar)
+                return;
+            presenter.OnFilterTextChanged("");
+            e.Handled = true;
         }
     }
 }

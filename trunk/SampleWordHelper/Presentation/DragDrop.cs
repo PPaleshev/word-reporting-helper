@@ -61,4 +61,17 @@ namespace SampleWordHelper.Presentation
         /// <param name="point">Экранные координаты точки, в которых было завершено перетаскивание.</param>
         void CompleteDrop(IDataObject data, Point point);
     }
+
+    /// <summary>
+    /// Интерфейс обратного вызова для обработки успешного перетаскивания.
+    /// </summary>
+    public interface IDropCallback
+    {
+        /// <summary>
+        /// Вызывается при успешном перетаскивании указанного элемента каталога.
+        /// </summary>
+        /// <param name="obj">Перетащенный объект.</param>
+        /// <param name="point">Экранные координаты точки, в которой был сброшен объект.</param>
+        void OnDrop(IDataObject obj, Point point);
+    }
 }

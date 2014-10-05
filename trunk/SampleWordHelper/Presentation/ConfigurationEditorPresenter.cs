@@ -1,5 +1,4 @@
-﻿using SampleWordHelper.Core;
-using SampleWordHelper.Core.Application;
+﻿using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;

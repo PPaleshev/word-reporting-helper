@@ -1,6 +1,5 @@
 ﻿using System;
 using SampleWordHelper.Model;
-using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Interface
 {

@@ -3,12 +3,11 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
+using SampleWordHelper.Core.Native;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
-using SampleWordHelper.Native;
 using Point = System.Drawing.Point;
 
 namespace SampleWordHelper.Presentation

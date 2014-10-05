@@ -18,11 +18,6 @@ namespace SampleWordHelper.Providers.FileSystem
         readonly bool materializeEmptyPaths;
 
         /// <summary>
-        /// Локальный кэш, используемый для временного хранения файлов.
-        /// </summary>
-        readonly LocalCache cache;
-
-        /// <summary>
         /// Полный путь к корневой директории каталога.
         /// </summary>
         readonly string rootDirectory;
@@ -32,11 +27,10 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         readonly Uri rootUri;
 
-        public CatalogBuilder2(string rootDirectory, bool materializeEmptyPaths, LocalCache cache)
+        public CatalogBuilder2(string rootDirectory, bool materializeEmptyPaths)
         {
             this.rootDirectory = rootDirectory;
             this.materializeEmptyPaths = materializeEmptyPaths;
-            this.cache = cache;
             rootUri = new Uri(FileSystemUtils.EnsureDirectory(rootDirectory));
         }
 
@@ -79,8 +73,7 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <param name="parent">Идентификатор родителя.</param>
         void AddFile(Catalog catalog, string file, string parent)
         {
-            var filePath = cache != null ? cache.TranslateFileName(file) : file;
-            catalog.AddItem(FileSystemUtils.GetRelativePath(rootUri, file, false), parent, Path.GetFileNameWithoutExtension(file), filePath);
+            catalog.AddItem(FileSystemUtils.GetRelativePath(rootUri, file, false), parent, Path.GetFileNameWithoutExtension(file), file);
         }
 
         /// <summary>
@@ -90,11 +83,10 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <param name="directory">Полный путь к директории.</param>
         /// <param name="id">Идентификатор директории. </param>
         /// <param name="parent">Идентификатор родителя.</param>
-        void AddGroup(Catalog catalog, string directory, string id, string parent)
+        static void AddGroup(Catalog catalog, string directory, string id, string parent)
         {
             var shortName = Path.GetFileName(FileSystemUtils.EnsureFile(directory));
-            var dirPath = cache != null ? cache.TranslateFileName(directory) : directory;
-            catalog.AddGroup(id, parent, shortName, dirPath);
+            catalog.AddGroup(id, parent, shortName, directory);
         }
     }
 }

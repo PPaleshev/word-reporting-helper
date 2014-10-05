@@ -16,5 +16,10 @@ namespace SampleWordHelper.Presentation
         /// Вызывается для перезагрузки содержимого каталога.
         /// </summary>
         void OnUpdateCatalog();
+
+        /// <summary>
+        /// Вызывается для изменения видимости панели каталога.
+        /// </summary>
+        void OnToggleCatalogVisibility();
     }
 }

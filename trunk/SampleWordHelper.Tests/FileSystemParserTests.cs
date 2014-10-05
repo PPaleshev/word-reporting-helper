@@ -20,7 +20,7 @@ namespace SampleWordHelper.Tests
         [Test]
         public void ParserLongTests()
         {
-            var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\", false, new LocalCache(@"c:\", @"e:\", false));
+            var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\", false);
             var model = new Catalog();
             parser.Build(model);
         }

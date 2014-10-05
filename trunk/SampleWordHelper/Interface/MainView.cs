@@ -19,6 +19,11 @@ namespace SampleWordHelper.Interface
         readonly IMainPresenter presenter;
 
         /// <summary>
+        /// Флаг для предотвращения обратных вызовов.
+        /// </summary>
+        readonly SuspendFlag eventsSuspended = new SuspendFlag();
+
+        /// <summary>
         /// Сообщение над кнопкой настройки по умолчанию.
         /// </summary>
         readonly string defaultSettingsSuperTip;
@@ -32,6 +37,7 @@ namespace SampleWordHelper.Interface
             this.presenter = presenter;
             this.ribbon.buttonSettings.Click += OnSettingsButtonClick;
             this.ribbon.buttonReload.Click += OnReloadCatalogButtonClick;
+            this.ribbon.toggleStructureVisibility.Click += OnToggleCatalogVisibility;
             defaultSettingsSuperTip = ribbon.buttonSettings.SuperTip;
         }
 
@@ -51,6 +57,16 @@ namespace SampleWordHelper.Interface
             presenter.OnUpdateCatalog();
         }
 
+        /// <summary>
+        /// Вызывается при нажатии на кнопку "Скрыть\показать структуру".
+        /// </summary>
+        void OnToggleCatalogVisibility(object sender, RibbonControlEventArgs e)
+        {
+            if (eventsSuspended)
+                return;
+            presenter.OnToggleCatalogVisibility();
+        }
+
         public void Dispose()
         {
             ribbon.buttonSettings.Click -= OnSettingsButtonClick;
@@ -64,6 +80,12 @@ namespace SampleWordHelper.Interface
             ribbon.toggleStructureVisibility.Visible = enable;
             ribbon.separator.Visible = enable;
             ribbon.buttonReload.Visible = enable;
+        }
+
+        public void SetCatalogButtonPressed(bool pressed)
+        {
+            using (eventsSuspended.Suspend())
+                ribbon.toggleStructureVisibility.Checked = pressed;
         }
     }
 }

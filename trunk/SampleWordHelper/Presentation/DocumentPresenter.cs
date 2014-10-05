@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Core.IO;
@@ -15,13 +13,8 @@ namespace SampleWordHelper.Presentation
     /// <summary>
     /// Менеджер документа Word.
     /// </summary>
-    public class DocumentPresenter: IRibbonEventListener, IStructurePresenter, IDropCallback, IDisposable
+    public class DocumentPresenter : BasicDisposable, ICatalogPresenter, IDropCallback
     {
-        /// <summary>
-        /// Представление ленты.
-        /// </summary>
-        readonly IRibbonView ribbonView;
-
         /// <summary>
         /// Общее представление документа.
         /// </summary>
@@ -38,24 +31,28 @@ namespace SampleWordHelper.Presentation
         readonly IDragSourceController dragController;
 
         /// <summary>
-        /// Контекст времени исполнения надстройки.
+        /// Контекст выполнения приложения.
         /// </summary>
-        readonly IRuntimeContext context;
+        readonly IApplicationContext context;
+
+        /// <summary>
+        /// Объект для выполнения обратных вызовов при взаимодействии с панелью каталога.
+        /// </summary>
+        readonly ICatalogPaneCallback callback;
 
         /// <summary>
         /// Создаёт новый экземпляр менеджера документа.
         /// </summary>
         /// <param name="context">Контекст исполнения надстройки.</param>
-        /// <param name="view">Экземпляр представления для управления лентой.</param>
-        /// <param name="catalog">Модель каталога.</param>
-        public DocumentPresenter(IRuntimeContext context, IRibbonView view, ICatalog catalog)
+        /// <param name="callback">Объект для выполнения обратных вызовов при взаимодействии с панелью каталога.</param>
+        public DocumentPresenter(IApplicationContext context, ICatalogPaneCallback callback)
         {
             this.context = context;
-            ribbonView = view;
+            this.callback = callback;
             model = new DocumentModel();
-            model.SetModel(catalog);
-            structureView = context.ViewFactory.CreateStructureView(this, model.PaneTitle);
-            dragController = new TreeDragDropController(context, structureView, model, this);
+            model.SetModel(context.Catalog);
+            structureView = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
+            dragController = new TreeDragDropController(context.Environment, structureView, model, this);
         }
 
         public IDragSourceController DragController
@@ -63,45 +60,55 @@ namespace SampleWordHelper.Presentation
             get { return dragController; }
         }
 
-        public void OnToggleStructureVisibility()
+        public void ToggleCatalogVisibility()
         {
             model.IsVisible = !model.IsVisible;
-            ribbonView.SetStructureVisible(model.IsVisible);
+            callback.OnVisibilityChanged(model.IsVisible);
             structureView.SetVisibility(model.IsVisible);
         }
 
-        public void OnClosed()
+        void ICatalogPresenter.OnClosed()
         {
-            model.IsVisible = false;
-            ribbonView.SetStructureVisible(model.IsVisible);
+            callback.OnVisibilityChanged(model.IsVisible = false);
         }
 
         void IDropCallback.OnDrop(IDataObject obj, Point point)
         {
             if (!model.IsValidDropData(obj))
                 return;
-            if (context.Application.ActiveDocument == null)
+            var application = context.Environment.Application;
+            if (application.ActiveDocument == null)
                 return;
             var filePath = model.ExtractFilePathFromTransferredData(obj);
             using (var safeFile = new SafeFilePath(filePath))
             {
-                var range = (Range) context.Application.ActiveWindow.RangeFromPoint(point.X, point.Y);
+                var range = (Range) application.ActiveWindow.RangeFromPoint(point.X, point.Y);
                 range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
             }
-            context.Application.ActiveWindow.SetFocus();
+            application.ActiveWindow.SetFocus();
         }
 
         public void OnNodeDoubleClicked(object item)
         {
-            if (!model.CanDragNode(item) || context.Application.ActiveDocument == null)
+            var application = context.Environment.Application;
+            if (!model.CanDragNode(item) || application.ActiveDocument == null)
                 return;
             var filePath = model.GetFilePathForId(item);
             using (var safeFile = new SafeFilePath(filePath))
             {
-                var range = context.Application.Selection;
+                var range = application.Selection;
                 range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
             }
-            context.Application.ActiveWindow.SetFocus();
+            application.ActiveWindow.SetFocus();
+        }
+
+        public void OnFilterTextChanged(string filterText)
+        {
+            if (string.Equals(model.Filter, filterText, StringComparison.InvariantCultureIgnoreCase))
+                return;
+            model.UpdateFilter(filterText);
+            structureView.SetFilterText(filterText);
+            structureView.UpdateStructure(model);
         }
 
         /// <summary>
@@ -109,7 +116,7 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Activate()
         {
-            ribbonView.SetStructureVisible(model.IsVisible);
+            callback.OnVisibilityChanged(model.IsVisible);
             structureView.SetVisibility(model.IsVisible);
             structureView.UpdateStructure(model);
         }
@@ -120,37 +127,23 @@ namespace SampleWordHelper.Presentation
         public void Run()
         {
             //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
-            model.IsVisible = false;
+            model.IsVisible = true;
             Activate();
         }
 
         /// <summary>
         /// Вызывается при обновлении данных каталога.
         /// </summary>
-        /// <param name="catalog">Обновлённая модель каталога.</param>
-        public void UpdateCatalog(ICatalog catalog)
+        public void UpdateCatalog()
         {
-            model.SetModel(catalog);
+            model.SetModel(context.Catalog);
             structureView.UpdateStructure(model);
         }
 
-        public void Dispose()
+        protected override void DisposeManaged()
         {
             dragController.SafeDispose();
             structureView.SafeDispose();
         }
-    }
-
-    /// <summary>
-    /// Интерфейс обратного вызова для обработки успешного перетаскивания.
-    /// </summary>
-    public interface IDropCallback
-    {
-        /// <summary>
-        /// Вызывается при успешном перетаскивании указанного элемента каталога.
-        /// </summary>
-        /// <param name="obj">Перетащенный объект.</param>
-        /// <param name="point">Экранные координаты точки, в которой был сброшен объект.</param>
-        void OnDrop(IDataObject obj, Point point);
     }
 }

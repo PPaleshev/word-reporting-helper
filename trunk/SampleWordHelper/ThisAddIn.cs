@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Windows.Forms;
-using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
-using Office = Microsoft.Office.Core;
 
 namespace SampleWordHelper
 {
@@ -30,10 +26,6 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
-//            var button = (Office.CommandBarButton)Application.CommandBars["Text"].Controls.Add(Office.MsoControlType.msoControlButton,Temporary: true);
-//            button.Caption = "Вставить же!";
-//            button.Style = Office.MsoButtonStyle.msoButtonCaption;
-//            button.Visible = true;
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
             var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
             presenter = new MainPresenter(context);
@@ -47,22 +39,6 @@ namespace SampleWordHelper
         void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
             presenter.SafeDispose();
-        }
-
-        /// <summary>
-        /// Вызывается после активации окна.
-        /// </summary>
-        void OnWindowActivated(Document doc, Window wn)
-        {
-            MessageBox.Show("OnWindowActivated: " + wn.Caption);
-        }
-
-        /// <summary>
-        /// Вызывается после деактивации окна.
-        /// </summary>
-        void OnWindowDeactivated(Document doc, Window wn)
-        {
-            MessageBox.Show("OnWindowDeactivated: " + wn.Caption);
         }
 
         #region VSTO generated code

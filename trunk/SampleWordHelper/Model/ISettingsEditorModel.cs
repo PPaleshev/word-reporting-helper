@@ -25,10 +25,5 @@ namespace SampleWordHelper.Model
         /// Модель настроек выбранного поставщика.
         /// </summary>
         ISettingsModel ProviderSettingsModel { get; }
-
-        /// <summary>
-        /// Устанавливает новый выбранный провайдер.
-        /// </summary>
-        void UpdateSelectedProvider(ListItem newItem);
     }
 }

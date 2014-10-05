@@ -34,7 +34,7 @@
             this.treeStructure = new System.Windows.Forms.TreeView();
             this.treeImages = new System.Windows.Forms.ImageList(this.components);
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textSearch = new System.Windows.Forms.TextBox();
             this.buttonFind = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -84,7 +84,7 @@
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.Controls.Add(this.textBox1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textSearch, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonFind, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
@@ -96,14 +96,14 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(300, 20);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
-            // textBox1
+            // textSearch
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(280, 20);
-            this.textBox1.TabIndex = 0;
+            this.textSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textSearch.Location = new System.Drawing.Point(0, 0);
+            this.textSearch.Margin = new System.Windows.Forms.Padding(0);
+            this.textSearch.Name = "textSearch";
+            this.textSearch.Size = new System.Drawing.Size(280, 20);
+            this.textSearch.TabIndex = 0;
             // 
             // buttonFind
             // 
@@ -136,8 +136,8 @@
         private System.Windows.Forms.ImageList treeImages;
         internal System.Windows.Forms.TreeView treeStructure;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button buttonFind;
+        internal System.Windows.Forms.TextBox textSearch;
 
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Model;
 
@@ -10,11 +9,6 @@ namespace SampleWordHelper.Interface
     /// </summary>
     public interface IDocumentView : IView
     {
-        /// <summary>
-        /// Инициализирует представление данными модели.
-        /// </summary>
-        void Initialize(DocumentModel model);
-
         /// <summary>
         /// Показывает\скрывает представление в зависимости от переданного флага.
         /// </summary>
@@ -32,5 +26,10 @@ namespace SampleWordHelper.Interface
         /// Обновляет структуру каталога.
         /// </summary>
         void UpdateStructure(DocumentModel model);
+
+        /// <summary>
+        /// Устанавливает текст фильтра.
+        /// </summary>
+        void SetFilterText(string filterText);
     }
 }

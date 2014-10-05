@@ -1,7 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Windows.Forms;
+﻿using System.IO;
 using System.Xml.Serialization;
 
 namespace SampleWordHelper.Providers.FileSystem
