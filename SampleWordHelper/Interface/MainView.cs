@@ -38,7 +38,16 @@ namespace SampleWordHelper.Interface
             this.ribbon.buttonSettings.Click += OnSettingsButtonClick;
             this.ribbon.buttonReload.Click += OnReloadCatalogButtonClick;
             this.ribbon.toggleStructureVisibility.Click += OnToggleCatalogVisibility;
+            this.ribbon.toggleEnabled.Click += OnEnabledChanged;
             defaultSettingsSuperTip = ribbon.buttonSettings.SuperTip;
+        }
+
+        /// <summary>
+        /// Вызывается при изменении активности надстройки.
+        /// </summary>
+        void OnEnabledChanged(object sender, RibbonControlEventArgs e)
+        {
+            presenter.OnEnabledChanged(ribbon.toggleEnabled.Checked);
         }
 
         /// <summary>
@@ -73,13 +82,16 @@ namespace SampleWordHelper.Interface
             ribbon.buttonReload.Click -= OnReloadCatalogButtonClick;
         }
 
-        public void EnableAddinFeatures(bool enable, string message)
+        public void EnableAddinFeatures(bool enabled, bool valid, string message)
         {
-            ribbon.buttonSettings.Image = enable ? Properties.Resources.settings : Properties.Resources.warning;
+            ribbon.toggleEnabled.Checked = enabled;
+            ribbon.group2.Visible = enabled;
+
+            ribbon.toggleStructureVisibility.Visible = ribbon.buttonReload.Visible = enabled && valid;
+            if (!enabled)
+                return;
+            ribbon.buttonSettings.Image = valid ? Properties.Resources.settings : Properties.Resources.warning;
             ribbon.buttonSettings.SuperTip = string.IsNullOrWhiteSpace(message) ? defaultSettingsSuperTip : message;
-            ribbon.toggleStructureVisibility.Visible = enable;
-            ribbon.separator.Visible = enable;
-            ribbon.buttonReload.Visible = enable;
         }
 
         public void SetCatalogButtonPressed(bool pressed)

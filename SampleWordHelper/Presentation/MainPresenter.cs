@@ -1,12 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using Microsoft.Office.Interop.Word;
-using SampleWordHelper.Core.Application;
+﻿using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
-using SampleWordHelper.Providers.Core;
 using ApplicationContext = SampleWordHelper.Core.Application.ApplicationContext;
 
 namespace SampleWordHelper.Presentation
@@ -27,29 +23,16 @@ namespace SampleWordHelper.Presentation
         readonly IMainView view;
 
         /// <summary>
-        /// Слушатель событий окружения.
+        /// Состояние.
         /// </summary>
-        readonly ApplicationEventsListener eventListener;
-
-        /// <summary>
-        /// Объект для отслеживания состояния документов.
-        /// </summary>
-        readonly DocumentManager documentManager;
+        MainPresenterState model;
 
         /// <summary>
         /// Механизм поиска.
         /// </summary>
-        SearchEngine searchEngine;
+        readonly SearchEngine searchEngine;
 
-        /// <summary>
-        /// Модель конфигурации приложения.
-        /// </summary>
-        ConfigurationModel configurationModel;
-
-        /// <summary>
-        /// Экземпляр провайдера.
-        /// </summary>
-        Provider provider;
+        bool isActive = false;
 
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
@@ -60,8 +43,6 @@ namespace SampleWordHelper.Presentation
             searchEngine = new SearchEngine(new WordDocumentContentProvider(runtimeContext.Application));
             context = new ApplicationContext(runtimeContext, new EmptyCatalog(), searchEngine);
             view = runtimeContext.ViewFactory.CreateMainView(this);
-            documentManager = new DocumentManager(context, this);
-            eventListener = new ApplicationEventsListener(runtimeContext, documentManager);
         }
 
         /// <summary>
@@ -69,25 +50,31 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Start()
         {
-            configurationModel = new ConfigurationModel("reportHelper");
-            provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
-            if (InitializeAndValidate())
-                UpdateCatalog();
-            eventListener.Listen();
+            isActive = false;
+            view.EnableAddinFeatures(isActive, false, "");
+        }
+
+        public void OnEnabledChanged(bool enabled)
+        {
+            if (isActive == enabled)
+                return;
+            if (enabled)
+                Activate();
+            else
+                Deactivate();
         }
 
         public void OnEditSettings()
         {
-            var editorModel = configurationModel.CreateEditorModel();
+            if(!isActive)
+                return;
+            var editorModel = model.CreateEditorModel();
             using (var presenter = new ConfigurationEditorPresenter(context.Environment.ViewFactory, editorModel))
             {
                 if (!presenter.Edit())
                     return;
-                provider.Shutdown();
-                configurationModel.Update(editorModel);
-                provider = new Provider(configurationModel.GetConfiguredProviderStrategy());
-                if (InitializeAndValidate())
-                    UpdateCatalog();
+                model.UpdateConfiguraion(editorModel);
+                view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
             }
         }
 
@@ -98,8 +85,9 @@ namespace SampleWordHelper.Presentation
 
         public void OnUpdateCatalogVisibility(bool visible)
         {
-            documentManager.UpdateCatalogVisibility(visible);
+            model.ShowCatalog(visible);
         }
+
 
         public void OnVisibilityChanged(bool visible)
         {
@@ -107,46 +95,35 @@ namespace SampleWordHelper.Presentation
         }
 
         /// <summary>
-        /// Проверяет состояние провайдера.
-        /// Если он успешно инициализировался, делает доступными все элементы управления надстройкой, в противном случае требует повторной настройки.
-        /// </summary>
-        bool InitializeAndValidate()
-        {
-            string message = null;
-            if (!configurationModel.HasConfiguredProvider)
-                message = "Требуется выбор поставщика каталога.";
-            else if (!provider.Initialize(context.Environment))
-                message = "Требуется настройка текущего поставщика каталога.";
-            var isSuccess = string.IsNullOrWhiteSpace(message);
-            view.EnableAddinFeatures(isSuccess, message);
-            return isSuccess;
-        }
-
-        /// <summary>
         /// Перезагружает текущий каталог и обновляет его данные.
         /// </summary>
         void UpdateCatalog()
         {
-            context.Catalog = provider.LoadCatalog();
-            documentManager.UpdateCatalog();
-            Debug.WriteLine("Update catalog");
-            using (var presenter = new SearchIndexPresenter(context.Environment))
-            using (eventListener.SuspendEvents())
-                presenter.Run(context.Catalog, searchEngine);
+            model.UpdateCatalog();
+        }
+
+        void Activate()
+        {
+            isActive = true;
+            model = new MainPresenterState(context, this);
+            model.UpdateCatalog();
+            view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
+//            using (var presenter = new SearchIndexPresenter(context.Environment))
+//            using (model.SuspendEvents())
+//                presenter.Run(context.Catalog, searchEngine);
+        }
+
+        void Deactivate()
+        {
+            isActive = false;
+            model.SafeDispose();
+            view.EnableAddinFeatures(false, false, "");
         }
 
         protected override void DisposeManaged()
         {
-            try
-            {
-                provider.Shutdown();
-            }
-            catch
-            {
-                //TODO log it
-            }
             view.SafeDispose();
-            documentManager.SafeDispose();
+            model.SafeDispose();
             searchEngine.SafeDispose();
         }
     }

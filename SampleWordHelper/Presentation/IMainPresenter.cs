@@ -21,5 +21,11 @@ namespace SampleWordHelper.Presentation
         /// Вызывается для изменения видимости панели каталога.
         /// </summary>
         void OnUpdateCatalogVisibility(bool visible);
+
+        /// <summary>
+        /// Вызывается при нажатии на кнопку включения\выключения возможностей надстройки.
+        /// </summary>
+        /// <param name="enabled">True, если надстройка включается, иначе false.</param>
+        void OnEnabledChanged(bool enabled);
     }
 }

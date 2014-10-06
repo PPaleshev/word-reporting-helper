@@ -14,7 +14,7 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Отображение из имени фабрики провайдера в реализующий его класс.
         /// </summary>
-        public IDictionary<string, IProviderFactory> Factories { get; private set; }
+        readonly IDictionary<string, IProviderFactory> factories;
 
         /// <summary>
         /// Создаёт конфигурацию приложения, загружая её из секции с названием <paramref name="sectionName"/>.
@@ -22,26 +22,25 @@ namespace SampleWordHelper.Model
         /// <param name="sectionName">Название секции, в которой содержатся настройки.</param>
         public ConfigurationModel(string sectionName)
         {
-            Factories = new Dictionary<string, IProviderFactory>();
+            factories = new Dictionary<string, IProviderFactory>();
             LoadFactoriesSafe((ReportHelperConfigurationSection) ConfigurationManager.GetSection(sectionName));
         }
 
         /// <summary>
         /// Название выбранного провайдера.
         /// </summary>
-        public string CurrentFactoryName
+        static string CurrentFactoryName
         {
             get { return Properties.Settings.Default.CurrentProviderName; }
-            private set { Properties.Settings.Default.CurrentProviderName = value; }
+            set { Properties.Settings.Default.CurrentProviderName = value; }
         }
 
         /// <summary>
         /// Создаёт модель для редактирования конфигурации.
         /// </summary>
-        /// <returns></returns>
         public ConfigurationEditorModel CreateEditorModel()
         {
-            return new ConfigurationEditorModel(Factories, CurrentFactoryName);
+            return new ConfigurationEditorModel(factories, CurrentFactoryName);
         }
 
         /// <summary>
@@ -49,10 +48,10 @@ namespace SampleWordHelper.Model
         /// </summary>
         public void Update(ConfigurationEditorModel model)
         {
-            if (!Factories.ContainsKey(model.SelectedProviderName))
+            if (!factories.ContainsKey(model.SelectedProviderName))
                 throw new ArgumentException("invalid provider name: " + model.SelectedProviderName);
             CurrentFactoryName = model.SelectedProviderName;
-            Factories[CurrentFactoryName].ApplyConfiguration(model.ProviderSettingsModel);
+            factories[CurrentFactoryName].ApplyConfiguration(model.ProviderSettingsModel);
         }
 
         /// <summary>
@@ -72,25 +71,26 @@ namespace SampleWordHelper.Model
             if (!typeof(IProviderFactory).IsAssignableFrom(factoryElement.Class))
                 return;
             var instance = (IProviderFactory) Activator.CreateInstance(factoryElement.Class);
-            Factories.Add(factoryElement.Name, instance);
+            factories.Add(factoryElement.Name, instance);
         }
 
         /// <summary>
-        /// Возвращает true, если модель содержит выбранный провайдер, иначе false.
+        /// Возвращает true, если в конфигурации содержится выбранный провайдер, иначе false.
         /// </summary>
         public bool HasConfiguredProvider
         {
-            get { return !string.IsNullOrWhiteSpace(CurrentFactoryName) && Factories.ContainsKey(CurrentFactoryName); }
+            get { return !string.IsNullOrWhiteSpace(CurrentFactoryName) && factories.ContainsKey(CurrentFactoryName); }
         }
 
         /// <summary>
         /// Возвращает стратегию выбранного провайдера.
-        /// Если фабрика не сконфигурирована, возвращает <see cref="NullProviderStrategy"/>.
         /// </summary>
         public ICatalogProviderStrategy GetConfiguredProviderStrategy()
         {
             IProviderFactory f;
-            return string.IsNullOrWhiteSpace(CurrentFactoryName) || !Factories.TryGetValue(CurrentFactoryName, out f) ? new NullProviderStrategy() : f.CreateStrategy();
+            if(string.IsNullOrWhiteSpace(CurrentFactoryName)||!factories.TryGetValue(CurrentFactoryName, out f))
+                throw new InvalidOperationException();
+            return f.CreateStrategy();
         }
     }
 }

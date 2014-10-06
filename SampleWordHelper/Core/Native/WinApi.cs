@@ -40,14 +40,6 @@ namespace SampleWordHelper.Core.Native
             int cy, // height
             uint uFlags // window-positioning options
             );
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
 
         /// <summary>
         /// Выполняет поиск дескриптора окна редактируемого документа Ms Word.
@@ -71,6 +63,24 @@ namespace SampleWordHelper.Core.Native
             var r = new RECT();
             GetWindowRect(handle, ref r);
             return new Rectangle(r.Left, r.Top, r.Right - r.Left + 1, r.Bottom - r.Top + 1);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+
+        public RECT(Rectangle r)
+            : this()
+        {
+            Left = r.Left;
+            Top = r.Top;
+            Right = r.Right;
+            Bottom = r.Bottom;
         }
     }
 }

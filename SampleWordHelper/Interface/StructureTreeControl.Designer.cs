@@ -61,7 +61,8 @@
             this.treeStructure.AllowDrop = true;
             this.treeStructure.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.treeStructure.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.treeStructure.HotTracking = true;
             this.treeStructure.ImageIndex = 0;
             this.treeStructure.ImageList = this.treeImages;
             this.treeStructure.Location = new System.Drawing.Point(3, 23);
@@ -78,6 +79,7 @@
             this.treeImages.Images.SetKeyName(0, "closed-folder.png");
             this.treeImages.Images.SetKeyName(1, "opened-folder.png");
             this.treeImages.Images.SetKeyName(2, "document.png");
+            this.treeImages.Images.SetKeyName(3, "lookup.png");
             // 
             // tableLayoutPanel2
             // 

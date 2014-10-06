@@ -36,23 +36,34 @@
         {
             Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainRibbon));
+            this.toggleEnabled = this.Factory.CreateRibbonToggleButton();
             this.toggleStructureVisibility = this.Factory.CreateRibbonToggleButton();
             this.buttonReload = this.Factory.CreateRibbonButton();
-            this.separator = this.Factory.CreateRibbonSeparator();
+            this.separator2 = this.Factory.CreateRibbonSeparator();
             this.buttonSettings = this.Factory.CreateRibbonButton();
             this.tab1 = this.Factory.CreateRibbonTab();
+            this.group2 = this.Factory.CreateRibbonGroup();
             group1 = this.Factory.CreateRibbonGroup();
             group1.SuspendLayout();
             this.tab1.SuspendLayout();
+            this.group2.SuspendLayout();
             // 
             // group1
             // 
-            group1.Items.Add(this.toggleStructureVisibility);
-            group1.Items.Add(this.buttonReload);
-            group1.Items.Add(this.separator);
-            group1.Items.Add(this.buttonSettings);
+            group1.Items.Add(this.toggleEnabled);
             group1.Label = "Управление";
             group1.Name = "group1";
+            // 
+            // toggleEnabled
+            // 
+            this.toggleEnabled.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.toggleEnabled.Image = ((System.Drawing.Image)(resources.GetObject("toggleEnabled.Image")));
+            this.toggleEnabled.Label = "Включить";
+            this.toggleEnabled.Name = "toggleEnabled";
+            this.toggleEnabled.ScreenTip = "Управление активностью";
+            this.toggleEnabled.ShowImage = true;
+            this.toggleEnabled.SuperTip = "Включает надстройку по управлению базой знаний: загружает данные каталога, выполн" +
+    "яет индексацию и начинает отслеживание состояния документов.";
             // 
             // toggleStructureVisibility
             // 
@@ -74,9 +85,9 @@
             this.buttonReload.ShowImage = true;
             this.buttonReload.SuperTip = "Полностью перечитывает данные из текущего каталога.";
             // 
-            // separator
+            // separator2
             // 
-            this.separator.Name = "separator";
+            this.separator2.Name = "separator2";
             // 
             // buttonSettings
             // 
@@ -93,8 +104,18 @@
             // 
             this.tab1.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office;
             this.tab1.Groups.Add(group1);
-            this.tab1.Label = "Отчётность";
+            this.tab1.Groups.Add(this.group2);
+            this.tab1.Label = "База знаний";
             this.tab1.Name = "tab1";
+            // 
+            // group2
+            // 
+            this.group2.Items.Add(this.toggleStructureVisibility);
+            this.group2.Items.Add(this.buttonReload);
+            this.group2.Items.Add(this.separator2);
+            this.group2.Items.Add(this.buttonSettings);
+            this.group2.Label = "Основное";
+            this.group2.Name = "group2";
             // 
             // MainRibbon
             // 
@@ -105,6 +126,8 @@
             group1.PerformLayout();
             this.tab1.ResumeLayout(false);
             this.tab1.PerformLayout();
+            this.group2.ResumeLayout(false);
+            this.group2.PerformLayout();
 
         }
 
@@ -113,7 +136,9 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleStructureVisibility;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonSettings;
-        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator;
+        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator2;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonReload;
+        internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleEnabled;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group2;
     }
 }

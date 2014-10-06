@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 
@@ -34,6 +35,8 @@ namespace SampleWordHelper.Presentation
         {
             this.context = context;
             this.callback = callback;
+            foreach (Document document in context.Environment.Application.Documents)
+                RegisterDocument(document.GetKey(context.Environment));
         }
 
         /// <summary>

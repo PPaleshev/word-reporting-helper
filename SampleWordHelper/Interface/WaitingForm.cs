@@ -18,7 +18,7 @@ namespace SampleWordHelper.Interface
         public void UpdateProgress(string action, int maxValue, int currentValue)
         {
             if (InvokeRequired)
-                Invoke(new Action(() => UpdateProgress(action, maxValue, currentValue)));
+                BeginInvoke(new Action(() => UpdateProgress(action, maxValue, currentValue)));
             else
             {
                 label2.Text = action;
@@ -29,18 +29,18 @@ namespace SampleWordHelper.Interface
 
         void IWaitingView.Show()
         {
-            using (var session = NativeWindowSession.GetCurrentProcessMainWindow())
+            using (var window = NativeWindowSession.GetCurrentProcessMainWindow())
             {
                 TopLevel = true;
                 StartPosition = FormStartPosition.CenterScreen;
-                ShowDialog(session.window);
+                ShowDialog(window.window);
             }
         }
 
         void IWaitingView.Close()
         {
             if (InvokeRequired)
-                Invoke((Action) Close);
+                BeginInvoke((Action) Close);
             else
                 Close();
         }
