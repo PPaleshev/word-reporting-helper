@@ -47,19 +47,20 @@ namespace SampleWordHelper.Presentation
         }
 
         /// <summary>
-        /// Изменяет видимость каталога на противоположную.
+        /// Изменяет видимость панели каталога.
         /// </summary>
-        public void ToggleCatalogVisibility()
+        public void UpdateCatalogVisibility(bool visible)
         {
             var key = context.Environment.GetActiveDocumentKey();
             DocumentPresenter presenter;
             if (presenters.TryGetValue(key, out presenter))
-                presenter.ToggleCatalogVisibility();
+                presenter.UpdateCatalogVisibility(visible);
         }
 
         /// <summary>
         /// Добавляет документ в список активных.
         /// </summary>
+        /// <param name="documentId">Уникальный идентификатор открываемого документа.</param>
         void RegisterDocument(object documentId)
         {
             var presenter = new DocumentPresenter(context, callback);
@@ -74,7 +75,8 @@ namespace SampleWordHelper.Presentation
 
         void IDocumentEventsCallback.OnDocumentOpened(object documentId)
         {
-            RegisterDocument(documentId);
+            if (!presenters.ContainsKey(documentId))
+                RegisterDocument(documentId);
         }
 
         void IDocumentEventsCallback.OnDocumentActivated(object documentId)

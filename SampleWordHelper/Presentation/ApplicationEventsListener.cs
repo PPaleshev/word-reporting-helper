@@ -72,7 +72,7 @@ namespace SampleWordHelper.Presentation
             documentOpenedExternally = false;
             doc.Saved = false;
             SetupShutdown(doc);
-            Debug.WriteLine("OnNewDocument");
+            Debug.WriteLine("OnNewDocument: {0}", GetDocumentKey(doc));
             callback.OnDocumentCreated(GetDocumentKey(doc));
         }
 
@@ -86,7 +86,7 @@ namespace SampleWordHelper.Presentation
                 return;
             documentOpenedExternally = false;
             SetupShutdown(doc);
-            Debug.WriteLine("OnOpened");
+            Debug.WriteLine("OnOpened: {0}", GetDocumentKey(doc));
             callback.OnDocumentOpened(GetDocumentKey(doc));
         }
 
@@ -97,7 +97,7 @@ namespace SampleWordHelper.Presentation
         {
             if (eventsSuspended )
                 return;
-            Debug.WriteLine("OnShutdown");
+            Debug.WriteLine("OnShutdown: {0}", documentId);
             callback.OnDocumentClosed(documentId);
         }
 
@@ -106,6 +106,8 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void OnDocumentChanged()
         {
+            if (eventsSuspended)
+                return;
             try
             {
                 if (context.Application.Documents.Count == 0)
@@ -115,6 +117,7 @@ namespace SampleWordHelper.Presentation
                 var activeDocument = context.Application.ActiveDocument;
                 if (activeDocument == null)
                     return;
+                Debug.WriteLine("Listener Changed: {0} {1} {2}", GetDocumentKey(activeDocument), documentOpenedExternally, activeDocument.Name);
                 if (documentOpenedExternally)
                 {
                     if (string.IsNullOrWhiteSpace(activeDocument.Path))
@@ -122,8 +125,8 @@ namespace SampleWordHelper.Presentation
                     else
                         OnDocumentOpened(activeDocument);
                 }
+                Debug.WriteLine("OnActivated: {0} {1}", GetDocumentKey(activeDocument), activeDocument.Name);
                 callback.OnDocumentActivated(GetDocumentKey(activeDocument));
-                Debug.WriteLine("OnActivated");
             }
             catch (COMException e)
             {

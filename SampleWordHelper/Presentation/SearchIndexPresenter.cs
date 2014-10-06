@@ -1,4 +1,5 @@
-﻿using SampleWordHelper.Core.Application;
+﻿using System.Threading;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
@@ -38,16 +39,16 @@ namespace SampleWordHelper.Presentation
         /// <param name="searchEngine">Экземпляр поискового механизма.</param>
         public void Run(ICatalog catalog, SearchEngine searchEngine)
         {
-            context.Application.Visible = false;
+            context.Application.ScreenUpdating = false;
             try
             {
-                view.Show();
+                new Thread(view.Show).Start();
                 searchEngine.BuildIndex(catalog, view);
             }
             finally
             {
-                view.Hide();
-                context.Application.Visible = true;
+                view.Close();
+                context.Application.ScreenUpdating = true;
             }
         }
 

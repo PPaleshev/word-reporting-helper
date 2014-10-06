@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Office.Tools;
+using SampleWordHelper.Core.Application;
+using SampleWordHelper.Core.Common;
 using SampleWordHelper.Model;
 using SampleWordHelper.Presentation;
 
@@ -9,7 +11,7 @@ namespace SampleWordHelper.Interface
     /// <summary>
     /// Представление для отображения структуры каталога.
     /// </summary>
-    public class StructureTreeView: IDocumentView
+    public class StructureTreeView: BasicDisposable, IDocumentView
     {
         /// <summary>
         /// Контрол со структурой.
@@ -19,7 +21,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Ссылка на контейнер, в коротом расположен контрол.
         /// </summary>
-        readonly CustomTaskPane container;
+        readonly ManagedTaskPaneContainer container;
 
         /// <summary>
         /// Менеджер представления.
@@ -31,7 +33,7 @@ namespace SampleWordHelper.Interface
         /// </summary>
         readonly SuspendFlag suspendEvents = new SuspendFlag();
 
-        public StructureTreeView(CustomTaskPane container, ICatalogPresenter presenter)
+        public StructureTreeView(ManagedTaskPaneContainer container, ICatalogPresenter presenter)
         {
             control = (StructureTreeControl) container.Control;
             this.container = container;
@@ -50,10 +52,11 @@ namespace SampleWordHelper.Interface
                 control.textSearch.Text = filterText;
         }
 
-        public void Dispose()
+        protected override void DisposeManaged()
         {
             container.VisibleChanged -= ContainerVisibilityChanged;
-            control.Dispose();
+            container.SafeDispose();
+            control.SafeDispose();
         }
 
         /// <summary>
@@ -160,8 +163,7 @@ namespace SampleWordHelper.Interface
         /// </summary>
         void ContainerVisibilityChanged(object sender, EventArgs e)
         {
-            if (!container.Visible)
-                presenter.OnClosed();
+            presenter.OnPaneVisibilityChanged(container.Visible);
         }
 
         /// <summary>

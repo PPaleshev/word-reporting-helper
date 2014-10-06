@@ -1,16 +1,16 @@
 ﻿namespace SampleWordHelper.Indexation
 {
     /// <summary>
-    /// Поставщик содержимого для индексации
+    /// Интерфейс поставщика содержимого документов.
     /// </summary>
     public interface IContentProvider
     {
         /// <summary>
-        /// Пытается прочитать содержимое файла по указанному пути.
+        /// Пытается извлечь содержимое файла <paramref name="fileName"/>.
         /// </summary>
-        /// <param name="filePath">Путь к файлу.</param>
-        /// <param name="content">Прочитанное содержимое, если метод вернул true.</param>
-        /// <returns>Возвращает true, если содержимое было прочитано, иначе false.</returns>
-        bool TryGetContent(string filePath, out string content);
+        /// <param name="fileName">Путь к файлу, содержимое которого требуется получить.</param>
+        /// <param name="content">Извлечённое содержимое документа.</param>
+        /// <returns>Возвращает true, если содержимое было успешно извлечено, иначе false.</returns>
+        bool TryGetContent(string fileName, out string content);
     }
 }
