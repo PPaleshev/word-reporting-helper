@@ -51,8 +51,6 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         Provider provider;
 
-        bool searchIndexCreated = false;
-
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
         /// </summary>
@@ -64,7 +62,6 @@ namespace SampleWordHelper.Presentation
             view = runtimeContext.ViewFactory.CreateMainView(this);
             documentManager = new DocumentManager(context, this);
             eventListener = new ApplicationEventsListener(runtimeContext, documentManager);
-//            runtimeContext.Application.WindowActivate += ApplicationOnWindowActivate;
         }
 
         /// <summary>
@@ -136,21 +133,6 @@ namespace SampleWordHelper.Presentation
             using (var presenter = new SearchIndexPresenter(context.Environment))
             using (eventListener.SuspendEvents())
                 presenter.Run(context.Catalog, searchEngine);
-        }
-
-        /// <summary>
-        /// Вызывается при первой активации окна для построения поискового индекса.
-        /// </summary>
-        void ApplicationOnWindowActivate(Document doc, Window wn)
-        {
-            Debug.WriteLine("Window activated");
-            context.Environment.Application.WindowActivate -= ApplicationOnWindowActivate;
-            if (searchIndexCreated)
-                return;
-            using (var presenter = new SearchIndexPresenter(context.Environment))
-            using (eventListener.SuspendEvents())
-                presenter.Run(context.Catalog, searchEngine);
-            searchIndexCreated = true;
         }
 
         protected override void DisposeManaged()

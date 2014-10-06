@@ -9,7 +9,7 @@ namespace SampleWordHelper.Core.Application
     /// Обёртка над <see cref="Microsoft.Office.Tools.CustomTaskPane"/>.
     /// Обеспечивает гарантированное и безопасное удаление панели при вызове <see cref="Dispose"/>.
     /// </summary>
-    public sealed class ManagedTaskPaneContainer : BasicDisposable
+    public sealed class ManagedTaskPane : BasicDisposable
     {
         /// <summary>
         /// Экземпляр панели задач.
@@ -21,7 +21,7 @@ namespace SampleWordHelper.Core.Application
         /// </summary>
         readonly CustomTaskPaneCollection parentCollection;
 
-        public ManagedTaskPaneContainer(CustomTaskPaneCollection parentCollection, CustomTaskPane pane)
+        public ManagedTaskPane(CustomTaskPaneCollection parentCollection, CustomTaskPane pane)
         {
             this.parentCollection = parentCollection;
             this.pane = pane;

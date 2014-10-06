@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using ICSharpCode.SharpZipLib.Core;
+using SampleWordHelper.Indexation;
 
 namespace SampleWordHelper.Model
 {
     /// <summary>
     /// Модель представления для работы со структурой каталога.
     /// </summary>
-    /// TODO: представить некий срез, содержащий определённый набор данных.
-    public class DocumentModel 
+    public class DocumentModel
     {
+        /// <summary>
+        /// Механизм поиска по содержимому.
+        /// </summary>
+        readonly ISearchEngine searchEngine;
+
         /// <summary>
         /// Объект для сортировки элементов каталога.
         /// </summary>
@@ -22,16 +28,22 @@ namespace SampleWordHelper.Model
         ICatalog catalog;
 
         /// <summary>
-        /// Отфильтрованное представление элементов.
+        /// Текущий источник данных модели.
         /// </summary>
-        NodeView currentView;
+        ElementSource currentSource;
+
+        /// <summary>
+        /// Источник элементов, содержащий нефильтрованные данные.
+        /// </summary>
+        ElementSource nonFilteredSource;
 
         /// <summary>
         /// Создаёт новый экземпляр модели документа.
         /// </summary>
-        public DocumentModel()
+        public DocumentModel(ICatalog catalog, ISearchEngine searchEngine)
         {
-            SetModel(new EmptyCatalog());
+            this.searchEngine = searchEngine;
+            SetModel(catalog);
         }
 
         /// <summary>
@@ -40,11 +52,16 @@ namespace SampleWordHelper.Model
         public bool IsVisible { get; set; }
 
         /// <summary>
+        /// Возвращает true, если текущая модель с учётом фильтра содержит элементы, иначе false.
+        /// </summary>
+        public bool HasElements { get; private set; }
+
+        /// <summary>
         /// Заголовок панели структуры.
         /// </summary>
         public string PaneTitle
         {
-            get { return "Структура каталога"; }
+            get { return "Каталог шаблонов"; }
         }
 
         /// <summary>
@@ -53,13 +70,21 @@ namespace SampleWordHelper.Model
         public string Filter { get; private set; }
 
         /// <summary>
+        /// Возвращает true, если текущая модель содержит отфильтрованные данные, иначе false.
+        /// </summary>
+        public bool IsFiltered
+        {
+            get { return !string.IsNullOrWhiteSpace(Filter); }
+        }
+
+        /// <summary>
         /// Устанавливает новую модель каталога.
         /// </summary>
         public void SetModel(ICatalog catalog)
         {
             this.catalog = catalog;
-            if (!string.IsNullOrWhiteSpace(Filter))
-                currentView = new NodeView(catalog, Filter);
+            nonFilteredSource = new ElementSource(catalog, new NullFilterStrategy());
+            currentSource = GetElementSource(Filter);
             nodeComparer = new Comparer(catalog);
         }
 
@@ -67,10 +92,10 @@ namespace SampleWordHelper.Model
         /// Устанавливает фильтр для элементов дерева.
         /// </summary>
         /// <param name="filter">Текст фильтра или пустое значение при его отсутствии.</param>
-        public void UpdateFilter(string filter)
+        public void SetFilter(string filter)
         {
             Filter = filter;
-            currentView = string.IsNullOrWhiteSpace(filter) ? null : new NodeView(catalog, filter);
+            currentSource = GetElementSource(filter);
         }
 
         /// <summary>
@@ -78,8 +103,7 @@ namespace SampleWordHelper.Model
         /// </summary>
         public IEnumerable<string> GetRootNodes()
         {
-            var roots = HasFilter ? currentView.GetRootElements() : catalog.GetRootElements();
-            return roots.OrderBy(s => s, nodeComparer);
+            return currentSource.GetRootElements().OrderBy(s => s, nodeComparer);
         }
 
         /// <summary>
@@ -88,8 +112,7 @@ namespace SampleWordHelper.Model
         /// <param name="parentId">Идентификатор родительского узла.</param>
         public IEnumerable<string> GetChildNodes(string parentId)
         {
-            var elements = HasFilter ? currentView.GetChildElements(parentId) : catalog.GetChildElements(parentId);
-            return elements.OrderBy(id => id, nodeComparer);
+            return currentSource.GetChildElements(parentId).OrderBy(id => id, nodeComparer);
         }
 
         /// <summary>
@@ -126,7 +149,7 @@ namespace SampleWordHelper.Model
         public bool CanDragNode(object item)
         {
             var id = item as string;
-            return !string.IsNullOrWhiteSpace(id) && !catalog.IsGroup(id);
+            return !string.IsNullOrWhiteSpace(id) && currentSource.Contains(id) && !catalog.IsGroup(id);
         }
 
         /// <summary>
@@ -135,7 +158,7 @@ namespace SampleWordHelper.Model
         public string GetFilePathForId(object item)
         {
             var id = item as string;
-            if (string.IsNullOrWhiteSpace(id) || !(HasFilter ? currentView.Contains(id) : catalog.Contains(id)))
+            if (string.IsNullOrWhiteSpace(id) || !currentSource.Contains(id))
                 throw new InvalidOperationException();
             return catalog.GetLocation(id);
         }
@@ -176,9 +199,16 @@ namespace SampleWordHelper.Model
             return dto != null && catalog.Contains(dto.ItemId);
         }
 
-        bool HasFilter
+        /// <summary>
+        /// Возвращает источник данных для текущего фильтра.
+        /// </summary>
+        /// <param name="filter">Текст фильтра.</param>
+        ElementSource GetElementSource(string filter)
         {
-            get { return !string.IsNullOrWhiteSpace(Filter); }
+            if (string.IsNullOrWhiteSpace(filter))
+                return nonFilteredSource;
+            var source = new ElementSource(catalog, new ElementNameFilterStrategy(catalog, filter));
+            return !source.IsEmpty ? source : new ElementSource(catalog, new ContentFilterStrategy(searchEngine, filter));
         }
 
         /// <summary>

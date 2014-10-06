@@ -70,7 +70,8 @@ namespace SampleWordHelper.Presentation
 
         void IDocumentEventsCallback.OnDocumentCreated(object documentId)
         {
-            RegisterDocument(documentId);
+            if (!presenters.ContainsKey(documentId))
+                RegisterDocument(documentId);
         }
 
         void IDocumentEventsCallback.OnDocumentOpened(object documentId)
