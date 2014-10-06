@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ICSharpCode.SharpZipLib.Core;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
@@ -18,7 +19,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Общее представление документа.
         /// </summary>
-        readonly IDocumentView structureView;
+        readonly IDocumentView view;
 
         /// <summary>
         /// Модель документа.
@@ -49,10 +50,9 @@ namespace SampleWordHelper.Presentation
         {
             this.context = context;
             this.callback = callback;
-            model = new DocumentModel();
-            model.SetModel(context.Catalog);
-            structureView = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
-            dragController = new TreeDragDropController(context.Environment, structureView, model, this);
+            model = new DocumentModel(context.Catalog, context.SearchEngine);
+            view = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
+            dragController = new TreeDragDropController(context.Environment, view, model, this);
         }
 
         public IDragSourceController DragController
@@ -64,7 +64,7 @@ namespace SampleWordHelper.Presentation
         {
             model.IsVisible = visible;
             callback.OnVisibilityChanged(model.IsVisible);
-            structureView.SetVisibility(model.IsVisible);
+            view.SetVisibility(model.IsVisible);
         }
 
         void ICatalogPresenter.OnPaneVisibilityChanged(bool visible)
@@ -106,9 +106,9 @@ namespace SampleWordHelper.Presentation
         {
             if (string.Equals(model.Filter, filterText, StringComparison.InvariantCultureIgnoreCase))
                 return;
-            model.UpdateFilter(filterText);
-            structureView.SetFilterText(filterText);
-            structureView.UpdateStructure(model);
+            model.SetFilter(filterText);
+            view.SetFilterText(filterText);
+            view.UpdateStructure(model);
         }
 
         /// <summary>
@@ -117,8 +117,8 @@ namespace SampleWordHelper.Presentation
         public void Activate()
         {
             callback.OnVisibilityChanged(model.IsVisible);
-            structureView.SetVisibility(model.IsVisible);
-            structureView.UpdateStructure(model);
+            view.SetVisibility(model.IsVisible);
+            view.UpdateStructure(model);
         }
 
         /// <summary>
@@ -137,13 +137,13 @@ namespace SampleWordHelper.Presentation
         public void UpdateCatalog()
         {
             model.SetModel(context.Catalog);
-            structureView.UpdateStructure(model);
+            view.UpdateStructure(model);
         }
 
         protected override void DisposeManaged()
         {
             dragController.SafeDispose();
-            structureView.SafeDispose();
+            view.SafeDispose();
         }
     }
 }

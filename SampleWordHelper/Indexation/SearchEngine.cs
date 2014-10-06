@@ -60,6 +60,7 @@ namespace SampleWordHelper.Indexation
         /// Пересоздаёт индекс заново.
         /// </summary>
         /// <param name="catalog">Индексируемый каталог.</param>
+        /// <param name="monitor">Объект для отображения прогресса выполнения операции.</param>
         public void BuildIndex(ICatalog catalog, IProgressMonitor monitor)
         {
             using (var indexWriter = new IndexWriter(indexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED))

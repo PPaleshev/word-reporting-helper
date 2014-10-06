@@ -15,9 +15,9 @@ namespace SampleWordHelper.Core.Application
         readonly MainRibbon ribbon;
 
         /// <summary>
-        /// Фабрика контейнеров для панелей задач.
+        /// Фабрика панелей задач.
         /// </summary>
-        readonly CustomTaskPaneCollection paneFactory;
+        readonly TaskPaneFactory paneFactory;
 
         /// <summary>
         /// Создаёт экземпляр фабрики представлений.
@@ -27,7 +27,7 @@ namespace SampleWordHelper.Core.Application
         public ViewFactory(MainRibbon ribbon, CustomTaskPaneCollection paneFactory)
         {
             this.ribbon = ribbon;
-            this.paneFactory = paneFactory;
+            this.paneFactory = new TaskPaneFactory(paneFactory);
         }
 
         public IMainView CreateMainView(IMainPresenter presenter)
@@ -37,9 +37,7 @@ namespace SampleWordHelper.Core.Application
 
         public IDocumentView CreateStructureView(ICatalogPresenter presenter, string title)
         {
-            var control = new StructureTreeControl();
-            var mangedContainer = new ManagedTaskPaneContainer(paneFactory, paneFactory.Add(control, title));
-            return new StructureTreeView(mangedContainer, presenter);
+            return new StructureTreeView(paneFactory, presenter, title);
         }
 
         public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)

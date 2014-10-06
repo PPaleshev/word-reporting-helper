@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Microsoft.Office.Tools;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Model;
@@ -21,7 +20,7 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Ссылка на контейнер, в коротом расположен контрол.
         /// </summary>
-        readonly ManagedTaskPaneContainer container;
+        readonly ManagedTaskPane container;
 
         /// <summary>
         /// Менеджер представления.
@@ -33,10 +32,16 @@ namespace SampleWordHelper.Interface
         /// </summary>
         readonly SuspendFlag suspendEvents = new SuspendFlag();
 
-        public StructureTreeView(ManagedTaskPaneContainer container, ICatalogPresenter presenter)
+        /// <summary>
+        /// Создаёт экземпляр представления структуры каталога.
+        /// </summary>
+        /// <param name="taskPaneFactory">Фабрика панелей задач.</param>
+        /// <param name="presenter">Менеджер представления.</param>
+        /// <param name="title">Заголовок панели задач.</param>
+        public StructureTreeView(TaskPaneFactory taskPaneFactory, ICatalogPresenter presenter, string title)
         {
-            control = (StructureTreeControl) container.Control;
-            this.container = container;
+            control = new StructureTreeControl();
+            container = taskPaneFactory.Create(control, title);
             this.presenter = presenter;
             InitializeComponents();
         }
@@ -44,6 +49,11 @@ namespace SampleWordHelper.Interface
         public void SetVisibility(bool value)
         {
             container.Visible = value;
+        }
+
+        public void SetWidth(int width)
+        {
+            container.Width = width;
         }
 
         public void SetFilterText(string filterText)

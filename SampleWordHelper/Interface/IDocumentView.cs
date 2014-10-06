@@ -10,6 +10,12 @@ namespace SampleWordHelper.Interface
     public interface IDocumentView : IView
     {
         /// <summary>
+        /// Устанавливает ширину панели структуры.
+        /// </summary>
+        /// <param name="width"></param>
+        void SetWidth(int width);
+
+        /// <summary>
         /// Показывает\скрывает представление в зависимости от переданного флага.
         /// </summary>
         void SetVisibility(bool value);
