@@ -30,7 +30,7 @@ namespace SampleWordHelper.Core.Common
             DisposeSafe(false);
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             if (disposed)
                 return;

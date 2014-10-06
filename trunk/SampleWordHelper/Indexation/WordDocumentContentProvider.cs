@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
@@ -28,7 +29,7 @@ namespace SampleWordHelper.Indexation
 
         public bool TryGetContent(string filePath, out string content)
         {
-            
+
             using (var safePath = new SafeFilePath(filePath))
             {
                 try
@@ -36,7 +37,7 @@ namespace SampleWordHelper.Indexation
                     content = LoadDocument(safePath.FilePath);
                     return true;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     MessageBox.Show(filePath + " " + e.Message);
                     //TODO PP: log error.
@@ -56,12 +57,8 @@ namespace SampleWordHelper.Indexation
             try
             {
                 var content = new StringBuilder();
-                foreach (Paragraph paragraph in doc.Paragraphs)
+                foreach (var paragraph in doc.Paragraphs.Cast<Paragraph>().Where(p => p.Range.Tables.Count == 0 && !(bool) p.Range.Information[WdInformation.wdWithInTable]))
                 {
-                    if (paragraph.Range.Tables.Count > 0)
-                        continue;
-                    if ((bool) paragraph.Range.Information[WdInformation.wdWithInTable])
-                        continue;
                     var text = paragraph.Range.Text;
                     content.Append(text);
                     if (!text.EndsWith(Environment.NewLine))

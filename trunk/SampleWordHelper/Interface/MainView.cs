@@ -64,7 +64,7 @@ namespace SampleWordHelper.Interface
         {
             if (eventsSuspended)
                 return;
-            presenter.OnToggleCatalogVisibility();
+            presenter.OnUpdateCatalogVisibility(ribbon.toggleStructureVisibility.Checked);
         }
 
         public void Dispose()

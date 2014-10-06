@@ -20,6 +20,6 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Вызывается для изменения видимости панели каталога.
         /// </summary>
-        void OnToggleCatalogVisibility();
+        void OnUpdateCatalogVisibility(bool visible);
     }
 }

@@ -38,8 +38,8 @@ namespace SampleWordHelper.Core.Application
         public IDocumentView CreateStructureView(ICatalogPresenter presenter, string title)
         {
             var control = new StructureTreeControl();
-            var container = paneFactory.Add(control, title);
-            return new StructureTreeView(container, presenter);
+            var mangedContainer = new ManagedTaskPaneContainer(paneFactory, paneFactory.Add(control, title));
+            return new StructureTreeView(mangedContainer, presenter);
         }
 
         public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)

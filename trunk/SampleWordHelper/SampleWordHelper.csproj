@@ -218,12 +218,14 @@
     <Compile Include="Configuration\ProviderFactoryElementCollection.cs" />
     <Compile Include="Core\Application\ApplicationContext.cs" />
     <Compile Include="Core\Application\IApplicationContext.cs" />
+    <Compile Include="Core\Application\ManagedTaskPaneContainer.cs" />
     <Compile Include="Core\Application\RuntimeContext.cs" />
     <Compile Include="Core\Application\ViewFactory.cs" />
     <Compile Include="Core\Common\BackgroundTaskContext.cs" />
     <Compile Include="Core\IO\FileSystemUtils.cs" />
     <Compile Include="Core\IO\SafeFilePath.cs" />
     <Compile Include="Core\Design\FileSystemPathEditor.cs" />
+    <Compile Include="Indexation\IContentProvider.cs" />
     <Compile Include="Indexation\IProgressMonitor.cs" />
     <Compile Include="Indexation\ISearchEngine.cs" />
     <Compile Include="Indexation\SearchEngine.cs" />

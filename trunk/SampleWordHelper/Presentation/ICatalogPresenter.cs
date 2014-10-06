@@ -11,9 +11,10 @@
         IDragSourceController DragController { get; }
 
         /// <summary>
-        /// Вызывается при закрытии панели структуры каталога.
+        /// Вызывается при изменении видимости панели со структурой каталога.
         /// </summary>
-        void OnClosed();
+        /// <param name="visible">True, если панель становится видимой, иначе false.</param>
+        void OnPaneVisibilityChanged(bool visible);
 
         /// <summary>
         /// Вызывается при двойном клике на узел дерева.

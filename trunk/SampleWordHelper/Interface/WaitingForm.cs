@@ -1,9 +1,12 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
+using SampleWordHelper.Core.Native;
 
 namespace SampleWordHelper.Interface
 {
     /// <summary>
     /// Экземпляр представления для ожидания операции.
+    /// Все методы представления безопасны с точки зрения вызова из не-GUI потоков.
     /// </summary>
     public partial class WaitingForm : Form, IWaitingView
     {
@@ -14,22 +17,32 @@ namespace SampleWordHelper.Interface
 
         public void UpdateProgress(string action, int maxValue, int currentValue)
         {
-            label2.Text = action;
-            progressBar1.Maximum = maxValue;
-            progressBar1.Value = currentValue;
-            Application.DoEvents();
+            if (InvokeRequired)
+                Invoke(new Action(() => UpdateProgress(action, maxValue, currentValue)));
+            else
+            {
+                label2.Text = action;
+                progressBar1.Maximum = maxValue;
+                progressBar1.Value = currentValue;
+            }
         }
 
         void IWaitingView.Show()
         {
-            TopLevel = true;
-            StartPosition = FormStartPosition.CenterScreen;
-            Show();
+            using (var session = NativeWindowSession.GetCurrentProcessMainWindow())
+            {
+                TopLevel = true;
+                StartPosition = FormStartPosition.CenterScreen;
+                ShowDialog(session.window);
+            }
         }
 
-        void IWaitingView.Hide()
+        void IWaitingView.Close()
         {
-            Close();
+            if (InvokeRequired)
+                Invoke((Action) Close);
+            else
+                Close();
         }
     }
 }

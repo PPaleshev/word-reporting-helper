@@ -65,9 +65,9 @@ namespace SampleWordHelper.Indexation
             using (var indexWriter = new IndexWriter(indexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED))
             {
                 var allItems = catalog.All().Where(id => !catalog.IsGroup(id)).ToArray();
-                var totalProgress = allItems.Length + 10;
+                var totalProgress = allItems.Length;
                 monitor.UpdateProgress("Инициализация", totalProgress, 0);
-                int count = 0;
+                var count = 0;
                 foreach (var id in allItems)
                 {
                     count++;
@@ -78,7 +78,6 @@ namespace SampleWordHelper.Indexation
                     indexWriter.AddDocument(CreateDocumentForFile(id, location, content));
                     monitor.UpdateProgress("Обработка: " + catalog.GetName(id), totalProgress, count);
                 }
-                monitor.UpdateProgress("Оптимизация индекса", totalProgress, totalProgress);
                 indexWriter.Optimize();
             }
         }

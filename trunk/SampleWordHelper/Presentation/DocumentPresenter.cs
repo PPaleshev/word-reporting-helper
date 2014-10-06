@@ -60,16 +60,16 @@ namespace SampleWordHelper.Presentation
             get { return dragController; }
         }
 
-        public void ToggleCatalogVisibility()
+        public void UpdateCatalogVisibility(bool visible)
         {
-            model.IsVisible = !model.IsVisible;
+            model.IsVisible = visible;
             callback.OnVisibilityChanged(model.IsVisible);
             structureView.SetVisibility(model.IsVisible);
         }
 
-        void ICatalogPresenter.OnClosed()
+        void ICatalogPresenter.OnPaneVisibilityChanged(bool visible)
         {
-            callback.OnVisibilityChanged(model.IsVisible = false);
+            callback.OnVisibilityChanged(model.IsVisible = visible);
         }
 
         void IDropCallback.OnDrop(IDataObject obj, Point point)

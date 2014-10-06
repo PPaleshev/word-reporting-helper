@@ -1,4 +1,7 @@
-﻿using SampleWordHelper.Core.Application;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Office.Interop.Word;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
@@ -48,6 +51,8 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         Provider provider;
 
+        bool searchIndexCreated = false;
+
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
         /// </summary>
@@ -59,6 +64,7 @@ namespace SampleWordHelper.Presentation
             view = runtimeContext.ViewFactory.CreateMainView(this);
             documentManager = new DocumentManager(context, this);
             eventListener = new ApplicationEventsListener(runtimeContext, documentManager);
+//            runtimeContext.Application.WindowActivate += ApplicationOnWindowActivate;
         }
 
         /// <summary>
@@ -93,9 +99,9 @@ namespace SampleWordHelper.Presentation
             UpdateCatalog();
         }
 
-        public void OnToggleCatalogVisibility()
+        public void OnUpdateCatalogVisibility(bool visible)
         {
-            documentManager.ToggleCatalogVisibility();
+            documentManager.UpdateCatalogVisibility(visible);
         }
 
         public void OnVisibilityChanged(bool visible)
@@ -126,9 +132,25 @@ namespace SampleWordHelper.Presentation
         {
             context.Catalog = provider.LoadCatalog();
             documentManager.UpdateCatalog();
+            Debug.WriteLine("Update catalog");
             using (var presenter = new SearchIndexPresenter(context.Environment))
             using (eventListener.SuspendEvents())
                 presenter.Run(context.Catalog, searchEngine);
+        }
+
+        /// <summary>
+        /// Вызывается при первой активации окна для построения поискового индекса.
+        /// </summary>
+        void ApplicationOnWindowActivate(Document doc, Window wn)
+        {
+            Debug.WriteLine("Window activated");
+            context.Environment.Application.WindowActivate -= ApplicationOnWindowActivate;
+            if (searchIndexCreated)
+                return;
+            using (var presenter = new SearchIndexPresenter(context.Environment))
+            using (eventListener.SuspendEvents())
+                presenter.Run(context.Catalog, searchEngine);
+            searchIndexCreated = true;
         }
 
         protected override void DisposeManaged()

@@ -16,6 +16,6 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Скрывает представление.
         /// </summary>
-        void Hide();
+        void Close();
     }
 }
