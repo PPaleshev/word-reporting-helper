@@ -53,7 +53,7 @@ namespace SampleWordHelper.Indexation
         /// <param name="wordSafeFilePath">Безопасный путь к файлу для открытия в MS Word.</param>
         string LoadDocument(string wordSafeFilePath)
         {
-            var doc = application.Documents.Open(wordSafeFilePath, Visible: false, ReadOnly: true);
+            var doc = application.Documents.Open(wordSafeFilePath, Visible: false, ReadOnly: true, OpenAndRepair: false);
             try
             {
                 var content = new StringBuilder();

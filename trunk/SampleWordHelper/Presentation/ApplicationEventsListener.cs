@@ -12,7 +12,7 @@ namespace SampleWordHelper.Presentation
     /// <summary>
     /// Вспомогательный класс для отслеживания событий Microsoft Word.
     /// </summary>
-    public class ApplicationEventsListener
+    public class ApplicationEventsListener: BasicDisposable
     {
         /// <summary>
         /// Объект для выполнения обратных вызовов.
@@ -45,7 +45,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Начинает прослушивание событий от приложения.
         /// </summary>
-        public void Listen()
+        public void StartListen()
         {
             var application = context.Application;
             ((ApplicationEvents4_Event)application).NewDocument += OnNewDocument;
@@ -152,6 +152,14 @@ namespace SampleWordHelper.Presentation
         {
             var vsto = context.ApplicationFactory.GetVstoObject(document);
             return vsto.GetKey();
+        }
+
+        protected override void DisposeManaged()
+        {
+            var application = context.Application;
+            ((ApplicationEvents4_Event) application).NewDocument -= OnNewDocument;
+            application.DocumentOpen -= OnDocumentOpened;
+            application.DocumentChange -= OnDocumentChanged;
         }
     }
 

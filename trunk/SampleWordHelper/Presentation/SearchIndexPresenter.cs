@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
@@ -39,7 +40,7 @@ namespace SampleWordHelper.Presentation
         /// <param name="searchEngine">Экземпляр поискового механизма.</param>
         public void Run(ICatalog catalog, SearchEngine searchEngine)
         {
-            context.Application.ScreenUpdating = false;
+            context.Application.Visible = false;
             try
             {
                 new Thread(view.Show).Start();
@@ -48,7 +49,7 @@ namespace SampleWordHelper.Presentation
             finally
             {
                 view.Close();
-                context.Application.ScreenUpdating = true;
+                context.Application.Visible = true;
             }
         }
 

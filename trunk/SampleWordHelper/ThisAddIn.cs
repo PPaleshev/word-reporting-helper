@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
@@ -18,7 +20,7 @@ namespace SampleWordHelper
         /// <summary>
         /// Экземпляр основного менеджера приложения.
         /// </summary>
-        MainPresenter presenter;
+        IDisposable presenterObject;
 
         /// <summary>
         /// Вызывается при старте приложения.
@@ -26,10 +28,17 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
+            //Заглушка на случай использования Word в качестве COM сервера для других целей. В этом случае надстройка загружаться не должна.
+            if (Application.Windows.Count == 0)
+            {
+                presenterObject = new EmptyDisposable();
+                return;
+            }
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
             var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
-            presenter = new MainPresenter(context);
+            var presenter = new MainPresenter(context);
             presenter.Start();
+            presenterObject = presenter;
         }
 
         /// <summary>
@@ -38,7 +47,7 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
-            presenter.SafeDispose();
+            presenterObject.SafeDispose();
         }
 
         #region VSTO generated code

@@ -223,16 +223,33 @@
     <Compile Include="Core\Application\TaskPaneFactory.cs" />
     <Compile Include="Core\Application\ViewFactory.cs" />
     <Compile Include="Core\Common\BackgroundTaskContext.cs" />
+    <Compile Include="Core\Common\EmptyDisposable.cs" />
     <Compile Include="Core\IO\FileSystemUtils.cs" />
     <Compile Include="Core\IO\SafeFilePath.cs" />
     <Compile Include="Core\Design\FileSystemPathEditor.cs" />
+    <Compile Include="Core\Native\PreviewHandlerRegistry.cs" />
+    <Compile Include="Core\Native\PreviewHandlers.cs" />
+    <Compile Include="Core\Native\StreamAdapter.cs" />
     <Compile Include="Indexation\IContentProvider.cs" />
     <Compile Include="Indexation\IProgressMonitor.cs" />
     <Compile Include="Indexation\ISearchEngine.cs" />
     <Compile Include="Indexation\SearchEngine.cs" />
     <Compile Include="Indexation\WordDocumentContentProvider.cs" />
     <Compile Include="Interface\IDropTargetHost.cs" />
+    <Compile Include="Interface\IPreviewView.cs" />
     <Compile Include="Interface\IWaitingView.cs" />
+    <Compile Include="Interface\PreviewHostControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\PreviewHostControl.Designer.cs">
+      <DependentUpon>PreviewHostControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\PreviewWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\PreviewWindow.Designer.cs">
+      <DependentUpon>PreviewWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\WaitingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -253,6 +270,7 @@
     <Compile Include="Model\ISettingsEditorModel.cs" />
     <Compile Include="Model\ListItem.cs" />
     <Compile Include="Model\ElementSource.cs" />
+    <Compile Include="Model\MainPresenterState.cs" />
     <Compile Include="Model\ValidationResult.cs" />
     <Compile Include="Core\Native\NativeWindowSession.cs" />
     <Compile Include="Interface\OverlayWindow.cs">
@@ -264,6 +282,7 @@
     <Compile Include="Core\Native\WinApi.cs" />
     <Compile Include="Presentation\ApplicationEventsListener.cs" />
     <Compile Include="Presentation\ICatalogPaneCallback.cs" />
+    <Compile Include="Presentation\PreviewPresenter.cs" />
     <Compile Include="Presentation\TreeDragDropPresenter.cs" />
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
     <Compile Include="Presentation\DragDrop.cs" />
@@ -310,6 +329,12 @@
     <EmbeddedResource Include="Interface\ConfigurationEditorForm.resx">
       <DependentUpon>ConfigurationEditorForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interface\PreviewHostControl.resx">
+      <DependentUpon>PreviewHostControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\PreviewWindow.resx">
+      <DependentUpon>PreviewWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\StructureTreeControl.resx">
       <DependentUpon>StructureTreeControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -345,7 +370,6 @@
     </Compile>
     <Compile Include="Providers\Core\IProviderFactory.cs" />
     <Compile Include="Providers\Core\ISettingsModel.cs" />
-    <Compile Include="Providers\Core\CatalogLoadMode.cs" />
     <Compile Include="Providers\Core\NullProviderStrategy.cs" />
     <Compile Include="Providers\Core\Provider.cs" />
     <Compile Include="Providers\Core\ProviderDescription.cs" />

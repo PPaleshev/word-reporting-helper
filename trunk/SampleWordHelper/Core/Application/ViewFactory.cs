@@ -54,5 +54,10 @@ namespace SampleWordHelper.Core.Application
         {
             return new OverlayWindow(presenter);
         }
+
+        public IPreviewView CreatePreviewView(PreviewPresenter presenter)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

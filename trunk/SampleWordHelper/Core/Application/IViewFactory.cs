@@ -36,5 +36,11 @@ namespace SampleWordHelper.Core.Application
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
         IDropTargetHost CreateDropHost(IDropTargetPresenter presenter);
+
+        /// <summary>
+        /// Создаёт представление для предварительного просмотра документов.
+        /// </summary>
+        /// <param name="presenter">Менеджер представления.</param>
+        IPreviewView CreatePreviewView(PreviewPresenter presenter);
     }
 }
