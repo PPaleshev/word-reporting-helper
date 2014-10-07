@@ -16,17 +16,18 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Прямоугольник, описывающий область отображения предварительного просмотра.
         /// </summary>
-        Rectangle Bounds { get; }
+        Rectangle PreviewArea { get; }
 
         /// <summary>
-        /// Отображает представление.
+        /// Отображает представление в режиме загрузки.
         /// </summary>
-        void Show();
+        void ShowLoading(string caption);
 
         /// <summary>
-        /// Отображает ошибку предварительного просмотра.
+        /// Завершает загрузку предварительного просмотра и отображает результат.
         /// </summary>
-        /// <param name="message">Текст ошибки.</param>
-        void SetErrorMessage(string message);
+        /// <param name="valid">Флаг, равный false, если в процессе отображения превью возникли ошибки, иначе true.</param>
+        /// <param name="message">Текст ошибки, если есть.</param>
+        void CompleteLoading(bool valid, string message);
     }
 }

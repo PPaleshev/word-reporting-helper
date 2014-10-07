@@ -41,6 +41,6 @@ namespace SampleWordHelper.Core.Application
         /// Создаёт представление для предварительного просмотра документов.
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
-        IPreviewView CreatePreviewView(PreviewPresenter presenter);
+        IPreviewView CreatePreviewView(IPreviewPresenter presenter);
     }
 }

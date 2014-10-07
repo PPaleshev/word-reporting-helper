@@ -238,12 +238,6 @@
     <Compile Include="Interface\IDropTargetHost.cs" />
     <Compile Include="Interface\IPreviewView.cs" />
     <Compile Include="Interface\IWaitingView.cs" />
-    <Compile Include="Interface\PreviewHostControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\PreviewHostControl.Designer.cs">
-      <DependentUpon>PreviewHostControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\PreviewWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -282,6 +276,7 @@
     <Compile Include="Core\Native\WinApi.cs" />
     <Compile Include="Presentation\ApplicationEventsListener.cs" />
     <Compile Include="Presentation\ICatalogPaneCallback.cs" />
+    <Compile Include="Presentation\IPreviewPresenter.cs" />
     <Compile Include="Presentation\PreviewPresenter.cs" />
     <Compile Include="Presentation\TreeDragDropPresenter.cs" />
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
@@ -328,9 +323,6 @@
     </Compile>
     <EmbeddedResource Include="Interface\ConfigurationEditorForm.resx">
       <DependentUpon>ConfigurationEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\PreviewHostControl.resx">
-      <DependentUpon>PreviewHostControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\PreviewWindow.resx">
       <DependentUpon>PreviewWindow.cs</DependentUpon>

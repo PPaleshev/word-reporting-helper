@@ -110,9 +110,9 @@ namespace SampleWordHelper.Presentation
                 return;
             try
             {
-                if (context.Application.Documents.Count == 0)
-                    return;
-                if (context.Application.ActiveProtectedViewWindow != null)
+                var app = context.Application;
+
+                if (app.Documents.Count == 0 || app.ActiveProtectedViewWindow != null || !app.Visible)
                     return;
                 var activeDocument = context.Application.ActiveDocument;
                 if (activeDocument == null)

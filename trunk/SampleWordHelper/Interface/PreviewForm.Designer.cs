@@ -1,6 +1,6 @@
 ﻿namespace SampleWordHelper.Interface
 {
-    partial class PreviewWindow
+    partial class PreviewForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,35 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.previewHandlerHostControl1 = new C4F.DevKit.PreviewHandler.PreviewHandlerHost.PreviewHandlerHostControl();
             this.SuspendLayout();
             // 
-            // panel1
+            // previewHandlerHostControl1
             // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(765, 558);
-            this.panel1.TabIndex = 0;
+            this.previewHandlerHostControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.previewHandlerHostControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewHandlerHostControl1.FilePath = null;
+            this.previewHandlerHostControl1.Location = new System.Drawing.Point(0, 0);
+            this.previewHandlerHostControl1.Name = "previewHandlerHostControl1";
+            this.previewHandlerHostControl1.Size = new System.Drawing.Size(757, 598);
+            this.previewHandlerHostControl1.TabIndex = 0;
             // 
-            // PreviewWindow
+            // PreviewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(765, 558);
-            this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.KeyPreview = true;
-            this.Name = "PreviewWindow";
-            this.Text = "Превьюшечка";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PreviewWindowClosed);
-            this.ClientSizeChanged += new System.EventHandler(this.PreviewWindowClientSizeChanged);
+            this.ClientSize = new System.Drawing.Size(757, 598);
+            this.Controls.Add(this.previewHandlerHostControl1);
+            this.Name = "PreviewForm";
+            this.Text = "PreviewForm";
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
+        private C4F.DevKit.PreviewHandler.PreviewHandlerHost.PreviewHandlerHostControl previewHandlerHostControl1;
+
+
     }
 }

@@ -54,14 +54,6 @@ namespace SampleWordHelper.Core.Application
             remove { pane.VisibleChanged -= value; }
         }
 
-        /// <summary>
-        /// Возвращает элемент управления, содержащийся в контейнере.
-        /// </summary>
-        public UserControl Control
-        {
-            get { return pane.Control; }
-        }
-
         protected override void DisposeManaged()
         {
             parentCollection.Remove(pane);

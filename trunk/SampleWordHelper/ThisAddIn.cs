@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using SampleWordHelper.Core.Application;
@@ -20,7 +19,7 @@ namespace SampleWordHelper
         /// <summary>
         /// Экземпляр основного менеджера приложения.
         /// </summary>
-        IDisposable presenterObject;
+        IDisposable presenterObject = new EmptyDisposable();
 
         /// <summary>
         /// Вызывается при старте приложения.
@@ -28,17 +27,28 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Startup(object sender, EventArgs e)
         {
-            //Заглушка на случай использования Word в качестве COM сервера для других целей. В этом случае надстройка загружаться не должна.
-            if (Application.Windows.Count == 0)
-            {
-                presenterObject = new EmptyDisposable();
+            if (!CheckCanStartup())
                 return;
-            }
             var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
             var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
             var presenter = new MainPresenter(context);
             presenter.Start();
             presenterObject = presenter;
+        }
+
+        /// <summary>
+        /// Проверяет, может ли надстройка быть запущена в текущем окружении.
+        /// </summary>
+        /// <returns>Возвращает true, если настройка может быть активирована, иначе false.</returns>
+        /// <remarks>
+        /// Надстройка не активируется для версий Word ниже 14 (2007). <br/>
+        /// Также для 2007 проверяется, что есть хотя бы одно открытое окно. По этому косвенному признаку можно определить, запускается ли надстройка пользователем или через Automation.
+        /// Свойство <see cref="UserControl"/> отображает некорректную информацию.
+        /// </remarks>
+        bool CheckCanStartup()
+        {
+            var version = new Version(Application.Version);
+            return version.Major == 14 && Application.Windows.Count > 0 || version.Major > 14;
         }
 
         /// <summary>
