@@ -40,7 +40,7 @@ namespace SampleWordHelper.Presentation
         /// <param name="searchEngine">Экземпляр поискового механизма.</param>
         public void Run(ICatalog catalog, SearchEngine searchEngine)
         {
-            context.Application.Visible = false;
+            context.Application.ScreenUpdating = false;
             try
             {
                 new Thread(view.Show).Start();
@@ -49,7 +49,8 @@ namespace SampleWordHelper.Presentation
             finally
             {
                 view.Close();
-                context.Application.Visible = true;
+                context.Application.ScreenUpdating= true;
+                context.Application.ScreenRefresh();
             }
         }
 

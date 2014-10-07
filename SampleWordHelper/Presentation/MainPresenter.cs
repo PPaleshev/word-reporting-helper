@@ -32,6 +32,9 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         readonly SearchEngine searchEngine;
 
+        /// <summary>
+        /// True, если приложение активно в данный момент, иначе false.
+        /// </summary>
         bool isActive = false;
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace SampleWordHelper.Presentation
 
         public void OnUpdateCatalogVisibility(bool visible)
         {
-            model.ShowCatalog(visible);
+            model.ShowCatalogPane(visible);
         }
 
 
@@ -108,9 +111,9 @@ namespace SampleWordHelper.Presentation
             model = new MainPresenterState(context, this);
             model.UpdateCatalog();
             view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
-//            using (var presenter = new SearchIndexPresenter(context.Environment))
-//            using (model.SuspendEvents())
-//                presenter.Run(context.Catalog, searchEngine);
+            using (var presenter = new SearchIndexPresenter(context.Environment))
+            using (model.SuspendEvents())
+                presenter.Run(context.Catalog, searchEngine);
         }
 
         void Deactivate()

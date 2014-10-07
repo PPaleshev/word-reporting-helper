@@ -1,4 +1,7 @@
-﻿using Microsoft.Office.Tools.Word;
+﻿using System;
+using System.Windows.Forms;
+using Microsoft.Office.Tools.Word;
+using SampleWordHelper.Core.Native;
 
 namespace SampleWordHelper.Core.Application
 {
@@ -7,6 +10,11 @@ namespace SampleWordHelper.Core.Application
     /// </summary>
     public class RuntimeContext : IRuntimeContext
     {
+        /// <summary>
+        /// Объект, предоставляющий доступ к текущему главному окну приложения.
+        /// </summary>
+        readonly IWindowProvider winProvider;
+
         public IViewFactory ViewFactory { get; private set; }
 
         public Microsoft.Office.Interop.Word.Application Application { get; private set; }
@@ -19,11 +27,17 @@ namespace SampleWordHelper.Core.Application
         /// <param name="application">Объект приложения, в рамках которого выполняется работает надстройка.</param>
         /// <param name="viewFactory">Фабрика представлений.</param>
         /// <param name="applicationFactory">Фабрика вспомогательных объектов.</param>
-        public RuntimeContext(Microsoft.Office.Interop.Word.Application application, IViewFactory viewFactory, ApplicationFactory applicationFactory)
+        /// <param name="windowProvider">Объект, предоставляющий доступ к текущему главному окну приложения.</param>
+        public RuntimeContext(Microsoft.Office.Interop.Word.Application application, IViewFactory viewFactory, ApplicationFactory applicationFactory, IWindowProvider windowProvider)
         {
             Application = application;
             ViewFactory = viewFactory;
             ApplicationFactory = applicationFactory;
+        }
+
+        public IWin32Window GetMainWindow()
+        {
+            return winProvider.GetMainWindow();
         }
     }
 }

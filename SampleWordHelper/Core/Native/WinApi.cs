@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
@@ -41,6 +42,9 @@ namespace SampleWordHelper.Core.Native
             uint uFlags // window-positioning options
             );
 
+        [DllImport("user32.dll")]
+        public static extern int SetActiveWindow(int hWnd);
+
         /// <summary>
         /// Выполняет поиск дескриптора окна редактируемого документа Ms Word.
         /// </summary>
@@ -49,6 +53,7 @@ namespace SampleWordHelper.Core.Native
         public static IntPtr FindMicrosoftWordDocumentWindow(string activeWindowTitle)
         {
             var handle = FindWindow(WIN_CLASSES[0], string.IsNullOrWhiteSpace(activeWindowTitle) ? null : activeWindowTitle);
+            Debug.WriteLine("Root handle: {0}", handle);
             for (var i = 1; i < WIN_CLASSES.Length; i++)
                 handle = FindWindowEx(handle, IntPtr.Zero, WIN_CLASSES[i], null);
             return handle;

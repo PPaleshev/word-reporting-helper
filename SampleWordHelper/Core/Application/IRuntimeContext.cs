@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Tools.Word;
+﻿using System.Windows.Forms;
+using Microsoft.Office.Tools.Word;
 
 namespace SampleWordHelper.Core.Application
 {
@@ -21,5 +22,10 @@ namespace SampleWordHelper.Core.Application
         /// Фабрика вспомогательных объектов для надстроек уровня приложения.
         /// </summary>
         ApplicationFactory ApplicationFactory { get; }
+
+        /// <summary>
+        /// Возвращает ссылку на главное окно MS Word, активное в данный момент.
+        /// </summary>
+        IWin32Window GetMainWindow();
     }
 }

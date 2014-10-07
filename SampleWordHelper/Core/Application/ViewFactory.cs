@@ -20,14 +20,21 @@ namespace SampleWordHelper.Core.Application
         readonly TaskPaneFactory paneFactory;
 
         /// <summary>
+        /// Объект, предоставляющий доступ к главному окну приложения.
+        /// </summary>
+        readonly IWindowProvider windowProvider;
+
+        /// <summary>
         /// Создаёт экземпляр фабрики представлений.
         /// </summary>
         /// <param name="ribbon">Экземпляр ленты с элементами управления.</param>
         /// <param name="paneFactory">Фабрика контейнеров для панелей задач.</param>
-        public ViewFactory(MainRibbon ribbon, CustomTaskPaneCollection paneFactory)
+        /// <param name="windowProvider">Объект, предоставляющий доступ к главному окну приложения.</param>
+        public ViewFactory(MainRibbon ribbon, CustomTaskPaneCollection paneFactory, IWindowProvider windowProvider)
         {
             this.ribbon = ribbon;
             this.paneFactory = new TaskPaneFactory(paneFactory);
+            this.windowProvider = windowProvider;
         }
 
         public IMainView CreateMainView(IMainPresenter presenter)
@@ -57,7 +64,7 @@ namespace SampleWordHelper.Core.Application
 
         public IPreviewView CreatePreviewView(IPreviewPresenter presenter)
         {
-            return new PreviewWindow(presenter);
+            return new PreviewWindow(presenter, windowProvider);
         }
     }
 }
