@@ -63,6 +63,7 @@
             this.treeStructure.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeStructure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.treeStructure.HotTracking = true;
+            this.treeStructure.FullRowSelect = true;
             this.treeStructure.ImageIndex = 0;
             this.treeStructure.ImageList = this.treeImages;
             this.treeStructure.Location = new System.Drawing.Point(3, 23);

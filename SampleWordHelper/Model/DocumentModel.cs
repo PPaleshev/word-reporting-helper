@@ -38,6 +38,11 @@ namespace SampleWordHelper.Model
         ElementSource nonFilteredSource;
 
         /// <summary>
+        /// Флаг, равный true, если каталог был отображён хотя бы раз.
+        /// </summary>
+        public bool WasShown { get; set; }
+
+        /// <summary>
         /// Создаёт новый экземпляр модели документа.
         /// </summary>
         public DocumentModel(ICatalog catalog, ISearchEngine searchEngine)
@@ -62,6 +67,14 @@ namespace SampleWordHelper.Model
         public string PaneTitle
         {
             get { return "Каталог шаблонов"; }
+        }
+
+        /// <summary>
+        /// Ширина панели каталога по умолчанию.
+        /// </summary>
+        public int DefaultWidth
+        {
+            get { return 400; }
         }
 
         /// <summary>

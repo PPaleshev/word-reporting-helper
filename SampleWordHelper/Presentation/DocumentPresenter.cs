@@ -41,6 +41,8 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         readonly ICatalogPaneCallback callback;
 
+        readonly PreviewPresenter preview;
+
         /// <summary>
         /// Создаёт новый экземпляр менеджера документа.
         /// </summary>
@@ -53,6 +55,7 @@ namespace SampleWordHelper.Presentation
             model = new DocumentModel(context.Catalog, context.SearchEngine);
             view = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
             dragController = new TreeDragDropController(context.Environment, view, model, this);
+            preview = new PreviewPresenter(context.Environment, @"e:\projects\understanding WCF extensibility.doc");
         }
 
         public IDragSourceController DragController
@@ -60,6 +63,9 @@ namespace SampleWordHelper.Presentation
             get { return dragController; }
         }
 
+        /// <summary>
+        /// Вызывается при изменении видимости структуры каталога.
+        /// </summary>
         public void UpdateCatalogVisibility(bool visible)
         {
             model.IsVisible = visible;
@@ -111,12 +117,20 @@ namespace SampleWordHelper.Presentation
             view.UpdateStructure(model);
         }
 
+        public void OnPreviewRequested(object item)
+        {
+            if (!model.CanDragNode(item))
+                return;
+            preview.Run();
+        }
+
         /// <summary>
         /// Выполняет активацию презентера при смене активного документа.
         /// </summary>
         public void Activate()
         {
             callback.OnVisibilityChanged(model.IsVisible);
+            view.SetWidth(model.DefaultWidth);
             view.SetVisibility(model.IsVisible);
             view.UpdateStructure(model);
         }
@@ -144,6 +158,7 @@ namespace SampleWordHelper.Presentation
         {
             dragController.SafeDispose();
             view.SafeDispose();
+            preview.SafeDispose();
         }
     }
 }

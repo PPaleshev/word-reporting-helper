@@ -27,5 +27,11 @@
         /// </summary>
         /// <param name="filterText">Текст фильтра.</param>
         void OnFilterTextChanged(string filterText);
+
+        /// <summary>
+        /// Вызывается при запросе предварительного просмотра элемента.
+        /// </summary>
+        /// <param name="item">Выбранный элемент.</param>
+        void OnPreviewRequested(object item);
     }
 }

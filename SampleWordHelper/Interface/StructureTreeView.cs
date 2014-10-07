@@ -83,6 +83,7 @@ namespace SampleWordHelper.Interface
             tree.DragLeave += OnDraggingLeavedControlBounds;
             tree.NodeMouseDoubleClick += OnNodeDoubleClicked;
             tree.KeyPress += CheckResetSearchFilter;
+            tree.NodeMouseClick += NodeClicked;
         }
 
         /// <summary>
@@ -195,6 +196,15 @@ namespace SampleWordHelper.Interface
                 return;
             presenter.OnFilterTextChanged("");
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// Вызывается при клике на узел дерева.
+        /// </summary>
+        void NodeClicked(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (Control.ModifierKeys.HasFlag(Keys.Control) && e.Button.HasFlag(MouseButtons.Left))
+                presenter.OnPreviewRequested(e.Node.Tag);
         }
     }
 }
