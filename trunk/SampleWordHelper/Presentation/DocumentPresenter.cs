@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using ICSharpCode.SharpZipLib.Core;
 using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
@@ -41,7 +40,10 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         readonly ICatalogPaneCallback callback;
 
-        readonly PreviewPresenter preview;
+        /// <summary>
+        /// Менеджер отображения превью.
+        /// </summary>
+        readonly PreviewManager previewManager;
 
         /// <summary>
         /// Создаёт новый экземпляр менеджера документа.
@@ -55,7 +57,7 @@ namespace SampleWordHelper.Presentation
             model = new DocumentModel(context.Catalog, context.SearchEngine);
             view = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
             dragController = new TreeDragDropController(context.Environment, view, model, this);
-            preview = new PreviewPresenter(context.Environment, @"e:\projects\understanding WCF extensibility.doc");
+            previewManager = new PreviewManager(context.Environment);
         }
 
         public IDragSourceController DragController
@@ -121,7 +123,7 @@ namespace SampleWordHelper.Presentation
         {
             if (!model.CanDragNode(item))
                 return;
-            preview.Run();
+            previewManager.ShowPreview(model.GetFilePathForId(item));
         }
 
         /// <summary>
@@ -158,7 +160,7 @@ namespace SampleWordHelper.Presentation
         {
             dragController.SafeDispose();
             view.SafeDispose();
-            preview.SafeDispose();
+            previewManager.SafeDispose();
         }
     }
 }

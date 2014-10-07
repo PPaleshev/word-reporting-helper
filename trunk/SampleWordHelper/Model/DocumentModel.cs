@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using ICSharpCode.SharpZipLib.Core;
 using SampleWordHelper.Indexation;
 
 namespace SampleWordHelper.Model
@@ -38,11 +37,6 @@ namespace SampleWordHelper.Model
         ElementSource nonFilteredSource;
 
         /// <summary>
-        /// Флаг, равный true, если каталог был отображён хотя бы раз.
-        /// </summary>
-        public bool WasShown { get; set; }
-
-        /// <summary>
         /// Создаёт новый экземпляр модели документа.
         /// </summary>
         public DocumentModel(ICatalog catalog, ISearchEngine searchEngine)
@@ -55,11 +49,6 @@ namespace SampleWordHelper.Model
         /// Флаг, равный true, если панель с данными видна, иначе false.
         /// </summary>
         public bool IsVisible { get; set; }
-
-        /// <summary>
-        /// Возвращает true, если текущая модель с учётом фильтра содержит элементы, иначе false.
-        /// </summary>
-        public bool HasElements { get; private set; }
 
         /// <summary>
         /// Заголовок панели структуры.
@@ -81,14 +70,6 @@ namespace SampleWordHelper.Model
         /// Текст для фильтрации элементов дерева.
         /// </summary>
         public string Filter { get; private set; }
-
-        /// <summary>
-        /// Возвращает true, если текущая модель содержит отфильтрованные данные, иначе false.
-        /// </summary>
-        public bool IsFiltered
-        {
-            get { return !string.IsNullOrWhiteSpace(Filter); }
-        }
 
         /// <summary>
         /// Устанавливает новую модель каталога.
@@ -221,7 +202,10 @@ namespace SampleWordHelper.Model
             if (string.IsNullOrWhiteSpace(filter))
                 return nonFilteredSource;
             var source = new ElementSource(catalog, new ElementNameFilterStrategy(catalog, filter));
-            return !source.IsEmpty ? source : new ElementSource(catalog, new ContentFilterStrategy(searchEngine, filter));
+            if (!source.IsEmpty)
+                return source;
+            var ids = searchEngine.Search(filter);
+            return new ElementSource(catalog, new ContentFilterStrategy(ids));
         }
 
         /// <summary>

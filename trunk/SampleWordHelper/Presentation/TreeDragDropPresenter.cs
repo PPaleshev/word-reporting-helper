@@ -17,18 +17,48 @@ namespace SampleWordHelper.Presentation
     /// </summary>
     public class TreeDragDropController : IDragSourceController, IDropTargetPresenter
     {
+        /// <summary>
+        /// Контекст окружения.
+        /// </summary>
         readonly IRuntimeContext context;
+
+        /// <summary>
+        /// Представление документа.
+        /// </summary>
         readonly IDocumentView view;
+
+        /// <summary>
+        /// Модель документа.
+        /// </summary>
         readonly DocumentModel model;
+
+        /// <summary>
+        /// Метод обратного вызова для уведомления об окончании перетаскивания.
+        /// </summary>
         readonly IDropCallback callback;
 
+        /// <summary>
+        /// Экземпляр объекта, который принимает перетаскивание.
+        /// </summary>
         IDropTargetHost dropHost;
 
+        /// <summary>
+        /// Текущее состояние процесса drag'n'drop.
+        /// </summary>
         State state = State.NONE;
 
+        /// <summary>
+        /// Флаг, равный true, если в данный момент выполняется перетаскивание над объектом назначения, иначе false.
+        /// </summary>
         bool isDraggingOnTarget = false;
 
-
+        /// <summary>
+        /// Создаёт новый экземпляр контроллера.
+        /// </summary>
+        /// <param name="context">Контекст окружения.</param>
+        /// <param name="view">Представление.</param>
+        /// <param name="model">Модель.</param>
+        /// <param name="callback">Объект для выполнения обратных вызовов по факту завершения перетаскивания.</param>
         public TreeDragDropController(IRuntimeContext context, IDocumentView view, DocumentModel model, IDropCallback callback)
         {
             this.context = context;

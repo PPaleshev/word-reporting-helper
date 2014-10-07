@@ -34,10 +34,21 @@ namespace SampleWordHelper.Model
         /// </summary>
         Provider Provider { get; set; }
 
-
+        /// <summary>
+        /// Флаг, равный true, если состояние корректно проинициализировано.
+        /// </summary>
         public bool IsValid { get; private set; }
+
+        /// <summary>
+        /// Сообщение, описывающее ошибку, если она имело место.
+        /// </summary>
         public string Message { get; private set; }
 
+        /// <summary>
+        /// Создаёт новый экземпляр состояния.
+        /// </summary>
+        /// <param name="context">Контекст приложения.</param>
+        /// <param name="callback">Объект для выполнения обратных вызовов от панели каталога.</param>
         public MainPresenterState(ApplicationContext context, ICatalogPaneCallback callback)
         {
             this.context = context;
@@ -64,11 +75,18 @@ namespace SampleWordHelper.Model
             return IsValid = true;
         }
 
+        /// <summary>
+        /// Создаёт модель для редактирования конфигурации.
+        /// </summary>
         public ConfigurationEditorModel CreateEditorModel()
         {
             return configuration.CreateEditorModel();
         }
 
+        /// <summary>
+        /// Обновляет конфигурацию приложения.
+        /// </summary>
+        /// <param name="model">Модель для редактирования, на основании которой обновляется конфигурация.</param>
         public void UpdateConfiguraion(ConfigurationEditorModel model)
         {
             Provider.Shutdown();
@@ -77,17 +95,35 @@ namespace SampleWordHelper.Model
             InitializeAndValidate();
         }
 
+        /// <summary>
+        /// Выполняет обновление каталога.
+        /// </summary>
         public void UpdateCatalog()
         {
             context.Catalog = Provider.LoadCatalog();
             DocumentManager.UpdateCatalog();
         }
 
-        public void ShowCatalog(bool visible)
+        /// <summary>
+        /// Приостанавливает обработку событий приложения.
+        /// </summary>
+        public IDisposable SuspendEvents()
+        {
+            return eventListener.SuspendEvents();
+        }
+
+        /// <summary>
+        /// Устанавливает видимость панели каталога в зависимости от флага.
+        /// </summary>
+        /// <param name="visible">True, если каталог видим, иначе false.</param>
+        public void ShowCatalogPane(bool visible)
         {
             DocumentManager.UpdateCatalogVisibility(visible);
         }
 
+        /// <summary>
+        /// Устанавливает ошибку валидации и сообщение.
+        /// </summary>
         bool SetInvalid(string message)
         {
             IsValid = false;
@@ -100,11 +136,6 @@ namespace SampleWordHelper.Model
             eventListener.SafeDispose();
             DocumentManager.SafeDispose();
             Provider.Shutdown();
-        }
-
-        public IDisposable SuspendEvents()
-        {
-            return eventListener.SuspendEvents();
         }
     }
 }

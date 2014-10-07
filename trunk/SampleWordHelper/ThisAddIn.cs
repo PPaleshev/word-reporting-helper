@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Presentation;
+using Version = System.Version;
 
 namespace SampleWordHelper
 {
@@ -22,6 +25,11 @@ namespace SampleWordHelper
         IDisposable presenterObject = new EmptyDisposable();
 
         /// <summary>
+        /// Контекст исполнения надстройки.
+        /// </summary>
+        RuntimeContext context;
+
+        /// <summary>
         /// Вызывается при старте приложения.
         /// К моменту вызова все сервисы проинициализированы и доступны.
         /// </summary>
@@ -29,8 +37,9 @@ namespace SampleWordHelper
         {
             if (!CheckCanStartup())
                 return;
-            var viewFactory = new ViewFactory(ribbon, CustomTaskPanes);
-            var context = new RuntimeContext(Application, viewFactory, Globals.Factory);
+            var windowProvider = new MsWordWindowProvider(Application);
+            var viewFactory = new ViewFactory(ribbon, CustomTaskPanes, windowProvider);
+            context = new RuntimeContext(Application, viewFactory, Globals.Factory, windowProvider);
             var presenter = new MainPresenter(context);
             presenter.Start();
             presenterObject = presenter;
