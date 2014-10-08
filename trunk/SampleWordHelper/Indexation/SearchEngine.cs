@@ -92,9 +92,16 @@ namespace SampleWordHelper.Indexation
         {
             using (var searcher = new IndexSearcher(indexDirectory, true))
             {
-                var query = new QueryParser(Version.LUCENE_30, "text", analyzer).Parse(input);
-                var result = searcher.Search(query, 10);
-                return result.ScoreDocs.Select(doc => searcher.Doc(doc.Doc).Get("id")).ToArray();
+                try
+                {
+                    var query = new QueryParser(Version.LUCENE_30, "text", analyzer).Parse(input);
+                    var result = searcher.Search(query, 10);
+                    return result.ScoreDocs.Select(doc => searcher.Doc(doc.Doc).Get("id")).ToArray();
+                }
+                catch
+                {
+                    return new string[0];
+                }
             }
         }
 

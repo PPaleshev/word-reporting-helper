@@ -76,13 +76,13 @@ namespace SampleWordHelper.Interface
         {
             container.VisibleChanged += ContainerVisibilityChanged;
             control.textSearch.TextChanged += SearchFilterChanged;
-            control.textSearch.KeyPress += CheckResetSearchFilter;
+            control.textSearch.KeyPress += FilterTextKeyPressed;
             var tree = control.treeStructure;
             tree.ItemDrag += OnTreeItemDrag;
             tree.QueryContinueDrag += OnContinueDragRequested;
             tree.DragLeave += OnDraggingLeavedControlBounds;
             tree.NodeMouseDoubleClick += OnNodeDoubleClicked;
-            tree.KeyPress += CheckResetSearchFilter;
+            tree.KeyPress += TreeKeyPressed;
             tree.NodeMouseClick += NodeClicked;
         }
 
@@ -164,7 +164,7 @@ namespace SampleWordHelper.Interface
         /// </summary>
         void OnNodeDoubleClicked(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(e.Button!=MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
             presenter.OnNodeDoubleClicked(e.Node.Tag);
         }
@@ -190,11 +190,47 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Вызывается при сбросе активного фильтра.
         /// </summary>
-        void CheckResetSearchFilter(object sender, KeyPressEventArgs e)
+        void FilterTextKeyPressed(object sender, KeyPressEventArgs e)
         {
-            if (Keys.Escape != (Keys) e.KeyChar)
-                return;
-            presenter.OnFilterTextChanged("");
+            switch ((Keys) e.KeyChar)
+            {
+                case Keys.Escape:
+                    using (suspendEvents.Suspend())
+                        presenter.OnFilterTextChanged("");
+                    e.Handled = true;
+                    break;
+                case Keys.Enter:
+                    SendKeys.Send("{TAB}");
+                    e.Handled = true;
+                    break;
+                default:
+                    e.Handled = false;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Вызывается при нажатии кнопки в дереве.
+        /// </summary>
+        void TreeKeyPressed(object sender, KeyPressEventArgs e)
+        {
+            var key = (Keys) e.KeyChar;
+            switch (key)
+            {
+                case Keys.Escape:
+                    using (suspendEvents.Suspend())
+                        presenter.OnFilterTextChanged("");
+                    break;
+                case Keys.Enter:
+                    var node = control.treeStructure.SelectedNode;
+                    if (node.Tag != null)
+                        presenter.OnPreviewRequested(node.Tag);
+                    break;
+                default:
+                    control.textSearch.Focus();
+                    SendKeys.Send(e.KeyChar.ToString());
+                    break;
+            }
             e.Handled = true;
         }
 

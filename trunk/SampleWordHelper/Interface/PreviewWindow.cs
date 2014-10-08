@@ -41,17 +41,20 @@ namespace SampleWordHelper.Interface
             get { return panel1.ClientRectangle; }
         }
 
-        public void CompleteLoading(bool valid, string message)
+        public void SetCaption(string caption)
+        {
+            Text = caption;
+        }
+
+        public void Show(bool valid, string message)
         {
             lblMessage.Visible = !valid;
             if (!valid)
                 lblMessage.Text = message;
-        }
-
-        public void ShowLoading(string caption)
-        {
-            Text = caption;
-            Show(parent);
+            if (!Visible)
+                Show(parent);
+            else
+                Activate();
         }
 
         /// <summary>

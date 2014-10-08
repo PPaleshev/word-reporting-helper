@@ -7,6 +7,9 @@ using SampleWordHelper.Providers.Core;
 
 namespace SampleWordHelper.Model
 {
+    /// <summary>
+    /// Состояние менеджера главного представления.
+    /// </summary>
     public class MainPresenterState: BasicDisposable
     {
         /// <summary>
@@ -27,7 +30,7 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Объект для отслеживания состояния документов.
         /// </summary>
-        DocumentManager DocumentManager { get; set; }
+        readonly DocumentManager documentManager;
 
         /// <summary>
         /// Экземпляр активного поставщика каталога.
@@ -52,8 +55,8 @@ namespace SampleWordHelper.Model
         public MainPresenterState(ApplicationContext context, ICatalogPaneCallback callback)
         {
             this.context = context;
-            DocumentManager = new DocumentManager(context, callback);
-            eventListener = new ApplicationEventsListener(context.Environment, DocumentManager);
+            documentManager = new DocumentManager(context, callback);
+            eventListener = new ApplicationEventsListener(context.Environment, documentManager);
             configuration = new ConfigurationModel("reportHelper");
             Provider = new Provider(new NullProviderStrategy());
             InitializeAndValidate();
@@ -101,15 +104,15 @@ namespace SampleWordHelper.Model
         public void UpdateCatalog()
         {
             context.Catalog = Provider.LoadCatalog();
-            DocumentManager.UpdateCatalog();
+            documentManager.UpdateCatalog();
         }
 
         /// <summary>
         /// Приостанавливает обработку событий приложения.
         /// </summary>
-        public IDisposable SuspendEvents()
+        public IDisposable SuspendUpdates()
         {
-            return eventListener.SuspendEvents();
+            return new SuspendedState(documentManager, eventListener.SuspendEvents());
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace SampleWordHelper.Model
         /// <param name="visible">True, если каталог видим, иначе false.</param>
         public void ShowCatalogPane(bool visible)
         {
-            DocumentManager.UpdateCatalogVisibility(visible);
+            documentManager.UpdateCatalogVisibility(visible);
         }
 
         /// <summary>
@@ -134,8 +137,30 @@ namespace SampleWordHelper.Model
         protected override void DisposeManaged()
         {
             eventListener.SafeDispose();
-            DocumentManager.SafeDispose();
+            documentManager.SafeDispose();
             Provider.Shutdown();
+        }
+
+        /// <summary>
+        /// Приостановленное состояние.
+        /// </summary>
+        class SuspendedState : IDisposable
+        {
+            readonly IDisposable events;
+            readonly DocumentManager man;
+
+            public SuspendedState(DocumentManager man, IDisposable events)
+            {
+                this.man = man;
+                this.events = events;
+                man.UpdateCatalogVisibility(false);
+            }
+
+            public void Dispose()
+            {
+                events.Dispose();
+                man.UpdateCatalogVisibility(true);
+            }
         }
     }
 }

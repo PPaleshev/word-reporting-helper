@@ -42,19 +42,21 @@ namespace SampleWordHelper.Presentation
         /// <param name="fileName">Путь к файлу для отображения.</param>
         public void ShowPreview(string fileName)
         {
+            var caption = Path.GetFileName(fileName);
             if (state != null && string.Equals(fileName, state.FileName, StringComparison.InvariantCultureIgnoreCase))
             {
-                view.CompleteLoading(state.IsValid, state.ErrorMessage);
+                view.SetCaption(caption);
+                view.Show(state.IsValid, state.ErrorMessage);
                 return;
             }
             if (state != null)
                 Unload();
             view = viewFactory.CreatePreviewView(this);
-            view.ShowLoading(Path.GetFileName(fileName));
+            view.SetCaption(caption);
             state = new PreviewState(fileName);
             if (state.IsValid)
                 state.ShowPreview(view.Handle, view.PreviewArea);
-            view.CompleteLoading(state.IsValid, state.ErrorMessage);
+            view.Show(state.IsValid, state.ErrorMessage);
         }
 
         public void OnSizeChanged()

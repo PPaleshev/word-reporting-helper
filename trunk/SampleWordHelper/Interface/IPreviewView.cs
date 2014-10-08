@@ -19,15 +19,16 @@ namespace SampleWordHelper.Interface
         Rectangle PreviewArea { get; }
 
         /// <summary>
-        /// Отображает представление в режиме загрузки.
+        /// Устанавливает заголовок представления.
         /// </summary>
-        void ShowLoading(string caption);
+        /// <param name="caption">Текст заголовка.</param>
+        void SetCaption(string caption);
 
         /// <summary>
-        /// Завершает загрузку предварительного просмотра и отображает результат.
+        /// Отображает представление.
         /// </summary>
         /// <param name="valid">Флаг, равный false, если в процессе отображения превью возникли ошибки, иначе true.</param>
         /// <param name="message">Текст ошибки, если есть.</param>
-        void CompleteLoading(bool valid, string message);
+        void Show(bool valid, string message);
     }
 }
