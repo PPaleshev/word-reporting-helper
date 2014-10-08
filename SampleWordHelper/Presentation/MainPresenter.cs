@@ -111,8 +111,10 @@ namespace SampleWordHelper.Presentation
             model = new MainPresenterState(context, this);
             model.UpdateCatalog();
             view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
+            if (!model.IsValid)
+                return;
+            using (model.SuspendUpdates())
             using (var presenter = new SearchIndexPresenter(context.Environment))
-            using (model.SuspendEvents())
                 presenter.Run(context.Catalog, searchEngine);
         }
 
