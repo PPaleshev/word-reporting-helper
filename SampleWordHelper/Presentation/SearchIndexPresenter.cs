@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using Microsoft.Office.Interop.Word;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
@@ -44,12 +43,15 @@ namespace SampleWordHelper.Presentation
             try
             {
                 new Thread(view.Show).Start();
-                searchEngine.BuildIndex(catalog, view);
+                if (searchEngine.IsCreated)
+                    searchEngine.UpdateIndex(catalog, view);
+                else
+                    searchEngine.BuildIndex(catalog, view);
             }
             finally
             {
                 view.Close();
-                context.Application.ScreenUpdating= true;
+                context.Application.ScreenUpdating = true;
                 context.Application.ScreenRefresh();
             }
         }
