@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -40,9 +41,22 @@ namespace SampleWordHelper.Indexation
         readonly SHA256Managed hasher = new SHA256Managed();
 
         /// <summary>
+        /// Отображение из идентификатора элемента каталога в информацию о нём.
+        /// </summary>
+        readonly Dictionary<string, IndexRecord> records = new Dictionary<string, IndexRecord>();
+
+        /// <summary>
         /// Объект для извлечения содержимого из индексируемых файлов.
         /// </summary>
         readonly IContentProvider contentProvider;
+
+        /// <summary>
+        /// Флаг, равный true, если индекс содержит данные, иначе false.
+        /// </summary>
+        public bool IsCreated
+        {
+            get { return records.Count > 0; }
+        }
 
         /// <summary>
         /// Создаёт экземпляр поискового механизма.
@@ -72,15 +86,133 @@ namespace SampleWordHelper.Indexation
                 foreach (var id in allItems)
                 {
                     count++;
-                    string content;
-                    var location = catalog.GetLocation(id);
-                    if (!contentProvider.TryGetContent(location, out content))
-                        continue;
-                    indexWriter.AddDocument(CreateDocumentForFile(id, location, content));
+                    AddItemToIndex(catalog, id, indexWriter);
                     monitor.UpdateProgress("Обработка: " + catalog.GetName(id), totalProgress, count);
                 }
                 indexWriter.Optimize();
             }
+        }
+
+        /// <summary>
+        /// Обновляет содержимое индекса на основании данных каталога.
+        /// </summary>
+        /// <param name="catalog">Индексируемый каталог.</param>
+        /// <param name="monitor">Объект для отображения прогресса операции.</param>
+        public void UpdateIndex(ICatalog catalog, IProgressMonitor monitor)
+        {
+            List<string> newItems = new List<string>(),
+                         changedItems = new List<string>(),
+                         outdatedItems = new List<string>();
+            monitor.UpdateProgress("Поиск изменений в каталоге", 100, 0);
+            CheckIndexRecords(catalog, newItems, changedItems, outdatedItems);
+            var totalCount = newItems.Count + changedItems.Count + outdatedItems.Count;
+            if(totalCount == 0)
+            {
+                monitor.UpdateProgress("Индексация завершена", 100, 100);
+                return;
+            }
+            records.Clear();
+            monitor.UpdateProgress("Индексация элементов каталога", totalCount, 0);
+            using (var writer = new IndexWriter(indexDirectory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED))
+            {
+                var count = 0;
+                AddItems(catalog, newItems, writer);
+                monitor.UpdateProgress("Обновление индекса", totalCount, count += newItems.Count);
+                UpdateItems(catalog, changedItems, writer);
+                monitor.UpdateProgress("Очистка индекса", totalCount, count + changedItems.Count);
+                ClearOutdatedItems(outdatedItems, writer);
+            }
+            monitor.UpdateProgress("Выполнено", totalCount, totalCount);
+        }
+
+        /// <summary>
+        /// Удаляет все устаревшие записи из индекса.
+        /// </summary>
+        /// <param name="outdatedItems">Перечисление идентификаторов устаревших элементов.</param>
+        /// <param name="writer">Объект для записи в индекс.</param>
+        void ClearOutdatedItems(IEnumerable<string> outdatedItems, IndexWriter writer)
+        {
+            foreach (var term in outdatedItems.Select(id => new Term("id", id)))
+                writer.DeleteDocuments(term);
+        }
+
+        /// <summary>
+        /// Добавляет в индекс новые элементы.
+        /// </summary>
+        /// <param name="catalog">Каталог.</param>
+        /// <param name="newItems">Перечисление идентификаторов элементов, которые нужно проиндексировать.</param>
+        /// <param name="writer">Объект для записи в индекс.</param>
+        void AddItems(ICatalog catalog, IEnumerable<string> newItems, IndexWriter writer)
+        {
+            foreach (var newItemId in newItems)
+                AddItemToIndex(catalog, newItemId, writer);
+        }
+
+        /// <summary>
+        /// Обновляет содержимое индекса.
+        /// </summary>
+        /// <param name="catalog">Каталог.</param>
+        /// <param name="changedItems">Перечисление идентификаторов элементов, которые нужно обновить.</param>
+        /// <param name="writer">Объект для записи в индекс.</param>
+        void UpdateItems(ICatalog catalog, IEnumerable<string> changedItems, IndexWriter writer)
+        {
+            foreach (var id in changedItems)
+            {
+                string content;
+                if (!contentProvider.TryGetContent(catalog.GetLocation(id), out content))
+                    continue;
+                var term = new Term("id", id);
+                writer.UpdateDocument(term, CreateDocumentForFile(id, catalog.GetLocation(id), content));
+            }
+        }
+
+        /// <summary>
+        /// Добавляет новый элемент в индекс: считывает его содержимое и вычисляет необходимые поля.
+        /// </summary>
+        /// <param name="catalog">Каталог.</param>
+        /// <param name="id">Идентификатор элемента.</param>
+        /// <param name="writer">Объект для записи в индекс.</param>
+        void AddItemToIndex(ICatalog catalog, string id, IndexWriter writer)
+        {
+            string content;
+            if (!contentProvider.TryGetContent(catalog.GetLocation(id), out content))
+                return;
+            writer.AddDocument(CreateDocumentForFile(id, catalog.GetLocation(id), content));
+        }
+
+
+        /// <summary>
+        /// Соотносит записи в индексе с новым состоянием каталога. 
+        /// Заполняет список <paramref name="newItems"/> идентификаторами элементов, которые должны быть добавлены в индекс.
+        /// Заполняет список <paramref name="changedItems"/> идентификаторами элементов, которые должны быть обновлены в индексе.
+        /// Заполняет список <paramref name="outdatedItems"/> идентификаторами элементов, которые должны быть удалены из индекса.
+        /// </summary>
+        /// <param name="catalog">Каталог.</param>
+        /// <param name="newItems">Список идентификаторов элементов, которые должны быть добавлены.</param>
+        /// <param name="changedItems">Список идентификаторов элементов, которые должны быть обновлены.</param>
+        /// <param name="outdatedItems">Список идентификаторов элементов, которые должны быть удалены.</param>
+        void CheckIndexRecords(ICatalog catalog, List<string> newItems, List<string> changedItems, List<string> outdatedItems)
+        {
+            var items = catalog.All().Where(id => !catalog.IsGroup(id)).ToArray();
+            var temp = new Dictionary<string, IndexRecord>(records);
+            foreach (var id in items)
+            {
+                IndexRecord record;
+                if (!temp.TryGetValue(id, out record))
+                {
+                    newItems.Add(id);
+                    continue;
+                }
+                if (!string.Equals(catalog.GetLocation(id), record.path, StringComparison.InvariantCultureIgnoreCase))
+                    changedItems.Add(id);
+                using (var stream = LongPathFile.Open(catalog.GetLocation(id), FileMode.Open, FileAccess.Read))
+                {
+                    if (stream.Length != record.size || !record.hash.SequenceEqual(hasher.ComputeHash(stream)))
+                        changedItems.Add(id);
+                }
+                temp.Remove(id);
+            }
+            outdatedItems.AddRange(temp.Keys);
         }
 
         /// <summary>
@@ -107,6 +239,7 @@ namespace SampleWordHelper.Indexation
 
         /// <summary>
         /// Создаёт индексированный документ для сохранения в индексе.
+        /// Добавляет элемент в <see cref="records"/>.
         /// </summary>
         /// <param name="id">Идентификатор элемента каталога. </param>
         /// <param name="filePath">Путь к файлу.</param>
@@ -115,21 +248,51 @@ namespace SampleWordHelper.Indexation
         {
             var doc = new Document();
             doc.Add(new Field("id", id, Field.Store.YES, Field.Index.NO));
-            doc.Add(new Field("path", filePath, Field.Store.YES, Field.Index.NO));
             doc.Add(new Field("text", content, Field.Store.NO, Field.Index.ANALYZED));
             using (var stream = LongPathFile.Open(filePath, FileMode.Open, FileAccess.Read))
-            {
-                doc.Add(new NumericField("size").SetLongValue(stream.Length));
-                var hash = hasher.ComputeHash(stream);
-                doc.Add(new Field("checksum", Convert.ToBase64String(hash), Field.Store.YES, Field.Index.NO));
-            }
+                records.Add(id, new IndexRecord(id, filePath, stream.Length, hasher.ComputeHash(stream)));
             return doc;
         }
 
         protected override void DisposeManaged()
         {
+            records.Clear();
             analyzer.Dispose();
             indexDirectory.Dispose();
+        }
+
+        /// <summary>
+        /// Запись с информацией об элементе в индексе.
+        /// </summary>
+        class IndexRecord
+        {
+            /// <summary>
+            /// Идентификатор элемента.
+            /// </summary>
+            public readonly string id;
+
+            /// <summary>
+            /// Путь к элементу.
+            /// </summary>
+            public readonly string path;
+
+            /// <summary>
+            /// Размер файла элемента.
+            /// </summary>
+            public long size;
+
+            /// <summary>
+            /// Хэш файла.
+            /// </summary>
+            public readonly byte[] hash;
+
+            public IndexRecord(string id, string path, long size, byte[] hash)
+            {
+                this.id = id;
+                this.path = path;
+                this.size = size;
+                this.hash = hash;
+            }
         }
     }
 }
