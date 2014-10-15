@@ -142,8 +142,6 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Run()
         {
-            //http://code.msdn.microsoft.com/Word-2010-Using-the-Drag-81bb5bff
-            model.IsVisible = true;
             Activate();
         }
 

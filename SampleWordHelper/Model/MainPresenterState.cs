@@ -121,7 +121,7 @@ namespace SampleWordHelper.Model
         /// <param name="visible">True, если каталог видим, иначе false.</param>
         public void ShowCatalogPane(bool visible)
         {
-            documentManager.UpdateCatalogVisibility(visible);
+            documentManager.UpdateCatalogVisibility(IsValid && visible);
         }
 
         /// <summary>
