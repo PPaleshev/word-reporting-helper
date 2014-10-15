@@ -78,6 +78,8 @@ namespace SampleWordHelper.Presentation
                     return;
                 model.UpdateConfiguraion(editorModel);
                 view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
+                if (model.IsValid)
+                    model.UpdateCatalog();
             }
         }
 
@@ -109,10 +111,11 @@ namespace SampleWordHelper.Presentation
         {
             isActive = true;
             model = new MainPresenterState(context, this);
-            model.UpdateCatalog();
             view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
+            model.ShowCatalogPane(model.IsValid);
             if (!model.IsValid)
                 return;
+            model.UpdateCatalog();
             using (model.SuspendUpdates())
             using (var presenter = new SearchIndexPresenter(context.Environment))
                 presenter.Run(context.Catalog, searchEngine);
