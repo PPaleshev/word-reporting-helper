@@ -72,6 +72,11 @@ namespace SampleWordHelper.Model
         public string Filter { get; private set; }
 
         /// <summary>
+        /// Идентификатор выбранного элемента в дереве.
+        /// </summary>
+        public object SelectedNodeId { get; set; }
+
+        /// <summary>
         /// Устанавливает новую модель каталога.
         /// </summary>
         public void SetModel(ICatalog catalog)
@@ -80,6 +85,7 @@ namespace SampleWordHelper.Model
             nonFilteredSource = new ElementSource(catalog, new NullFilterStrategy());
             currentSource = GetElementSource(Filter);
             nodeComparer = new Comparer(catalog);
+            SelectedNodeId = null;
         }
 
         /// <summary>
@@ -140,7 +146,7 @@ namespace SampleWordHelper.Model
         /// Возвращает true, если узел может быть перетащен, иначе false.
         /// </summary>
         /// <param name="item">Идентификатор элемента.</param>
-        public bool CanDragNode(object item)
+        public bool IsContentNode(object item)
         {
             var id = item as string;
             return !string.IsNullOrWhiteSpace(id) && currentSource.Contains(id) && !catalog.IsGroup(id);

@@ -10,7 +10,7 @@ namespace SampleWordHelper.Interface
     /// <summary>
     /// Представление для отображения структуры каталога.
     /// </summary>
-    public class StructureTreeView: BasicDisposable, IDocumentView
+    public class StructureTreeView : BasicDisposable, IDocumentView
     {
         /// <summary>
         /// Контрол со структурой.
@@ -33,6 +33,11 @@ namespace SampleWordHelper.Interface
         readonly SuspendFlag suspendEvents = new SuspendFlag();
 
         /// <summary>
+        /// Контекстное меню каталога.
+        /// </summary>
+        ContextMenuStrip menu;
+
+        /// <summary>
         /// Создаёт экземпляр представления структуры каталога.
         /// </summary>
         /// <param name="taskPaneFactory">Фабрика панелей задач.</param>
@@ -44,6 +49,11 @@ namespace SampleWordHelper.Interface
             container = taskPaneFactory.Create(control, title);
             this.presenter = presenter;
             InitializeComponents();
+        }
+
+        public void SetContextMenu(ICommandView menu)
+        {
+            this.menu = (ContextMenuStrip) menu.RawObject;
         }
 
         public void SetVisibility(bool value)
@@ -84,6 +94,7 @@ namespace SampleWordHelper.Interface
             tree.NodeMouseDoubleClick += OnNodeDoubleClicked;
             tree.KeyPress += TreeKeyPressed;
             tree.NodeMouseClick += NodeClicked;
+            tree.AfterSelect += OnSelectedNodeChanged;
         }
 
         /// <summary>
@@ -122,13 +133,31 @@ namespace SampleWordHelper.Interface
         static void BuildNode(string nodeId, DocumentModel model, TreeNodeCollection target)
         {
             var node = new TreeNode(model.GetText(nodeId));
-            node.ImageIndex = model.GetNodeType(nodeId) == NodeType.LEAF ? 2 : 0;
+            node.ImageIndex = GetNodeImageIndex(model.GetNodeType(nodeId));
             node.SelectedImageIndex = node.ImageIndex;
             node.ToolTipText = model.GetHint(nodeId);
             node.Tag = nodeId;
             foreach (var childId in model.GetChildNodes(nodeId))
                 BuildNode(childId, model, node.Nodes);
             target.Add(node);
+        }
+
+        /// <summary>
+        /// Определяет индекс картинки, соответствующей типу узла.
+        /// </summary>
+        static int GetNodeImageIndex(NodeType nodeType)
+        {
+            switch (nodeType)
+            {
+                case NodeType.LEAF:
+                    return 2;
+                case NodeType.GROUP:
+                    return 0;
+                case NodeType.INDEXED_SEARCH:
+                    return 3;
+                default:
+                    return -1;
+            }
         }
 
         /// <summary>
@@ -167,6 +196,15 @@ namespace SampleWordHelper.Interface
             if (e.Button != MouseButtons.Left)
                 return;
             presenter.OnNodeDoubleClicked(e.Node.Tag);
+        }
+
+        /// <summary>
+        /// Вызывается при изменении выбранного узла дерева.
+        /// </summary>
+        void OnSelectedNodeChanged(object sender, TreeViewEventArgs e)
+        {
+            var item = e.Node == null ? null : e.Node.Tag;
+            presenter.OnItemSelected(item);
         }
 
         /// <summary>
@@ -239,8 +277,13 @@ namespace SampleWordHelper.Interface
         /// </summary>
         void NodeClicked(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (Control.ModifierKeys.HasFlag(Keys.Control) && e.Button.HasFlag(MouseButtons.Left))
+            if (e.Button.HasFlag(MouseButtons.Left) && Control.ModifierKeys.HasFlag(Keys.Control))
                 presenter.OnPreviewRequested(e.Node.Tag);
+            if (e.Button.HasFlag(MouseButtons.Right))
+            {
+                control.treeStructure.SelectedNode = e.Node;
+                menu.Show(control.treeStructure, e.Location);
+            }
         }
     }
-}
+} 

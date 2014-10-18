@@ -77,7 +77,7 @@ namespace SampleWordHelper.Presentation
             Debug.WriteLine("Source: BeginDrag");
             if (state != State.NONE)
                 throw new InvalidOperationException("invalid state to begin dragging (" + state + ")");
-            if (!model.CanDragNode(item))
+            if (!model.IsContentNode(item))
                 return;
             state = State.INITIATED;
             view.BeginDragNode(model.CreateTransferObject(item), DragDropEffects.Copy);
