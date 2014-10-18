@@ -16,6 +16,11 @@ namespace SampleWordHelper.Interface
         void SetWidth(int width);
 
         /// <summary>
+        /// Устанавливает контекстное меню.
+        /// </summary>
+        void SetContextMenu(ICommandView menu);
+
+        /// <summary>
         /// Показывает\скрывает представление в зависимости от переданного флага.
         /// </summary>
         void SetVisibility(bool value);

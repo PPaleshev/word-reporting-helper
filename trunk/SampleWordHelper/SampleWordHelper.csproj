@@ -242,6 +242,8 @@
     <Compile Include="Indexation\ISearchEngine.cs" />
     <Compile Include="Indexation\SearchEngine.cs" />
     <Compile Include="Indexation\WordDocumentContentProvider.cs" />
+    <Compile Include="Interface\CommandView.cs" />
+    <Compile Include="Interface\ICommandView.cs" />
     <Compile Include="Interface\IDropTargetHost.cs" />
     <Compile Include="Interface\IPreviewView.cs" />
     <Compile Include="Interface\IWaitingView.cs" />
@@ -285,6 +287,7 @@
     <Compile Include="Presentation\ApplicationEventsListener.cs" />
     <Compile Include="Presentation\ICatalogPaneCallback.cs" />
     <Compile Include="Presentation\IPreviewPresenter.cs" />
+    <Compile Include="Presentation\PasteMethods.cs" />
     <Compile Include="Presentation\PreviewManager.cs" />
     <Compile Include="Presentation\TreeDragDropPresenter.cs" />
     <Compile Include="Presentation\IConfigurationEditorPresenter.cs" />
@@ -325,7 +328,6 @@
     <Compile Include="Interface\MainRibbon.Designer.cs">
       <DependentUpon>MainRibbon.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -405,6 +407,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\open.png" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

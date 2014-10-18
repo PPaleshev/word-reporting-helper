@@ -66,5 +66,10 @@ namespace SampleWordHelper.Core.Application
         {
             return new PreviewWindow(presenter, windowProvider);
         }
+
+        public ICommandView CreateCommandView()
+        {
+            return new CommandView();
+        }
     }
 }

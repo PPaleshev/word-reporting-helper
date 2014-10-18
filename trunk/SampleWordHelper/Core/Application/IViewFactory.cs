@@ -42,5 +42,10 @@ namespace SampleWordHelper.Core.Application
         /// </summary>
         /// <param name="presenter">Менеджер представления.</param>
         IPreviewView CreatePreviewView(IPreviewPresenter presenter);
+
+        /// <summary>
+        /// Создаёт представление для списка команд.
+        /// </summary>
+        ICommandView CreateCommandView();
     }
 }

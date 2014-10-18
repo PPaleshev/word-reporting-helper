@@ -18,6 +18,11 @@
         /// <summary>
         /// Листовой узел.
         /// </summary>
-        LEAF
+        LEAF,
+
+        /// <summary>
+        /// Элемент, обнаруженный при индексированном поиске.
+        /// </summary>
+        INDEXED_SEARCH
     }
 }

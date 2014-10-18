@@ -116,9 +116,9 @@ namespace SampleWordHelper.Presentation
             if (!model.IsValid)
                 return;
             model.UpdateCatalog();
-            using (model.SuspendUpdates())
-            using (var presenter = new SearchIndexPresenter(context.Environment))
-                presenter.Run(context.Catalog, searchEngine);
+//            using (model.SuspendUpdates())
+//            using (var presenter = new SearchIndexPresenter(context.Environment))
+//                presenter.Run(context.Catalog, searchEngine);
         }
 
         void Deactivate()

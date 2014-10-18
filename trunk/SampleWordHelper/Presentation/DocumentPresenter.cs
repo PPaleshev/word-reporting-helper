@@ -46,6 +46,11 @@ namespace SampleWordHelper.Presentation
         readonly PreviewManager previewManager;
 
         /// <summary>
+        /// Представление списка команд.
+        /// </summary>
+        readonly ICommandView commandView;
+
+        /// <summary>
         /// Создаёт новый экземпляр менеджера документа.
         /// </summary>
         /// <param name="context">Контекст исполнения надстройки.</param>
@@ -56,8 +61,10 @@ namespace SampleWordHelper.Presentation
             this.callback = callback;
             model = new DocumentModel(context.Catalog, context.SearchEngine);
             view = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
+            commandView = context.Environment.ViewFactory.CreateCommandView();
             dragController = new TreeDragDropController(context.Environment, view, model, this);
             previewManager = new PreviewManager(context.Environment);
+            InitializeCommands(commandView);
         }
 
         public IDragSourceController DragController
@@ -75,6 +82,19 @@ namespace SampleWordHelper.Presentation
             view.SetVisibility(model.IsVisible);
         }
 
+        /// <summary>
+        /// Инициализирует команды.
+        /// </summary>
+        void InitializeCommands(ICommandView cmdView)
+        {
+            cmdView.Add("Вставить", "Добавляет содержимое выбранного элемента каталога в редактируемый документ.", "paste",
+                () => model.IsContentNode(model.SelectedNodeId), () => OnNodeDoubleClicked(model.SelectedNodeId));
+            cmdView.Add("Предварительный просмотр", "Отображает содержимое выбранного элемента каталога в окне предварительного просмотра.", "preview",
+                () => model.IsContentNode(model.SelectedNodeId), () => OnPreviewRequested(model.SelectedNodeId));
+            cmdView.Add("Открыть", "Открывает выбранный элемент каталога в новом окне в режиме только для чтения.", "open",
+                () => model.IsContentNode(model.SelectedNodeId), OpenDocumentInNewWindow);
+        }
+
         void ICatalogPresenter.OnPaneVisibilityChanged(bool visible)
         {
             callback.OnVisibilityChanged(model.IsVisible = visible);
@@ -87,27 +107,15 @@ namespace SampleWordHelper.Presentation
             var application = context.Environment.Application;
             if (application.ActiveDocument == null)
                 return;
-            var filePath = model.ExtractFilePathFromTransferredData(obj);
-            using (var safeFile = new SafeFilePath(filePath))
-            {
-                var range = (Range) application.ActiveWindow.RangeFromPoint(point.X, point.Y);
-                range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
-            }
-            application.ActiveWindow.SetFocus();
+            PasteFile(model.ExtractFilePathFromTransferredData(obj), (Range) application.ActiveWindow.RangeFromPoint(point.X, point.Y));
         }
 
         public void OnNodeDoubleClicked(object item)
         {
             var application = context.Environment.Application;
-            if (!model.CanDragNode(item) || application.ActiveDocument == null)
+            if (!model.IsContentNode(item) || application.ActiveDocument == null)
                 return;
-            var filePath = model.GetFilePathForId(item);
-            using (var safeFile = new SafeFilePath(filePath))
-            {
-                var range = application.Selection;
-                range.InsertFile(safeFile.FilePath, ConfirmConversions: true);
-            }
-            application.ActiveWindow.SetFocus();
+            PasteFile(model.GetFilePathForId(item), application.Selection.Range);
         }
 
         public void OnFilterTextChanged(string filterText)
@@ -121,9 +129,14 @@ namespace SampleWordHelper.Presentation
 
         public void OnPreviewRequested(object item)
         {
-            if (!model.CanDragNode(item))
+            if (!model.IsContentNode(item))
                 return;
             previewManager.ShowPreview(model.GetFilePathForId(item));
+        }
+
+        public void OnItemSelected(object item)
+        {
+            model.SelectedNodeId = model.IsContentNode(item) ? item : null;
         }
 
         /// <summary>
@@ -132,6 +145,7 @@ namespace SampleWordHelper.Presentation
         public void Activate()
         {
             callback.OnVisibilityChanged(model.IsVisible);
+            view.SetContextMenu(commandView);
             view.SetWidth(model.DefaultWidth);
             view.SetVisibility(model.IsVisible);
             view.UpdateStructure(model);
@@ -156,9 +170,32 @@ namespace SampleWordHelper.Presentation
 
         protected override void DisposeManaged()
         {
+            commandView.SafeDispose();
             dragController.SafeDispose();
             view.SafeDispose();
             previewManager.SafeDispose();
+        }
+
+        /// <summary>
+        /// Открывает выбранный элемент каталога в новом окне в режиме только для чтения.
+        /// </summary>
+        void OpenDocumentInNewWindow()
+        {
+            var application = context.Environment.Application;
+            var doc = application.Documents.Open(model.GetFilePathForId(model.SelectedNodeId), ReadOnly: true, Visible: true, AddToRecentFiles: true);
+            doc.Activate();
+        }
+
+        /// <summary>
+        /// Выполняет вставку данных из файла в текущий документ.
+        /// </summary>
+        /// <param name="unsafeFilePath">Путь к файлу.</param>
+        /// <param name="range">Диапазон.</param>
+        static void PasteFile(string unsafeFilePath, Range range)
+        {
+            using (var safeFile = new SafeFilePath(unsafeFilePath))
+                PasteMethods.OpenAndCopyPaste(safeFile.FilePath, range);
+            range.Application.ActiveWindow.SetFocus();
         }
     }
 }

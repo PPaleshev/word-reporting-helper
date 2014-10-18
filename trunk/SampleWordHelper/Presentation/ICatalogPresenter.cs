@@ -33,5 +33,11 @@
         /// </summary>
         /// <param name="item">Выбранный элемент.</param>
         void OnPreviewRequested(object item);
+
+        /// <summary>
+        /// Вызывается при изменении выбранного элемента каталога.
+        /// </summary>
+        /// <param name="item">Выбранный элемент.</param>
+        void OnItemSelected(object item);
     }
 }
