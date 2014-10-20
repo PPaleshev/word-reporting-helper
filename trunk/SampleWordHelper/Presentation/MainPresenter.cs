@@ -1,4 +1,5 @@
-﻿using SampleWordHelper.Core.Application;
+﻿using NLog;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
@@ -12,6 +13,11 @@ namespace SampleWordHelper.Presentation
     /// </summary>
     public class MainPresenter : BasicDisposable, IMainPresenter, ICatalogPaneCallback
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static Logger LOG = LogManager.GetCurrentClassLogger(); 
+
         /// <summary>
         /// Контекст времени выполнения приложения.
         /// </summary>
@@ -35,7 +41,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// True, если приложение активно в данный момент, иначе false.
         /// </summary>
-        bool isActive = false;
+        bool isActive;
 
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
@@ -109,16 +115,20 @@ namespace SampleWordHelper.Presentation
 
         void Activate()
         {
+            LOG.Info("Activating presenter");
             isActive = true;
             model = new MainPresenterState(context, this);
+            LOG.Info("MainPresenterState: Valid={0}; Message={1}", model.IsValid, model.Message);
             view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
             model.ShowCatalogPane(model.IsValid);
             if (!model.IsValid)
                 return;
+            LOG.Info("Updating catalog");
             model.UpdateCatalog();
-//            using (model.SuspendUpdates())
-//            using (var presenter = new SearchIndexPresenter(context.Environment))
-//                presenter.Run(context.Catalog, searchEngine);
+            LOG.Info("Indexing catalog");
+            using (model.SuspendUpdates())
+            using (var presenter = new SearchIndexPresenter(context.Environment))
+                presenter.Run(context.Catalog, searchEngine);
         }
 
         void Deactivate()
