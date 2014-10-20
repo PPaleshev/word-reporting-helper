@@ -17,11 +17,6 @@ namespace SampleWordHelper.Model
         readonly ISearchEngine searchEngine;
 
         /// <summary>
-        /// Объект для сортировки элементов каталога.
-        /// </summary>
-        Comparer nodeComparer;
-
-        /// <summary>
         /// Модель каталога, на основании которого строится модель.
         /// </summary>
         ICatalog catalog;
@@ -29,12 +24,12 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Текущий источник данных модели.
         /// </summary>
-        ElementSource currentSource;
+        IDataSlice currentSource;
 
         /// <summary>
         /// Источник элементов, содержащий нефильтрованные данные.
         /// </summary>
-        ElementSource nonFilteredSource;
+        IDataSlice fullDataSlice;
 
         /// <summary>
         /// Создаёт новый экземпляр модели документа.
@@ -82,9 +77,8 @@ namespace SampleWordHelper.Model
         public void SetModel(ICatalog catalog)
         {
             this.catalog = catalog;
-            nonFilteredSource = new ElementSource(catalog, new NullFilterStrategy());
-            currentSource = GetElementSource(Filter);
-            nodeComparer = new Comparer(catalog);
+            fullDataSlice = new CatalogSliceAdapter(catalog);
+            currentSource = GetDataSlice(Filter);
             SelectedNodeId = null;
         }
 
@@ -95,7 +89,7 @@ namespace SampleWordHelper.Model
         public void SetFilter(string filter)
         {
             Filter = filter;
-            currentSource = GetElementSource(filter);
+            currentSource = GetDataSlice(filter);
         }
 
         /// <summary>
@@ -103,7 +97,7 @@ namespace SampleWordHelper.Model
         /// </summary>
         public IEnumerable<string> GetRootNodes()
         {
-            return currentSource.GetRootElements().OrderBy(s => s, nodeComparer);
+            return currentSource.GetRootElements();
         }
 
         /// <summary>
@@ -112,7 +106,7 @@ namespace SampleWordHelper.Model
         /// <param name="parentId">Идентификатор родительского узла.</param>
         public IEnumerable<string> GetChildNodes(string parentId)
         {
-            return currentSource.GetChildElements(parentId).OrderBy(id => id, nodeComparer);
+            return currentSource.GetChildElements(parentId);
         }
 
         /// <summary>
@@ -139,7 +133,7 @@ namespace SampleWordHelper.Model
         /// <param name="id">Идентификатор узла.</param>
         public NodeType GetNodeType(string id)
         {
-            return catalog.IsGroup(id) ? NodeType.GROUP : NodeType.LEAF;
+            return currentSource.GetNodeType(id);
         }
 
         /// <summary>
@@ -203,37 +197,26 @@ namespace SampleWordHelper.Model
         /// Возвращает источник данных для текущего фильтра.
         /// </summary>
         /// <param name="filter">Текст фильтра.</param>
-        ElementSource GetElementSource(string filter)
+        IDataSlice GetDataSlice(string filter)
         {
             if (string.IsNullOrWhiteSpace(filter))
-                return nonFilteredSource;
-            var source = new ElementSource(catalog, new ElementNameFilterStrategy(catalog, filter));
-            if (!source.IsEmpty)
-                return source;
-            var ids = searchEngine.Search(filter);
-            return new ElementSource(catalog, new ContentFilterStrategy(ids));
+                return fullDataSlice;
+            var foundBySearch = new HashSet<string>(searchEngine.Search(filter));
+            var lowerFilter = filter.ToLower();
+            var foundByName = catalog.All().Where(id => !catalog.IsGroup(id) && !foundBySearch.Contains(id) && SatisfiesName(catalog, id, lowerFilter));
+            return new FoundDataSlice(foundBySearch, new HashSet<string>(foundByName));
         }
 
         /// <summary>
-        /// Класс для упорядочения элементов в дерева.
+        /// Определяет, удовлетворяет ли название элемента каталога указанному фильтру.
         /// </summary>
-        sealed class Comparer: IComparer<string>
+        /// <param name="catalog">Экземпляр каталога.</param>
+        /// <param name="id">Идентификатор анализируемого элемента.</param>
+        /// <param name="criteria">Поисковой критерий.</param>
+        /// <returns>Возвращает true, если элемент удовлетворяет критерию, иначе false.</returns>
+        static bool SatisfiesName(ICatalog catalog, string id, string criteria)
         {
-            /// <summary>
-            /// Модель каталога.
-            /// </summary>
-            readonly ICatalog catalog;
-
-            public Comparer(ICatalog catalog)
-            {
-                this.catalog = catalog;
-            }
-
-            public int Compare(string first, string second)
-            {
-                var result = catalog.IsGroup(first).CompareTo(catalog.IsGroup(second));
-                return result != 0 ? result : string.Compare(catalog.GetName(first), catalog.GetName(second), StringComparison.CurrentCultureIgnoreCase);
-            }
+            return string.IsNullOrWhiteSpace(criteria) || (catalog.GetName(id) ?? "").ToLower().Contains(criteria);
         }
     }
 }

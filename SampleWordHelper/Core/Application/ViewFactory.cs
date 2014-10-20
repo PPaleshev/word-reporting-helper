@@ -49,12 +49,12 @@ namespace SampleWordHelper.Core.Application
 
         public IConfigurationEditorView CreateSettingsView(IConfigurationEditorPresenter presenter)
         {
-            return new ConfigurationEditorForm(presenter);
+            return new ConfigurationEditorForm(presenter, windowProvider);
         }
 
         public IWaitingView CreateWaitingView()
         {
-            return new WaitingForm();
+            return new WaitingForm(windowProvider);
         }
 
         public IDropTargetHost CreateDropHost(IDropTargetPresenter presenter)

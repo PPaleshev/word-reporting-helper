@@ -54,5 +54,14 @@ namespace SampleWordHelper.Core.IO
         {
             return path[path.Length - 1] == Path.DirectorySeparatorChar ? path.Substring(0, path.Length - 1) : path;
         }
+
+        static string NormalizePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new IOException();
+            if (path.StartsWith(@"\\"))
+                return @"\\?\UNC" + path.Substring(1);
+            return @"\\?\" + path;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Native;
 using SampleWordHelper.Model;
 using SampleWordHelper.Presentation;
@@ -17,13 +18,19 @@ namespace SampleWordHelper.Interface
         readonly IConfigurationEditorPresenter presenter;
 
         /// <summary>
+        /// Объект для доступа к главному окну приложения.ы
+        /// </summary>
+        readonly IWindowProvider windowProvider;
+
+        /// <summary>
         /// Модель представления.
         /// </summary>
         ISettingsEditorModel model;
 
-        public ConfigurationEditorForm(IConfigurationEditorPresenter presenter)
+        public ConfigurationEditorForm(IConfigurationEditorPresenter presenter, IWindowProvider windowProvider)
         {
             this.presenter = presenter;
+            this.windowProvider = windowProvider;
             InitializeComponent();
         }
 
@@ -53,8 +60,7 @@ namespace SampleWordHelper.Interface
 
         bool IConfigurationEditorView.ShowDialog()
         {
-            using (var parent = NativeWindowSession.GetCurrentProcessMainWindow())
-                return ShowDialog(parent.window) == DialogResult.OK;
+            return ShowDialog(windowProvider.GetMainWindow()) == DialogResult.OK;
         }
 
         void OnSelectedProviderChanged(object sender, System.EventArgs e)

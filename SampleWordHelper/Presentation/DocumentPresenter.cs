@@ -131,7 +131,7 @@ namespace SampleWordHelper.Presentation
         {
             if (!model.IsContentNode(item))
                 return;
-            previewManager.ShowPreview(model.GetFilePathForId(item));
+            previewManager.ShowPreview(model.GetFilePathForId(item), true);
         }
 
         public void OnItemSelected(object item)

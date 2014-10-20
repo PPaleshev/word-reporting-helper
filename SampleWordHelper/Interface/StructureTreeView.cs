@@ -150,11 +150,11 @@ namespace SampleWordHelper.Interface
             switch (nodeType)
             {
                 case NodeType.LEAF:
-                    return 2;
+                    return 1;
                 case NodeType.GROUP:
                     return 0;
                 case NodeType.INDEXED_SEARCH:
-                    return 3;
+                    return 2;
                 default:
                     return -1;
             }

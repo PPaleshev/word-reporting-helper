@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using NLog;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
@@ -12,6 +14,11 @@ namespace SampleWordHelper.Presentation
     /// </summary>
     public class SearchIndexPresenter : BasicDisposable
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Контекст времени исполнения.
         /// </summary>
@@ -47,6 +54,10 @@ namespace SampleWordHelper.Presentation
                     searchEngine.UpdateIndex(catalog, view);
                 else
                     searchEngine.BuildIndex(catalog, view);
+            }
+            catch (Exception ex)
+            {
+                LOG.Error("Failed to create or update index", ex);
             }
             finally
             {

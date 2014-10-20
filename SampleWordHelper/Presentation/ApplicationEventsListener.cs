@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
+using NLog;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
@@ -14,6 +13,11 @@ namespace SampleWordHelper.Presentation
     /// </summary>
     public class ApplicationEventsListener: BasicDisposable
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Объект для выполнения обратных вызовов.
         /// </summary>
@@ -51,6 +55,7 @@ namespace SampleWordHelper.Presentation
             ((ApplicationEvents4_Event)application).NewDocument += OnNewDocument;
             application.DocumentOpen += OnDocumentOpened;
             application.DocumentChange += OnDocumentChanged;
+            LOG.Debug("Started to listen for events");
         }
 
         /// <summary>
@@ -58,6 +63,7 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public IDisposable SuspendEvents()
         {
+            LOG.Debug("Event listening suspended");
             return eventsSuspended.Suspend();
         }
 
@@ -67,12 +73,12 @@ namespace SampleWordHelper.Presentation
         /// <remarks>Для нового документа признак сохранения устанавливается в <c>false</c> для предотвращения его "перезаписывания" при открытии существующего документа.</remarks>
         void OnNewDocument(Document doc)
         {
+            LOG.Debug("New document ({0}): [{2}] {1}", eventsSuspended ? "suspended" : "active", doc.FullName, doc.GetKey(context));
             if (eventsSuspended)
                 return;
             documentOpenedExternally = false;
             doc.Saved = false;
             SetupShutdown(doc);
-            Debug.WriteLine("OnNewDocument: {0}", GetDocumentKey(doc));
             callback.OnDocumentCreated(GetDocumentKey(doc));
         }
 
@@ -82,11 +88,11 @@ namespace SampleWordHelper.Presentation
         /// <param name="doc">Открытый документ.</param>
         void OnDocumentOpened(Document doc)
         {
+            LOG.Debug("Document opened ({0}): [{2}] {1}", eventsSuspended ? "suspended" : "active", doc.FullName, doc.GetKey(context));
             if (eventsSuspended)
                 return;
             documentOpenedExternally = false;
             SetupShutdown(doc);
-            Debug.WriteLine("OnOpened: {0}", GetDocumentKey(doc));
             callback.OnDocumentOpened(GetDocumentKey(doc));
         }
 
@@ -95,9 +101,9 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void OnDocumentShutdown(object documentId)
         {
+            LOG.Debug("Document shutdown ({0}): [{1}]", eventsSuspended ? "suspended" : "active", documentId);
             if (eventsSuspended )
                 return;
-            Debug.WriteLine("OnShutdown: {0}", documentId);
             callback.OnDocumentClosed(documentId);
         }
 
@@ -106,18 +112,18 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void OnDocumentChanged()
         {
+            LOG.Debug("Document changed ({0})", eventsSuspended ? "suspended" : "active");
             if (eventsSuspended)
                 return;
             try
             {
                 var app = context.Application;
-
                 if (app.Documents.Count == 0 || app.ActiveProtectedViewWindow != null || !app.Visible)
                     return;
                 var activeDocument = context.Application.ActiveDocument;
                 if (activeDocument == null)
                     return;
-                Debug.WriteLine("Listener Changed: {0} {1} {2}", GetDocumentKey(activeDocument), documentOpenedExternally, activeDocument.Name);
+                LOG.Debug("Listener changed: Key={0}; OpenedExternally={1}; Name={2}", GetDocumentKey(activeDocument), documentOpenedExternally, activeDocument.Name);
                 if (documentOpenedExternally)
                 {
                     if (string.IsNullOrWhiteSpace(activeDocument.Path))
@@ -125,12 +131,11 @@ namespace SampleWordHelper.Presentation
                     else
                         OnDocumentOpened(activeDocument);
                 }
-                Debug.WriteLine("OnActivated: {0} {1}", GetDocumentKey(activeDocument), activeDocument.Name);
                 callback.OnDocumentActivated(GetDocumentKey(activeDocument));
             }
             catch (COMException e)
             {
-                MessageBox.Show("OnDocumentChanged: " + e.StackTrace);
+                LOG.Error("Failed to change document", (Exception) e);
             }
         }
 
