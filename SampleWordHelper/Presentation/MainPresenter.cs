@@ -82,6 +82,7 @@ namespace SampleWordHelper.Presentation
             {
                 if (!presenter.Edit())
                     return;
+                LOG.Info("Updating settings: {0}", editorModel.SelectedProviderName);
                 model.UpdateConfiguraion(editorModel);
                 view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
                 if (model.IsValid)
@@ -118,7 +119,7 @@ namespace SampleWordHelper.Presentation
             LOG.Info("Activating presenter");
             isActive = true;
             model = new MainPresenterState(context, this);
-            LOG.Info("MainPresenterState: Valid={0}; Message={1}", model.IsValid, model.Message);
+            LOG.Info("MainPresenterState: Valid={0}; Message={1}; ShowWindowsInTaskBar={2}", model.IsValid, model.Message, context.Environment.Application.ShowWindowsInTaskbar);
             view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
             model.ShowCatalogPane(model.IsValid);
             if (!model.IsValid)
@@ -133,6 +134,7 @@ namespace SampleWordHelper.Presentation
 
         void Deactivate()
         {
+            LOG.Info("Dea");
             isActive = false;
             model.SafeDispose();
             view.EnableAddinFeatures(false, false, "");

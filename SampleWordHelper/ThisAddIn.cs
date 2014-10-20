@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
+using NLog;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
@@ -13,6 +12,11 @@ namespace SampleWordHelper
 {
     public partial class ThisAddIn
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Экземпляр ленты. 
         /// Лента создаётся до вызова <see cref="ThisAddIn_Startup"/> в методе <see cref="CreateRibbonObjects"/> и существует одна на всё приложение.
@@ -37,12 +41,20 @@ namespace SampleWordHelper
         {
             if (!CheckCanStartup())
                 return;
-            var windowProvider = new MsWordWindowProvider(Application);
-            var viewFactory = new ViewFactory(ribbon, CustomTaskPanes, windowProvider);
-            context = new RuntimeContext(Application, viewFactory, Globals.Factory, windowProvider);
-            var presenter = new MainPresenter(context);
-            presenter.Start();
-            presenterObject = presenter;
+            LOG.Info("Starting addin");
+            try
+            {
+                var windowProvider = new MsWordWindowProvider(Application);
+                var viewFactory = new ViewFactory(ribbon, CustomTaskPanes, windowProvider);
+                context = new RuntimeContext(Application, viewFactory, Globals.Factory, windowProvider);
+                var presenter = new MainPresenter(context);
+                presenter.Start();
+                presenterObject = presenter;
+            }
+            catch (Exception ex)
+            {
+                LOG.Error("Failed to startup addin", ex);
+            }
         }
 
         /// <summary>
@@ -56,6 +68,7 @@ namespace SampleWordHelper
         /// </remarks>
         bool CheckCanStartup()
         {
+            LOG.Info("Application version: {0}", Application.Version);
             var version = new Version(Application.Version);
             return version.Major == 14 && Application.Windows.Count > 0 || version.Major > 14;
         }
@@ -66,6 +79,7 @@ namespace SampleWordHelper
         /// </summary>
         void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
+            LOG.Info("Shutting down");
             presenterObject.SafeDispose();
         }
 
