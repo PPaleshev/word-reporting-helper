@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using SampleWordHelper.Core.Native;
+using SampleWordHelper.Core.Application;
 
 namespace SampleWordHelper.Interface
 {
@@ -10,15 +10,21 @@ namespace SampleWordHelper.Interface
     /// </summary>
     public partial class WaitingForm : Form, IWaitingView
     {
-        public WaitingForm()
+        /// <summary>
+        /// Объект для доступа к главному окну приложения.
+        /// </summary>
+        readonly IWindowProvider parentProvider;
+
+        public WaitingForm(IWindowProvider parentProvider)
         {
+            this.parentProvider = parentProvider;
             InitializeComponent();
         }
 
         public void UpdateProgress(string action, int maxValue, int currentValue)
         {
             if (InvokeRequired)
-                BeginInvoke(new Action(() => UpdateProgress(action, maxValue, currentValue)));
+                Invoke(new Action(() => UpdateProgress(action, maxValue, currentValue)));
             else
             {
                 label2.Text = action;
@@ -29,18 +35,19 @@ namespace SampleWordHelper.Interface
 
         void IWaitingView.Show()
         {
-            using (var window = NativeWindowSession.GetCurrentProcessMainWindow())
+            if (InvokeRequired)
+                Invoke((Action) (this as IWaitingView).Show);
+            else
             {
-                TopLevel = true;
                 StartPosition = FormStartPosition.CenterScreen;
-                ShowDialog(window.window);
+                ShowDialog(parentProvider.GetMainWindow());
             }
         }
 
         void IWaitingView.Close()
         {
             if (InvokeRequired)
-                BeginInvoke((Action) Close);
+                Invoke((Action) Close);
             else
                 Close();
         }

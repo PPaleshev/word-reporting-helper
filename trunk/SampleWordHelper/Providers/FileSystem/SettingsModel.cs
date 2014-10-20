@@ -80,17 +80,8 @@ namespace SampleWordHelper.Providers.FileSystem
                 return new ValidationResult("Путь к каталогу должен быть указан.");
             if (RootPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
                 return new ValidationResult("Путь к каталогу содержит недопустимые символы.");
-            if (!LongPathDirectory.Exists(RootPath))
+            if (!Directory.Exists(RootPath))
                 return new ValidationResult("Путь к каталогу указывает на несуществующую директорию файловой системы.");
-//            if (UseLocalCache)
-//            {
-//                if (string.IsNullOrWhiteSpace(CacheDirectory))
-//                    return new ValidationResult("Путь к локальному кэшу должен быть указан.");
-//                if (CacheDirectory.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-//                    return new ValidationResult("Путь к локальному кэшу содержит недопустимые символы.");
-//                if (!LongPathDirectory.Exists(CacheDirectory))
-//                    return new ValidationResult("Путь к кэшу указывает на несуществующую директорию файловой системы.");
-//            }
             return ValidationResult.CORRECT;
         }
 

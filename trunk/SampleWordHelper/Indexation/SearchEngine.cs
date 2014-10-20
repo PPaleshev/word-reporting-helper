@@ -10,6 +10,7 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using NLog;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Core.IO;
 using SampleWordHelper.Model;
@@ -21,9 +22,13 @@ namespace SampleWordHelper.Indexation
     /// <summary>
     /// Реализация поискового механизма.
     /// </summary>
-    /// TODO добавить данные для определения, какие документы в данный момент есть в индексе. Создавать их при создании индекса и не хранить их в lucene.
     public class SearchEngine : BasicDisposable, ISearchEngine
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Директория, в которой хранится индекс Lucene.
         /// Во время жизни приложения используется отображение в памяти, по завершению данные могут сохраняться на диск.
@@ -77,6 +82,7 @@ namespace SampleWordHelper.Indexation
         /// <param name="monitor">Объект для отображения прогресса выполнения операции.</param>
         public void BuildIndex(ICatalog catalog, IProgressMonitor monitor)
         {
+            LOG.Debug("Creating index");
             using (var indexWriter = new IndexWriter(indexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED))
             {
                 var allItems = catalog.All().Where(id => !catalog.IsGroup(id)).ToArray();
@@ -91,6 +97,7 @@ namespace SampleWordHelper.Indexation
                 }
                 indexWriter.Optimize();
             }
+            LOG.Debug("Index created");
         }
 
         /// <summary>
@@ -100,11 +107,13 @@ namespace SampleWordHelper.Indexation
         /// <param name="monitor">Объект для отображения прогресса операции.</param>
         public void UpdateIndex(ICatalog catalog, IProgressMonitor monitor)
         {
+            LOG.Debug("Updating existing index");
             List<string> newItems = new List<string>(),
                          changedItems = new List<string>(),
                          outdatedItems = new List<string>();
             monitor.UpdateProgress("Поиск изменений в каталоге", 100, 0);
             CheckIndexRecords(catalog, newItems, changedItems, outdatedItems);
+            LOG.Info("New: {0}; Changed: {1}; Outdated: {2}", newItems.Count, changedItems.Count, outdatedItems.Count);
             var totalCount = newItems.Count + changedItems.Count + outdatedItems.Count;
             if(totalCount == 0)
             {
@@ -123,6 +132,7 @@ namespace SampleWordHelper.Indexation
                 ClearOutdatedItems(outdatedItems, writer);
             }
             monitor.UpdateProgress("Выполнено", totalCount, totalCount);
+            LOG.Debug("Index updating complete");
         }
 
         /// <summary>
@@ -130,7 +140,7 @@ namespace SampleWordHelper.Indexation
         /// </summary>
         /// <param name="outdatedItems">Перечисление идентификаторов устаревших элементов.</param>
         /// <param name="writer">Объект для записи в индекс.</param>
-        void ClearOutdatedItems(IEnumerable<string> outdatedItems, IndexWriter writer)
+        static void ClearOutdatedItems(IEnumerable<string> outdatedItems, IndexWriter writer)
         {
             foreach (var term in outdatedItems.Select(id => new Term("id", id)))
                 writer.DeleteDocuments(term);
@@ -228,10 +238,12 @@ namespace SampleWordHelper.Indexation
                 {
                     var query = new QueryParser(Version.LUCENE_30, "text", analyzer).Parse(input);
                     var result = searcher.Search(query, 10);
+                    LOG.Info("Found {0} file(s) for query '{1}'", result.ScoreDocs.Length, input);
                     return result.ScoreDocs.Select(doc => searcher.Doc(doc.Doc).Get("id")).ToArray();
                 }
                 catch
                 {
+                    LOG.Error("Incorrect search criteria: '{0}'", input);
                     return new string[0];
                 }
             }
@@ -250,7 +262,7 @@ namespace SampleWordHelper.Indexation
             doc.Add(new Field("id", id, Field.Store.YES, Field.Index.NO));
             doc.Add(new Field("text", content, Field.Store.NO, Field.Index.ANALYZED));
             using (var stream = LongPathFile.Open(filePath, FileMode.Open, FileAccess.Read))
-                records.Add(id, new IndexRecord(id, filePath, stream.Length, hasher.ComputeHash(stream)));
+                records.Add(id, new IndexRecord(filePath, stream.Length, hasher.ComputeHash(stream)));
             return doc;
         }
 
@@ -267,11 +279,6 @@ namespace SampleWordHelper.Indexation
         class IndexRecord
         {
             /// <summary>
-            /// Идентификатор элемента.
-            /// </summary>
-            public readonly string id;
-
-            /// <summary>
             /// Путь к элементу.
             /// </summary>
             public readonly string path;
@@ -279,16 +286,15 @@ namespace SampleWordHelper.Indexation
             /// <summary>
             /// Размер файла элемента.
             /// </summary>
-            public long size;
+            public readonly long size;
 
             /// <summary>
             /// Хэш файла.
             /// </summary>
             public readonly byte[] hash;
 
-            public IndexRecord(string id, string path, long size, byte[] hash)
+            public IndexRecord(string path, long size, byte[] hash)
             {
-                this.id = id;
                 this.path = path;
                 this.size = size;
                 this.hash = hash;

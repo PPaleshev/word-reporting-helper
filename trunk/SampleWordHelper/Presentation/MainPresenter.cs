@@ -86,7 +86,7 @@ namespace SampleWordHelper.Presentation
                 model.UpdateConfiguraion(editorModel);
                 view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
                 if (model.IsValid)
-                    model.UpdateCatalog();
+                    UpdateCatalog();
             }
         }
 
@@ -100,20 +100,28 @@ namespace SampleWordHelper.Presentation
             model.ShowCatalogPane(visible);
         }
 
-
         public void OnVisibilityChanged(bool visible)
         {
             view.SetCatalogButtonPressed(visible);
         }
 
         /// <summary>
-        /// Перезагружает текущий каталог и обновляет его данные.
+        /// Перезагружает текущий каталог и перестраивает поисковой индекс.
         /// </summary>
         void UpdateCatalog()
         {
             model.UpdateCatalog();
+            LOG.Info("Updating catalog");
+            model.UpdateCatalog();
+            LOG.Info("Indexing catalog");
+            using (model.SuspendUpdates())
+            using (var presenter = new SearchIndexPresenter(context.Environment))
+                presenter.Run(context.Catalog, searchEngine);
         }
 
+        /// <summary>
+        /// Выполняет активацию аддина.
+        /// </summary>
         void Activate()
         {
             LOG.Info("Activating presenter");
@@ -124,17 +132,15 @@ namespace SampleWordHelper.Presentation
             model.ShowCatalogPane(model.IsValid);
             if (!model.IsValid)
                 return;
-            LOG.Info("Updating catalog");
-            model.UpdateCatalog();
-            LOG.Info("Indexing catalog");
-            using (model.SuspendUpdates())
-            using (var presenter = new SearchIndexPresenter(context.Environment))
-                presenter.Run(context.Catalog, searchEngine);
+            UpdateCatalog();
         }
 
+        /// <summary>
+        /// Выполянет деактивацию аддина.
+        /// </summary>
         void Deactivate()
         {
-            LOG.Info("Dea");
+            LOG.Info("Deactivating presenter");
             isActive = false;
             model.SafeDispose();
             view.EnableAddinFeatures(false, false, "");

@@ -104,7 +104,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
     <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <!--
     This section defines properties that are set when the "Release" configuration is selected.
@@ -272,14 +272,14 @@
     <Compile Include="Model\ConfigurationEditorModel.cs" />
     <Compile Include="Model\EmptyCatalog.cs" />
     <Compile Include="Model\ICatalog.cs" />
+    <Compile Include="Model\IDataSlice.cs" />
     <Compile Include="Model\IFilterStrategy.cs" />
     <Compile Include="Model\ISettingsEditorModel.cs" />
     <Compile Include="Model\ListItem.cs" />
     <Compile Include="Model\ElementSource.cs" />
     <Compile Include="Model\MainPresenterState.cs" />
-    <Compile Include="Model\PreviewState.cs" />
+    <Compile Include="Model\PreviewModel.cs" />
     <Compile Include="Model\ValidationResult.cs" />
-    <Compile Include="Core\Native\NativeWindowSession.cs" />
     <Compile Include="Interface\OverlayWindow.cs">
       <SubType>Form</SubType>
     </Compile>

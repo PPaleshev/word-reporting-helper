@@ -71,7 +71,6 @@
             this.MinimumSize = new System.Drawing.Size(400, 400);
             this.Name = "PreviewWindow";
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Превьюшечка";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PreviewWindowClosed);
             this.ClientSizeChanged += new System.EventHandler(this.PreviewWindowClientSizeChanged);

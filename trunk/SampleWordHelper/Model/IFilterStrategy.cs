@@ -16,7 +16,7 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Возвращает true, если элемент с указанным идентификатором удовлетворяет стратегии поиска, иначе false.
         /// </summary>
-        /// <param name="elementId">Идентификаторо проверяемого элемента.</param>
+        /// <param name="elementId">Идентификатор проверяемого элемента.</param>
         bool Satisfies(string elementId);
     }
 
