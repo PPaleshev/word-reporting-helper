@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
-using SampleWordHelper.Core.IO;
+using NLog;
 using Application = Microsoft.Office.Interop.Word.Application;
 
 namespace SampleWordHelper.Indexation
@@ -13,6 +12,11 @@ namespace SampleWordHelper.Indexation
     /// </summary>
     public class WordDocumentContentProvider : IContentProvider
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Ссылка на экземпляр приложения.
         /// </summary>
@@ -30,25 +34,21 @@ namespace SampleWordHelper.Indexation
         public bool TryGetContent(string filePath, out string content)
         {
 
-            using (var safePath = new SafeFilePath(filePath))
+            try
             {
-                try
-                {
-                    content = LoadDocument(safePath.FilePath);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(filePath + " " + e.Message);
-                    //TODO PP: log error.
-                    content = null;
-                    return false;
-                }
+                content = LoadDocument(filePath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                LOG.Error("Failed to load content from file: " + filePath, e);
+                content = null;
+                return false;
             }
         }
 
         /// <summary>
-        /// Читает содержимое документа.
+        /// Извлекает содержимое из документа.
         /// </summary>
         /// <param name="wordSafeFilePath">Безопасный путь к файлу для открытия в MS Word.</param>
         string LoadDocument(string wordSafeFilePath)
@@ -57,7 +57,7 @@ namespace SampleWordHelper.Indexation
             try
             {
                 var content = new StringBuilder();
-                foreach (var paragraph in doc.Paragraphs.Cast<Paragraph>().Where(p => p.Range.Tables.Count == 0 && !(bool) p.Range.Information[WdInformation.wdWithInTable]))
+                foreach (var paragraph in doc.Paragraphs.Cast<Paragraph>().Where(p => p.Range.Tables.Count == 0 && !(bool)p.Range.Information[WdInformation.wdWithInTable]))
                 {
                     var text = paragraph.Range.Text;
                     content.Append(text);

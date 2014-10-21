@@ -199,7 +199,7 @@ namespace SampleWordHelper.Model
         /// <param name="filter">Текст фильтра.</param>
         IDataSlice GetDataSlice(string filter)
         {
-            if (string.IsNullOrWhiteSpace(filter))
+            if (string.IsNullOrWhiteSpace(filter) || filter.Length <= 3)
                 return fullDataSlice;
             var foundBySearch = new HashSet<string>(searchEngine.Search(filter));
             var lowerFilter = filter.ToLower();

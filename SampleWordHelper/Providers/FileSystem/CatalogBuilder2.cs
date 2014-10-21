@@ -1,16 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using SampleWordHelper.Core.IO;
 
 namespace SampleWordHelper.Providers.FileSystem
 {
+    /// <summary>
+    /// Построитель каталога.
+    /// </summary>
     public class CatalogBuilder2
-    {        
+    {
         /// <summary>
         /// Фильтр файлов.
         /// </summary>
-        const string SEARCH_PATTERN = "*.docx";
+        const string SEARCH_PATTERN = "*.doc";
 
         /// <summary>
         /// Флаг, равный true, если нужно сохранять пустые ветви, иначе false.
@@ -34,11 +36,14 @@ namespace SampleWordHelper.Providers.FileSystem
             rootUri = new Uri(FileSystemUtils.EnsureDirectory(rootDirectory));
         }
 
+        /// <summary>
+        /// Заполняет каталог данными.
+        /// </summary>
         public void Build(Catalog catalog)
         {
-            foreach (var file in LongPathDirectory.EnumerateFiles(rootDirectory, SEARCH_PATTERN))
+            foreach (var file in Directory.EnumerateFiles(rootDirectory, SEARCH_PATTERN))
                 AddFile(catalog, file, null);
-            foreach (var directory in LongPathDirectory.EnumerateDirectories(rootDirectory))
+            foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
                 ScanDirectory(directory, null, catalog);
         }
 
@@ -52,14 +57,14 @@ namespace SampleWordHelper.Providers.FileSystem
         bool ScanDirectory(string directoryFullName, string parentId, Catalog catalog)
         {
             var id = FileSystemUtils.GetRelativePath(rootUri, directoryFullName, true);
-            var files = LongPathDirectory.EnumerateFiles(directoryFullName, SEARCH_PATTERN);
+            var files = Directory.EnumerateFiles(directoryFullName, SEARCH_PATTERN);
             var materializeThis = materializeEmptyPaths;
             foreach (var file in files)
             {
                 materializeThis = true;
                 AddFile(catalog, file, id);
             }
-            materializeThis = LongPathDirectory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ScanDirectory(dir, id, catalog));
+            materializeThis = Directory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ScanDirectory(dir, id, catalog));
             if (materializeThis)
                 AddGroup(catalog, directoryFullName, id, parentId);
             return materializeThis;

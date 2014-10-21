@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SampleWordHelper.Core.IO
+namespace SampleWordHelper.Providers.FileSystem
 {
     /// <summary>
     /// Вспомогательные методы для работы с файловой системой и путями, длина которых превышает 260 символов.
@@ -53,15 +53,6 @@ namespace SampleWordHelper.Core.IO
         public static string EnsureFile(string path)
         {
             return path[path.Length - 1] == Path.DirectorySeparatorChar ? path.Substring(0, path.Length - 1) : path;
-        }
-
-        static string NormalizePath(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-                throw new IOException();
-            if (path.StartsWith(@"\\"))
-                return @"\\?\UNC" + path.Substring(1);
-            return @"\\?\" + path;
         }
     }
 }

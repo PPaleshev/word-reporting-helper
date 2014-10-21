@@ -34,7 +34,7 @@
     <PublishUrl>publish\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>0.1.0.1</ApplicationVersion>
+    <ApplicationVersion>0.5.0.0</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -233,8 +233,7 @@
     <Compile Include="Core\Application\TaskPaneFactory.cs" />
     <Compile Include="Core\Application\ViewFactory.cs" />
     <Compile Include="Core\Common\EmptyDisposable.cs" />
-    <Compile Include="Core\IO\FileSystemUtils.cs" />
-    <Compile Include="Core\IO\SafeFilePath.cs" />
+    <Compile Include="Providers\FileSystem\FileSystemUtils.cs" />
     <Compile Include="Core\Design\FileSystemPathEditor.cs" />
     <Compile Include="Core\Native\PreviewHandlerRegistry.cs" />
     <Compile Include="Core\Native\PreviewHandlers.cs" />
@@ -297,6 +296,7 @@
     <Compile Include="Presentation\DragDrop.cs" />
     <Compile Include="Presentation\MainPresenter.cs" />
     <Compile Include="Presentation\SearchIndexPresenter.cs" />
+    <Compile Include="Providers\Core\CatalogLoadException.cs" />
     <Compile Include="Providers\Core\ICatalogProviderStrategy.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Presentation\DocumentManager.cs" />
@@ -382,11 +382,6 @@
     <Compile Include="Providers\Core\ProviderDescription.cs" />
     <Compile Include="Providers\FileSystem\CatalogBuilder.cs" />
     <Compile Include="Providers\FileSystem\CatalogBuilder2.cs" />
-    <Compile Include="Core\IO\LongPathCommon.cs" />
-    <Compile Include="Core\IO\LongPathDirectory.cs" />
-    <Compile Include="Core\IO\LongPathFile.cs" />
-    <Compile Include="Core\IO\NativeMethods.cs" />
-    <Compile Include="Core\IO\SafeFindHandle.cs" />
     <Compile Include="Providers\FileSystem\FileSystemProviderFactory.cs" />
     <Compile Include="Providers\FileSystem\ProviderSettings.cs" />
     <Compile Include="Providers\FileSystem\SettingsModel.cs" />

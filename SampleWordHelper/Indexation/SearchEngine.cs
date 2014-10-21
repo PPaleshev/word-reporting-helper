@@ -12,7 +12,6 @@ using Lucene.Net.Search;
 using Lucene.Net.Store;
 using NLog;
 using SampleWordHelper.Core.Common;
-using SampleWordHelper.Core.IO;
 using SampleWordHelper.Model;
 using Directory = Lucene.Net.Store.Directory;
 using Version = Lucene.Net.Util.Version;
@@ -215,7 +214,7 @@ namespace SampleWordHelper.Indexation
                 }
                 if (!string.Equals(catalog.GetLocation(id), record.path, StringComparison.InvariantCultureIgnoreCase))
                     changedItems.Add(id);
-                using (var stream = LongPathFile.Open(catalog.GetLocation(id), FileMode.Open, FileAccess.Read))
+                using (var stream = File.Open(catalog.GetLocation(id), FileMode.Open, FileAccess.Read))
                 {
                     if (stream.Length != record.size || !record.hash.SequenceEqual(hasher.ComputeHash(stream)))
                         changedItems.Add(id);
@@ -260,8 +259,8 @@ namespace SampleWordHelper.Indexation
         {
             var doc = new Document();
             doc.Add(new Field("id", id, Field.Store.YES, Field.Index.NO));
-            doc.Add(new Field("text", content, Field.Store.NO, Field.Index.ANALYZED));
-            using (var stream = LongPathFile.Open(filePath, FileMode.Open, FileAccess.Read))
+            doc.Add(new Field("text", content, Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
                 records.Add(id, new IndexRecord(filePath, stream.Length, hasher.ComputeHash(stream)));
             return doc;
         }
