@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SampleWordHelper.Core.Common;
-using SampleWordHelper.Core.IO;
 using SampleWordHelper.Core.Native;
-using SampleWordHelper.Interface;
 
 namespace SampleWordHelper.Model
 {
@@ -19,11 +17,6 @@ namespace SampleWordHelper.Model
         /// Ссылка на объект, реализующий предварительный просмотр.
         /// </summary>
         IPreviewHandler handler;
-
-        /// <summary>
-        /// Безопасный путь к файлу, просмотр которого необходимо обеспечить.
-        /// </summary>
-        SafeFilePath safeFilePath;
 
         /// <summary>
         /// Экземпляр потока, которым может инициализироваться обработчик превью.
@@ -48,7 +41,6 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Создаёт новый экземпляр модели.
         /// </summary>
-        /// <param name="fileName"></param>
         public PreviewModel(string fileName)
         {
             FileName = fileName;
@@ -111,12 +103,11 @@ namespace SampleWordHelper.Model
             handler = (IPreviewHandler) Activator.CreateInstance(handlerType);
             if (handler is IInitializeWithFile)
             {
-                safeFilePath = new SafeFilePath(FileName);
-                ((IInitializeWithFile) handler).Initialize(safeFilePath.FilePath, 0);
+                ((IInitializeWithFile) handler).Initialize(FileName, 0);
             }
             else if (handler is IInitializeWithStream)
             {
-                stream = LongPathFile.Open(FileName, FileMode.Open, FileAccess.Read);
+                stream = File.Open(FileName, FileMode.Open, FileAccess.Read);
                 ((IInitializeWithStream) handler).Initialize(new StreamAdapter(stream), 0);
             }
         }
@@ -130,8 +121,6 @@ namespace SampleWordHelper.Model
             }
             if (stream != null)
                 stream.SafeDispose();
-            if (safeFilePath != null)
-                safeFilePath.SafeDispose();
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
-using SampleWordHelper.Core;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Model;
-using SampleWordHelper.Providers.FileSystem;
 
 namespace SampleWordHelper.Providers.Core
 {
@@ -55,7 +53,14 @@ namespace SampleWordHelper.Providers.Core
         {
             if (Thread.VolatileRead(ref isActive) != 1)
                 throw new InvalidOperationException("failed to load catalog due to inactive state");
-            return strategy.LoadCatalog();
+            try
+            {
+                return strategy.LoadCatalog();
+            }
+            catch (Exception e)
+            {
+                throw new CatalogLoadException(e.Message, e);
+            }
         }
 
         /// <summary>

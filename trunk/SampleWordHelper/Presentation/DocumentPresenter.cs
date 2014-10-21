@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
+using NLog;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
-using SampleWordHelper.Core.IO;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
 using Point = System.Drawing.Point;
@@ -15,6 +16,11 @@ namespace SampleWordHelper.Presentation
     /// </summary>
     public class DocumentPresenter : BasicDisposable, ICatalogPresenter, IDropCallback
     {
+        /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Общее представление документа.
         /// </summary>
@@ -193,9 +199,16 @@ namespace SampleWordHelper.Presentation
         /// <param name="range">Диапазон.</param>
         static void PasteFile(string unsafeFilePath, Range range)
         {
-            using (var safeFile = new SafeFilePath(unsafeFilePath))
-                PasteMethods.OpenAndCopyPaste(safeFile.FilePath, range);
-            range.Application.ActiveWindow.SetFocus();
+            try
+            {
+                PasteMethods.OpenAndCopyPaste(unsafeFilePath, range);
+                range.Application.ActiveWindow.SetFocus();
+            }
+            catch (COMException e)
+            {
+                LOG.Error("Error inserting file into document: " + unsafeFilePath, (Exception) e);
+                MessageBox.Show("Ошибка вставки документа.\r\nПричина: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

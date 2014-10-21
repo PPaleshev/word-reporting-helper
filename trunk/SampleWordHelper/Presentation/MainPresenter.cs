@@ -1,9 +1,12 @@
-﻿using NLog;
+﻿using System;
+using System.Windows.Forms;
+using NLog;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Indexation;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
+using SampleWordHelper.Providers.Core;
 using ApplicationContext = SampleWordHelper.Core.Application.ApplicationContext;
 
 namespace SampleWordHelper.Presentation
@@ -110,13 +113,20 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void UpdateCatalog()
         {
-            model.UpdateCatalog();
-            LOG.Info("Updating catalog");
-            model.UpdateCatalog();
-            LOG.Info("Indexing catalog");
-            using (model.SuspendUpdates())
-            using (var presenter = new SearchIndexPresenter(context.Environment))
-                presenter.Run(context.Catalog, searchEngine);
+            try
+            {
+                LOG.Info("Updating catalog");
+                model.UpdateCatalog();
+                LOG.Info("Indexing catalog");
+                using (model.SuspendUpdates())
+                using (var presenter = new SearchIndexPresenter(context.Environment))
+                    presenter.Run(context.Catalog, searchEngine);
+            }
+            catch (CatalogLoadException cle)
+            {
+                LOG.Error("Error loading catalog", (Exception) cle);
+                MessageBox.Show(string.Format("При загрузке каталога возникла ошибка: {0}", cle.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
