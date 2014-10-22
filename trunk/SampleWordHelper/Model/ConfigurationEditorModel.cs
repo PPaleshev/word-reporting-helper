@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SampleWordHelper.Providers.Core;
 
@@ -31,6 +33,11 @@ namespace SampleWordHelper.Model
         public string SelectedProviderDescription { get; private set; }
 
         /// <summary>
+        /// Путь к каталогу с логами.
+        /// </summary>
+        public string LogDirectory { get; private set; }
+
+        /// <summary>
         /// Модель настроек выбранного поставщика.
         /// </summary>
         public ISettingsModel ProviderSettingsModel { get; private set; }
@@ -41,8 +48,12 @@ namespace SampleWordHelper.Model
             Factories = factoriesMap.Select(pair => new ListItem(pair.Value.GetDescription().DisplayName, pair.Key)).ToArray();
             SelectedProviderName = currentName;
             UpdateProviderSettings();
+            LogDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WordHelper");
         }
 
+        /// <summary>
+        /// Обновляет информацию о выбранном поставщике.
+        /// </summary>
         public void UpdateSelectedProvider(ListItem newItem)
         {
             SelectedProviderName = newItem.Value;
