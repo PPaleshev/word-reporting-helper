@@ -1,4 +1,5 @@
-﻿using SampleWordHelper.Core.Application;
+﻿using System.Diagnostics;
+using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Interface;
 using SampleWordHelper.Model;
@@ -36,6 +37,11 @@ namespace SampleWordHelper.Presentation
         public void OnPropertyValueChanged()
         {
             InvalidateView();
+        }
+
+        public void OnLogDirectoryLinkClicked()
+        {
+            Process.Start(model.LogDirectory);
         }
 
         /// <summary>

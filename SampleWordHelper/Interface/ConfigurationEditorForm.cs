@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using SampleWordHelper.Core.Application;
-using SampleWordHelper.Core.Native;
 using SampleWordHelper.Model;
 using SampleWordHelper.Presentation;
 
@@ -41,6 +40,7 @@ namespace SampleWordHelper.Interface
             listProviders.Items.AddRange(model.Factories.ToArray());
             if (!string.IsNullOrWhiteSpace(model.SelectedProviderName))
                 listProviders.SelectedItem = model.Factories.Single(item => item.Value.Equals(model.SelectedProviderName));
+            linkLabel1.Text = model.LogDirectory;
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 
@@ -71,6 +71,14 @@ namespace SampleWordHelper.Interface
         void OnEditablePropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             presenter.OnPropertyValueChanged();
+        }
+
+        /// <summary>
+        /// Вызывается при клике на путь к логу.
+        /// </summary>
+        private void OnLinkClick(object sender, System.EventArgs e)
+        {
+            presenter.OnLogDirectoryLinkClicked();
         }
     }
 }
