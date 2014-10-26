@@ -233,6 +233,8 @@
     <Compile Include="Core\Application\TaskPaneFactory.cs" />
     <Compile Include="Core\Application\ViewFactory.cs" />
     <Compile Include="Core\Common\EmptyDisposable.cs" />
+    <Compile Include="Presentation\IPreviewCallback.cs" />
+    <Compile Include="Presentation\PreviewPresenter.cs" />
     <Compile Include="Providers\FileSystem\FileSystemUtils.cs" />
     <Compile Include="Core\Design\FileSystemPathEditor.cs" />
     <Compile Include="Core\Native\PreviewHandlerRegistry.cs" />
@@ -276,7 +278,7 @@
     <Compile Include="Model\ISettingsEditorModel.cs" />
     <Compile Include="Model\ListItem.cs" />
     <Compile Include="Model\ElementSource.cs" />
-    <Compile Include="Model\MainPresenterState.cs" />
+    <Compile Include="Model\MainModel.cs" />
     <Compile Include="Model\PreviewModel.cs" />
     <Compile Include="Model\ValidationResult.cs" />
     <Compile Include="Interface\OverlayWindow.cs">

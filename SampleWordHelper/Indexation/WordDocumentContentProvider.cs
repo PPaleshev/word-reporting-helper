@@ -53,11 +53,12 @@ namespace SampleWordHelper.Indexation
         /// <param name="wordSafeFilePath">Безопасный путь к файлу для открытия в MS Word.</param>
         string LoadDocument(string wordSafeFilePath)
         {
-            var doc = application.Documents.Open(wordSafeFilePath, Visible: false, ReadOnly: true, OpenAndRepair: false);
+            bool isOpened;
+            var doc = GetOrOpen(wordSafeFilePath, out isOpened);
             try
             {
                 var content = new StringBuilder();
-                foreach (var paragraph in doc.Paragraphs.Cast<Paragraph>().Where(p => p.Range.Tables.Count == 0 && !(bool)p.Range.Information[WdInformation.wdWithInTable]))
+                foreach (var paragraph in doc.Paragraphs.Cast<Paragraph>().Where(p => p.Range.Tables.Count == 0 && !(bool) p.Range.Information[WdInformation.wdWithInTable]))
                 {
                     var text = paragraph.Range.Text;
                     content.Append(text);
@@ -68,8 +69,21 @@ namespace SampleWordHelper.Indexation
             }
             finally
             {
-                doc.Close(false);
+                if (isOpened)
+                    doc.Close(false);
             }
+        }
+
+        /// <summary>
+        /// Возвращает открытый документ или открывает файл для чтения.
+        /// </summary>
+        /// <param name="filePath">Полный путь к файлу.</param>
+        /// <param name="isNew">Флаг, равный true, если файл открыт, а если он уже был открыт, то false.</param>
+        Document GetOrOpen(string filePath, out bool isNew)
+        {
+            var document = application.Documents.Cast<Document>().FirstOrDefault((d => string.Equals(d.FullName, filePath, StringComparison.InvariantCultureIgnoreCase)));
+            isNew = document == null;
+            return document ?? application.Documents.Open(filePath, Visible: false, ReadOnly: true, OpenAndRepair: false);
         }
     }
 }

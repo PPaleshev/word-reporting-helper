@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
-using SampleWordHelper.Interface;
-using SampleWordHelper.Model;
 
 namespace SampleWordHelper.Presentation
 {
@@ -25,31 +22,36 @@ namespace SampleWordHelper.Presentation
         readonly Dictionary<string, PreviewPresenter> presenters = new Dictionary<string, PreviewPresenter>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
+        /// Объект для выполнения обратных вызовов от менеджеров превью.
+        /// </summary>
+        readonly IPreviewCallback callback;
+
+        /// <summary>
         /// Создаёт новый менеджер превью.
         /// </summary>
-        public PreviewManager(IRuntimeContext context)
+        public PreviewManager(IRuntimeContext context, IPreviewCallback callback)
         {
             viewFactory = context.ViewFactory;
+            this.callback = callback;
         }
 
         /// <summary>
         /// Отображает превью для файла с указанным именем.
         /// </summary>
         /// <param name="fileName">Путь к файлу для отображения.</param>
-        /// <param name="allowMultiple">Флаг, равный true, если возможно отображение нескольких окон предварительного просмотра, иначе только одно.</param>
-        public void ShowPreview(string fileName, bool allowMultiple)
+        public void ShowPreview(string fileName)
         {
             if (TryShowExisting(fileName))
                 return;
-            if (!allowMultiple)
-            {
-                foreach (var presenter1 in presenters.Values)
-                    presenter1.SafeDispose();
-                presenters.Clear();
-            }
-            var presenter = new PreviewPresenter(fileName, viewFactory, OnPresenterClosed);
+            /*
+            foreach (var presenter1 in presenters.Values)
+                presenter1.SafeDispose();
+            presenters.Clear();
+             */
+
+            var presenter = new PreviewPresenter(fileName, viewFactory, new PreviewCallbackFacade(OnPresenterClosed, callback));
             presenters.Add(fileName, presenter);
-            presenter.Activate(true);
+            presenter.Show(true);
         }
 
         /// <summary>
@@ -72,7 +74,7 @@ namespace SampleWordHelper.Presentation
             PreviewPresenter presenter;
             if (!presenters.TryGetValue(fileName, out presenter))
                 return false;
-            presenter.Activate(false);
+            presenter.Show(false);
             return true;
         }
 
@@ -93,67 +95,44 @@ namespace SampleWordHelper.Presentation
     }
 
     /// <summary>
-    /// Менеджер отображения представления.
+    /// Фасад для вызова методов обратного вызова.
     /// </summary>
-    class PreviewPresenter : BasicDisposable, IPreviewPresenter
+    class PreviewCallbackFacade
     {
         /// <summary>
-        /// Метод обратного вызова при закрытии представления текущего презентера.
+        /// Метод, вызываемый при закрытии менеджера.
         /// </summary>
-        readonly Action<PreviewPresenter> closedCallback;
+        readonly Action<PreviewPresenter> OnClosed;
 
         /// <summary>
-        /// Модель презентера.
+        /// Объект для обратного вызова.
         /// </summary>
-        readonly PreviewModel model;
+        readonly IPreviewCallback callback;
 
         /// <summary>
-        /// Текущее представление.
+        /// Создаёт новый экземпляр фасада.
         /// </summary>
-        readonly IPreviewView view;
-
-        /// <summary>
-        /// Создаёт новый экземпляр презентера.
-        /// </summary>
-        /// <param name="fileName">Путь к файлу.</param>
-        /// <param name="viewFactory">Фабрика представлений.</param>
-        /// <param name="closedCallback">Метод обратного вызова при закрытии представления.</param>
-        public PreviewPresenter(string fileName, IViewFactory viewFactory, Action<PreviewPresenter> closedCallback)
+        public PreviewCallbackFacade(Action<PreviewPresenter> OnClosed, IPreviewCallback callback)
         {
-            this.closedCallback = closedCallback;
-            view = viewFactory.CreatePreviewView(this);
-            model = new PreviewModel(fileName);
+            this.OnClosed = OnClosed;
+            this.callback = callback;
         }
 
         /// <summary>
-        /// Активирует текущий презентер.
+        /// Вызывается при закрытии презентера.
         /// </summary>
-        public void Activate(bool initialize)
+        /// <param name="p">Закрываемый презентер.</param>
+        public void OnClose(PreviewPresenter p)
         {
-            if (initialize)
-            {
-                var caption = Path.GetFileName(model.FileName);
-                view.SetCaption(caption);
-                if (model.IsValid)
-                    model.GeneratePreview(view.Handle, view.PreviewArea);
-            }
-            view.Show(model.IsValid, model.ErrorMessage);
+            OnClosed(p);
         }
 
-        void IPreviewPresenter.OnSizeChanged()
+        /// <summary>
+        /// Вызывается для вставки данных в документ.
+        /// </summary>
+        public void OnPaste(string fileName)
         {
-            model.UpdateSize(view.PreviewArea);
-        }
-
-        void IPreviewPresenter.OnClose()
-        {
-            closedCallback(this);
-        }
-
-        protected override void DisposeManaged()
-        {
-            view.SafeDispose();
-            model.SafeDispose();
+            callback.OnPaste(fileName);
         }
     }
 }

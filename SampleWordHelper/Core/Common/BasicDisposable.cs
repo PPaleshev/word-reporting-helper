@@ -1,4 +1,5 @@
 ﻿using System;
+using NLog;
 
 namespace SampleWordHelper.Core.Common
 {
@@ -99,6 +100,11 @@ namespace SampleWordHelper.Core.Common
     public static class BasicDisposableExt
     {
         /// <summary>
+        /// Поддержка логирования.
+        /// </summary>
+        static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
         /// Выполняет безопасную с точки зрения исключений очистку ресурсов.
         /// </summary>
         /// <param name="disposable">Объект.</param>
@@ -109,9 +115,9 @@ namespace SampleWordHelper.Core.Common
                 if (disposable != null)
                     disposable.Dispose();
             }
-            catch
+            catch (Exception e)
             {
-                //TODO PP: Log disposing error
+                LOG.Error("Error while object disposal", e);
             }
         }
     }

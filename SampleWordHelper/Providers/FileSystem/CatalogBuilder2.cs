@@ -41,10 +41,20 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         public void Build(Catalog catalog)
         {
-            foreach (var file in Directory.EnumerateFiles(rootDirectory, SEARCH_PATTERN))
+            foreach (var file in Directory.EnumerateFiles(rootDirectory, SEARCH_PATTERN).Where(FilterFile))
                 AddFile(catalog, file, null);
             foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
                 ScanDirectory(directory, null, catalog);
+        }
+
+        /// <summary>
+        /// Фильтрует файлы по названию.
+        /// </summary>
+        /// <param name="filePath">Полный путь к файлу.</param>
+        /// <returns>Возвращает true, если файл может быть добавлен в каталог, иначе false.</returns>
+        static bool FilterFile(string filePath)
+        {
+            return !Path.GetFileName(filePath).StartsWith("~$");
         }
 
         /// <summary>
@@ -57,7 +67,7 @@ namespace SampleWordHelper.Providers.FileSystem
         bool ScanDirectory(string directoryFullName, string parentId, Catalog catalog)
         {
             var id = FileSystemUtils.GetRelativePath(rootUri, directoryFullName, true);
-            var files = Directory.EnumerateFiles(directoryFullName, SEARCH_PATTERN);
+            var files = Directory.EnumerateFiles(directoryFullName, SEARCH_PATTERN).Where(FilterFile);
             var materializeThis = materializeEmptyPaths;
             foreach (var file in files)
             {

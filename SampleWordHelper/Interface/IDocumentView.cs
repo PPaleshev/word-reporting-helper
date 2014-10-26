@@ -42,5 +42,11 @@ namespace SampleWordHelper.Interface
         /// Устанавливает текст фильтра.
         /// </summary>
         void SetFilterText(string filterText);
+
+        /// <summary>
+        /// Устанавливает выбранный узел по идентификатору элемента.
+        /// </summary>
+        /// <param name="nodeId">Идентификатор выбранного элемента.</param>
+        void UpdateSelectedNode(object nodeId);
     }
 }

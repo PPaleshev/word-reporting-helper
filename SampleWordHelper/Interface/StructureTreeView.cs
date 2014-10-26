@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
@@ -70,6 +71,18 @@ namespace SampleWordHelper.Interface
         {
             using (suspendEvents.Suspend())
                 control.textSearch.Text = filterText;
+        }
+
+        public void UpdateSelectedNode(object nodeId)
+        {
+            if(control.treeStructure.SelectedNode.Tag == nodeId)
+                return;
+            using(suspendEvents.Suspend())
+            {
+                var node = control.treeStructure.Nodes.Cast<TreeNode>().FirstOrDefault(n => nodeId.Equals(n.Tag));
+                if (node != null)
+                    control.treeStructure.SelectedNode = node;
+            }
         }
 
         protected override void DisposeManaged()
