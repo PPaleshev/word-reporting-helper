@@ -194,6 +194,15 @@ namespace SampleWordHelper.Model
         }
 
         /// <summary>
+        /// Устанавливает <see cref="SelectedNodeId"/> на основании пути к файлу.
+        /// </summary>
+        /// <param name="filePath">Путь к файлу.</param>
+        public void SelectByFilePath(string filePath)
+        {
+            SelectedNodeId = catalog.All().FirstOrDefault(id => !catalog.IsGroup(id) && string.Equals(filePath, catalog.GetLocation(id), StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
         /// Возвращает источник данных для текущего фильтра.
         /// </summary>
         /// <param name="filter">Текст фильтра.</param>

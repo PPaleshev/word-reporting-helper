@@ -11,6 +11,11 @@
         void OnSizeChanged();
 
         /// <summary>
+        /// Вызывается при запросе вставки просматриваемого документа.
+        /// </summary>
+        void OnPaste();
+
+        /// <summary>
         /// Вызывается при закрытии представления.
         /// </summary>
         void OnClose();

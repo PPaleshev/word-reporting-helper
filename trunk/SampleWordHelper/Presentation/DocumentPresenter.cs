@@ -14,7 +14,7 @@ namespace SampleWordHelper.Presentation
     /// <summary>
     /// Менеджер документа Word.
     /// </summary>
-    public class DocumentPresenter : BasicDisposable, ICatalogPresenter, IDropCallback
+    public class DocumentPresenter : BasicDisposable, ICatalogPresenter, IDropCallback, IPreviewCallback
     {
         /// <summary>
         /// Поддержка логирования.
@@ -69,7 +69,7 @@ namespace SampleWordHelper.Presentation
             view = context.Environment.ViewFactory.CreateStructureView(this, model.PaneTitle);
             commandView = context.Environment.ViewFactory.CreateCommandView();
             dragController = new TreeDragDropController(context.Environment, view, model, this);
-            previewManager = new PreviewManager(context.Environment);
+            previewManager = new PreviewManager(context.Environment, this);
             InitializeCommands(commandView);
         }
 
@@ -137,12 +137,18 @@ namespace SampleWordHelper.Presentation
         {
             if (!model.IsContentNode(item))
                 return;
-            previewManager.ShowPreview(model.GetFilePathForId(item), true);
+            previewManager.ShowPreview(model.GetFilePathForId(item));
         }
 
         public void OnItemSelected(object item)
         {
             model.SelectedNodeId = model.IsContentNode(item) ? item : null;
+        }
+
+        void IPreviewCallback.OnPaste(string filePath)
+        {
+            var range = context.Environment.Application.Selection.Range;
+            PasteFile(filePath, range);
         }
 
         /// <summary>

@@ -39,7 +39,6 @@
             this.toggleEnabled = this.Factory.CreateRibbonToggleButton();
             this.toggleStructureVisibility = this.Factory.CreateRibbonToggleButton();
             this.buttonReload = this.Factory.CreateRibbonButton();
-            this.separator2 = this.Factory.CreateRibbonSeparator();
             this.buttonSettings = this.Factory.CreateRibbonButton();
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group2 = this.Factory.CreateRibbonGroup();
@@ -51,6 +50,7 @@
             // group1
             // 
             group1.Items.Add(this.toggleEnabled);
+            group1.Items.Add(this.buttonSettings);
             group1.Label = "Управление";
             group1.Name = "group1";
             // 
@@ -85,10 +85,6 @@
             this.buttonReload.ShowImage = true;
             this.buttonReload.SuperTip = "Полностью перечитывает данные из текущего каталога.";
             // 
-            // separator2
-            // 
-            this.separator2.Name = "separator2";
-            // 
             // buttonSettings
             // 
             this.buttonSettings.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -112,8 +108,6 @@
             // 
             this.group2.Items.Add(this.toggleStructureVisibility);
             this.group2.Items.Add(this.buttonReload);
-            this.group2.Items.Add(this.separator2);
-            this.group2.Items.Add(this.buttonSettings);
             this.group2.Label = "Основное";
             this.group2.Name = "group2";
             // 
@@ -136,7 +130,6 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleStructureVisibility;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonSettings;
-        internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator2;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonReload;
         internal Microsoft.Office.Tools.Ribbon.RibbonToggleButton toggleEnabled;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group2;

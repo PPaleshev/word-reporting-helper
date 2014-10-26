@@ -72,5 +72,13 @@ namespace SampleWordHelper.Interface
         {
             presenter.OnSizeChanged();
         }
+
+        /// <summary>
+        /// Вызывается для вставки содержимого в документ.
+        /// </summary>
+        void OnPasteRequested(object sender, EventArgs e)
+        {
+            presenter.OnPaste();
+        }
     }
 }

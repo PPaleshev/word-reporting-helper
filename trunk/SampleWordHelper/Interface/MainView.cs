@@ -88,8 +88,6 @@ namespace SampleWordHelper.Interface
             ribbon.group2.Visible = enabled;
 
             ribbon.toggleStructureVisibility.Visible = ribbon.buttonReload.Visible = enabled && valid;
-            if (!enabled)
-                return;
             ribbon.buttonSettings.Image = valid ? Properties.Resources.settings : Properties.Resources.warning;
             ribbon.buttonSettings.SuperTip = string.IsNullOrWhiteSpace(message) ? defaultSettingsSuperTip : message;
         }

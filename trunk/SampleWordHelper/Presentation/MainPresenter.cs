@@ -34,17 +34,12 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Состояние.
         /// </summary>
-        MainPresenterState model;
+        readonly MainModel model;
 
         /// <summary>
         /// Механизм поиска.
         /// </summary>
         readonly SearchEngine searchEngine;
-
-        /// <summary>
-        /// True, если приложение активно в данный момент, иначе false.
-        /// </summary>
-        bool isActive;
 
         /// <summary>
         /// Создаёт экземпляр основного менеджера приложения.
@@ -55,6 +50,7 @@ namespace SampleWordHelper.Presentation
             searchEngine = new SearchEngine(new WordDocumentContentProvider(runtimeContext.Application));
             context = new ApplicationContext(runtimeContext, new EmptyCatalog(), searchEngine);
             view = runtimeContext.ViewFactory.CreateMainView(this);
+            model = new MainModel(context, this);
         }
 
         /// <summary>
@@ -62,13 +58,12 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         public void Start()
         {
-            isActive = false;
-            view.EnableAddinFeatures(isActive, false, "");
+            view.EnableAddinFeatures(model.IsActive, model.IsValid, model.Message);
         }
 
         public void OnEnabledChanged(bool enabled)
         {
-            if (isActive == enabled)
+            if (model.IsActive == enabled)
                 return;
             if (enabled)
                 Activate();
@@ -78,8 +73,6 @@ namespace SampleWordHelper.Presentation
 
         public void OnEditSettings()
         {
-            if(!isActive)
-                return;
             var editorModel = model.CreateEditorModel();
             using (var presenter = new ConfigurationEditorPresenter(context.Environment.ViewFactory, editorModel))
             {
@@ -87,8 +80,8 @@ namespace SampleWordHelper.Presentation
                     return;
                 LOG.Info("Updating settings: {0}", editorModel.SelectedProviderName);
                 model.UpdateConfiguraion(editorModel);
-                view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
-                if (model.IsValid)
+                view.EnableAddinFeatures(model.IsActive, model.IsValid, model.Message);
+                if (model.IsActive && model.IsValid)
                     UpdateCatalog();
             }
         }
@@ -134,11 +127,10 @@ namespace SampleWordHelper.Presentation
         /// </summary>
         void Activate()
         {
-            LOG.Info("Activating presenter");
-            isActive = true;
-            model = new MainPresenterState(context, this);
+            LOG.Info("Activating");
+            model.Activate();
             LOG.Info("MainPresenterState: Valid={0}; Message={1}; ShowWindowsInTaskBar={2}", model.IsValid, model.Message, context.Environment.Application.ShowWindowsInTaskbar);
-            view.EnableAddinFeatures(isActive, model.IsValid, model.Message);
+            view.EnableAddinFeatures(model.IsActive, model.IsValid, model.Message);
             model.ShowCatalogPane(model.IsValid);
             if (!model.IsValid)
                 return;
@@ -151,9 +143,8 @@ namespace SampleWordHelper.Presentation
         void Deactivate()
         {
             LOG.Info("Deactivating presenter");
-            isActive = false;
-            model.SafeDispose();
-            view.EnableAddinFeatures(false, false, "");
+            model.Shutdown();
+            view.EnableAddinFeatures(model.IsActive, model.IsValid, "");
         }
 
         protected override void DisposeManaged()
