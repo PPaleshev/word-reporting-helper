@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using SampleWordHelper.Providers.Core;
@@ -38,6 +39,11 @@ namespace SampleWordHelper.Model
         public string LogDirectory { get; private set; }
 
         /// <summary>
+        /// Путь к каталогу с настройками приложения.
+        /// </summary>
+        public string ConfigurationDirectory { get; private set; }
+
+        /// <summary>
         /// Модель настроек выбранного поставщика.
         /// </summary>
         public ISettingsModel ProviderSettingsModel { get; private set; }
@@ -49,6 +55,7 @@ namespace SampleWordHelper.Model
             SelectedProviderName = currentName;
             UpdateProviderSettings();
             LogDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WordHelper");
+            ConfigurationDirectory = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,11 +10,6 @@ namespace SampleWordHelper.Providers.FileSystem
     /// </summary>
     public class CatalogBuilder2
     {
-        /// <summary>
-        /// Фильтр файлов.
-        /// </summary>
-        const string SEARCH_PATTERN = "*.doc";
-
         /// <summary>
         /// Флаг, равный true, если нужно сохранять пустые ветви, иначе false.
         /// </summary>
@@ -39,12 +35,14 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <summary>
         /// Заполняет каталог данными.
         /// </summary>
-        public void Build(Catalog catalog)
+        public CatalogBuilderResult Build()
         {
-            foreach (var file in Directory.EnumerateFiles(rootDirectory, SEARCH_PATTERN).Where(FilterFile))
-                AddFile(catalog, file, null);
+            var result = new CatalogBuilderResult(rootUri);
+            foreach (var file in EnumerateFiles(rootDirectory))
+                result.AddFile(file, null);
             foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
-                ScanDirectory(directory, null, catalog);
+                ScanDirectory(directory, null, result);
+            return result;
         }
 
         /// <summary>
@@ -54,7 +52,11 @@ namespace SampleWordHelper.Providers.FileSystem
         /// <returns>Возвращает true, если файл может быть добавлен в каталог, иначе false.</returns>
         static bool FilterFile(string filePath)
         {
-            return !Path.GetFileName(filePath).StartsWith("~$");
+            var ext = Path.GetExtension(filePath);
+            if (!(".doc".Equals(ext, StringComparison.InvariantCultureIgnoreCase) || ".docx".Equals(ext, StringComparison.InvariantCultureIgnoreCase)))
+                return false;
+            var name = Path.GetFileName(filePath);
+            return !name.StartsWith("~$");
         }
 
         /// <summary>
@@ -62,46 +64,27 @@ namespace SampleWordHelper.Providers.FileSystem
         /// </summary>
         /// <param name="directoryFullName">Полный путь к директории.</param>
         /// <param name="parentId">Идентификатор родительской директории.</param>
-        /// <param name="catalog">Каталог, в который складываются результаты поиска.</param>
+        /// <param name="result">Результат сканирования файловой системы.</param>
         /// <returns>Возвращает true, если директория или одна из её поддиректорий содержат искомые файлы, иначе false.</returns>
-        bool ScanDirectory(string directoryFullName, string parentId, Catalog catalog)
+        bool ScanDirectory(string directoryFullName, string parentId, CatalogBuilderResult result)
         {
             var id = FileSystemUtils.GetRelativePath(rootUri, directoryFullName, true);
-            var files = Directory.EnumerateFiles(directoryFullName, SEARCH_PATTERN).Where(FilterFile);
             var materializeThis = materializeEmptyPaths;
-            foreach (var file in files)
-            {
-                materializeThis = true;
-                AddFile(catalog, file, id);
-            }
-            materializeThis = Directory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ScanDirectory(dir, id, catalog));
+            foreach (var file in EnumerateFiles(directoryFullName))
+                materializeThis |= result.AddFile(file, id);
+            materializeThis = Directory.EnumerateDirectories(directoryFullName).Aggregate(materializeThis, (val, dir) => val | ScanDirectory(dir, id, result));
             if (materializeThis)
-                AddGroup(catalog, directoryFullName, id, parentId);
+                result.AddGroup(directoryFullName, id, parentId);
             return materializeThis;
         }
 
         /// <summary>
-        /// Добавляет файл в каталог.
+        /// Перечисляет все требуемые файлы в директории.
         /// </summary>
-        /// <param name="catalog">Каталог.</param>
-        /// <param name="file">Полный путь к файлу.</param>
-        /// <param name="parent">Идентификатор родителя.</param>
-        void AddFile(Catalog catalog, string file, string parent)
+        /// <param name="directoryPath">Путь к каталогу.</param>
+        static IEnumerable<string> EnumerateFiles(string directoryPath)
         {
-            catalog.AddItem(FileSystemUtils.GetRelativePath(rootUri, file, false), parent, Path.GetFileNameWithoutExtension(file), file);
-        }
-
-        /// <summary>
-        /// Добавляет группу в каталог.
-        /// </summary>
-        /// <param name="catalog">Каталог.</param>
-        /// <param name="directory">Полный путь к директории.</param>
-        /// <param name="id">Идентификатор директории. </param>
-        /// <param name="parent">Идентификатор родителя.</param>
-        static void AddGroup(Catalog catalog, string directory, string id, string parent)
-        {
-            var shortName = Path.GetFileName(FileSystemUtils.EnsureFile(directory));
-            catalog.AddGroup(id, parent, shortName, directory);
+            return Directory.EnumerateFiles(directoryPath).Where(FilterFile);
         }
     }
 }

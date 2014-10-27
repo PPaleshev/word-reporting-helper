@@ -18,7 +18,7 @@ namespace SampleWordHelper.Providers.Core
         /// <summary>
         /// Выполняет создание модели каталога.
         /// </summary>
-        ICatalog LoadCatalog();
+        CatalogLoadResult LoadCatalog();
 
         /// <summary>
         /// Вызывается для завершения активности текущего провайдера.

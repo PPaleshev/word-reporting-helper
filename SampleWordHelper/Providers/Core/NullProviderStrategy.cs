@@ -12,7 +12,7 @@ namespace SampleWordHelper.Providers.Core
             return false;
         }
 
-        public ICatalog LoadCatalog()
+        public CatalogLoadResult LoadCatalog()
         {
             throw new NotSupportedException();
         }

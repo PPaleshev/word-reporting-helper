@@ -108,8 +108,9 @@ namespace SampleWordHelper.Presentation
         {
             try
             {
-                LOG.Info("Updating catalog");
-                model.UpdateCatalog();
+                ProcessCatalogUpdate();
+                if (!model.IsValid)
+                    return;
                 LOG.Info("Indexing catalog");
                 using (model.SuspendUpdates())
                 using (var presenter = new SearchIndexPresenter(context.Environment))
@@ -120,6 +121,20 @@ namespace SampleWordHelper.Presentation
                 LOG.Error("Error loading catalog", (Exception) cle);
                 MessageBox.Show(string.Format("При загрузке каталога возникла ошибка: {0}", cle.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Выполняет проверку необходимости продолжать дальнейшую индексацию каталога.
+        /// </summary>
+        /// <returns>Возвращает true, если процесс индексации может быть продолжен, иначе false.</returns>
+        void ProcessCatalogUpdate()
+        {
+            LOG.Info("Updating catalog");
+            if (model.UpdateCatalog())
+                return;
+            model.ShowCatalogPane(false);
+            LOG.Warn("Found issues while catalog loading: " + model.Message);
+            MessageBox.Show(model.Message, model.IsValid ? "Внимание" : "Ошибка загрузки каталога", MessageBoxButtons.OK, model.IsValid ? MessageBoxIcon.Warning : MessageBoxIcon.Error);
         }
 
         /// <summary>

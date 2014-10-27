@@ -40,7 +40,6 @@ namespace SampleWordHelper.Interface
             listProviders.Items.AddRange(model.Factories.ToArray());
             if (!string.IsNullOrWhiteSpace(model.SelectedProviderName))
                 listProviders.SelectedItem = model.Factories.Single(item => item.Value.Equals(model.SelectedProviderName));
-            linkLabel1.Text = model.LogDirectory;
             propertyGrid1.SelectedObject = model.ProviderSettingsModel;
         }
 
@@ -76,9 +75,17 @@ namespace SampleWordHelper.Interface
         /// <summary>
         /// Вызывается при клике на путь к логу.
         /// </summary>
-        private void OnLinkClick(object sender, System.EventArgs e)
+        private void OnLogCatalogLinkClick(object sender, System.EventArgs e)
         {
-            presenter.OnLogDirectoryLinkClicked();
+            presenter.OnOpenAdvancedCatalog("log");
+        }
+
+        /// <summary>
+        /// Вызыватеся при клике на путь к конфигурации.
+        /// </summary>
+        void OnConfigurationCatalogLinkClick(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            presenter.OnOpenAdvancedCatalog("configuration");
         }
     }
 }
