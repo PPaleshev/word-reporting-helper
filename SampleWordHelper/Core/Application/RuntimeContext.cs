@@ -1,7 +1,5 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using Microsoft.Office.Tools.Word;
-using SampleWordHelper.Core.Native;
 
 namespace SampleWordHelper.Core.Application
 {
@@ -30,6 +28,7 @@ namespace SampleWordHelper.Core.Application
         /// <param name="windowProvider">Объект, предоставляющий доступ к текущему главному окну приложения.</param>
         public RuntimeContext(Microsoft.Office.Interop.Word.Application application, IViewFactory viewFactory, ApplicationFactory applicationFactory, IWindowProvider windowProvider)
         {
+            winProvider = windowProvider;
             Application = application;
             ViewFactory = viewFactory;
             ApplicationFactory = applicationFactory;
