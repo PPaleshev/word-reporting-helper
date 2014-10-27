@@ -21,8 +21,8 @@ namespace SampleWordHelper.Tests
         public void ParserLongTests()
         {
             var parser = new CatalogBuilder2(@"d:\Projects\Private\WordHelper\SampleCatalog\оценка бизнеса\", false);
-            var model = new Catalog();
-            parser.Build(model);
+            var result = parser.Build();
+            Assert.True(result.GetErrors().Length == 0);
         }
 
         [TestCase(@"d:\Projects\Private\WordHelper\SampleCatalog\")]

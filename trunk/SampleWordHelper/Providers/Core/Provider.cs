@@ -49,7 +49,7 @@ namespace SampleWordHelper.Providers.Core
         /// <summary>
         /// Строит модель каталога.
         /// </summary>
-        public ICatalog LoadCatalog()
+        public CatalogLoadResult LoadCatalog()
         {
             if (Thread.VolatileRead(ref isActive) != 1)
                 throw new InvalidOperationException("failed to load catalog due to inactive state");

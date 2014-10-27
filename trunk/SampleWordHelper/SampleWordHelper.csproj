@@ -235,6 +235,9 @@
     <Compile Include="Core\Common\EmptyDisposable.cs" />
     <Compile Include="Presentation\IPreviewCallback.cs" />
     <Compile Include="Presentation\PreviewPresenter.cs" />
+    <Compile Include="Providers\Core\CatalogLoadResult.cs" />
+    <Compile Include="Providers\Core\ElementValidationInfo.cs" />
+    <Compile Include="Providers\FileSystem\CatalogBuilderResult.cs" />
     <Compile Include="Providers\FileSystem\FileSystemUtils.cs" />
     <Compile Include="Core\Design\FileSystemPathEditor.cs" />
     <Compile Include="Core\Native\PreviewHandlerRegistry.cs" />

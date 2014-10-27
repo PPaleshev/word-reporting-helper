@@ -39,9 +39,17 @@ namespace SampleWordHelper.Presentation
             InvalidateView();
         }
 
-        public void OnLogDirectoryLinkClicked()
+        public void OnOpenAdvancedCatalog(string type)
         {
-            Process.Start(model.LogDirectory);
+            switch (type)
+            {
+                case "log":
+                    Process.Start(model.LogDirectory);
+                    break;
+                case "configuration":
+                    Process.Start(model.ConfigurationDirectory);
+                    break;
+            }
         }
 
         /// <summary>

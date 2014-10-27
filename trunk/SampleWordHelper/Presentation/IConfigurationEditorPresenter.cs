@@ -21,6 +21,7 @@ namespace SampleWordHelper.Presentation
         /// <summary>
         /// Вызывается при клике на надпись с путём к логам.
         /// </summary>
-        void OnLogDirectoryLinkClicked();
+        /// <param name="type">Тип каталога для открытия.</param>
+        void OnOpenAdvancedCatalog(string type);
     }
 }

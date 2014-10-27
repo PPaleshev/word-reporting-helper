@@ -22,11 +22,6 @@ namespace SampleWordHelper.Model
         string SelectedProviderDescription { get; }
 
         /// <summary>
-        /// Путь к каталогу с логами.
-        /// </summary>
-        string LogDirectory { get; }
-
-        /// <summary>
         /// Модель настроек выбранного поставщика.
         /// </summary>
         ISettingsModel ProviderSettingsModel { get; }

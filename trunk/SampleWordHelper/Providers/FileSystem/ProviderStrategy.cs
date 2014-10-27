@@ -25,12 +25,11 @@ namespace SampleWordHelper.Providers.FileSystem
             return model.Validate().IsValid;
         }
 
-        public ICatalog LoadCatalog()
+        public CatalogLoadResult LoadCatalog()
         {
-            var catalog = new Catalog();
             var builder = new CatalogBuilder2(settings.RootDirectory, settings.MaterializeEmptyPaths);
-            builder.Build(catalog);
-            return catalog;
+            var result = builder.Build();
+            return new CatalogLoadResult(result.GetCatalog(), result.GetErrors());
         }
 
         public void Shutdown()

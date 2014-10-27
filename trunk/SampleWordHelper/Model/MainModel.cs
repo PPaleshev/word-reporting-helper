@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SampleWordHelper.Core.Application;
 using SampleWordHelper.Core.Common;
 using SampleWordHelper.Presentation;
@@ -113,10 +114,15 @@ namespace SampleWordHelper.Model
         /// <summary>
         /// Выполняет обновление каталога.
         /// </summary>
-        public void UpdateCatalog()
+        /// <returns>Возвращает false, если при загрузке каталога возникли какие-то проблемы, иначе true.</returns>
+        public bool UpdateCatalog()
         {
-            context.Catalog = state.Provider.LoadCatalog();
+            var result = state.Provider.LoadCatalog();
+            IsValid = !result.IsError;
+            Message = result.Errors.Count == 0 ? null : string.Join(Environment.NewLine, result.Errors.Select(err => err.Message));
+            context.Catalog = result.Catalog ?? new EmptyCatalog();
             state.documentManager.UpdateCatalog();
+            return !(result.IsError || result.Errors.Count > 0);
         }
 
         /// <summary>
