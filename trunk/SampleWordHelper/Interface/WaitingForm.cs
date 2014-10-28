@@ -46,10 +46,20 @@ namespace SampleWordHelper.Interface
 
         void IWaitingView.Close()
         {
+            if (!IsHandleCreated)
+                return;
             if (InvokeRequired)
                 Invoke((Action) Close);
             else
                 Close();
+        }
+
+        void IDisposable.Dispose()
+        {
+            if (InvokeRequired)
+                BeginInvoke((Action) Dispose);
+            else
+                Dispose();
         }
     }
 }
