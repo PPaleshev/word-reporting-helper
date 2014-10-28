@@ -61,10 +61,14 @@ namespace SampleWordHelper.Providers.FileSystem
         public bool AddFile(string file, string parent)
         {
             var id = FileSystemUtils.GetRelativePath(rootUri, file, false);
+            if (file.Length > 255)
+            {
+                errors.Add(new ElementValidationInfo(id, "Путь к файлу слишком длинный: " + file, false));
+                return false;
+            }
             try
             {
-                var temp = new FileInfo(file);
-                catalog.AddItem(id, parent, Path.GetFileNameWithoutExtension(file), temp.FullName);
+                catalog.AddItem(id, parent, Path.GetFileNameWithoutExtension(file), file);
                 return true;
             }
             catch (PathTooLongException)
