@@ -1,0 +1,1 @@
+Helps user create reports by combining its parts.
